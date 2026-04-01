@@ -1,0 +1,9 @@
+# Python
+**/__pycache__/
+*.pyc
+
+# Generated outputs
+04_generations/
+06_stems/
+08_exports/
+
