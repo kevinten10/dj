@@ -1,9 +1,34 @@
+# AI-DJ Workspace Gitignore
+
+# Audio Generations (Ignore raw but keep selected if needed)
+04_generations/audio/raw/*
+04_generations/audio/selected/*
+04_generations/metadata/*
+
+# Assets & Stems
+03_assets/samples/**/*
+06_stems/**/*
+
+# Exports (Selected tracks should be committed manually or kept in a separate cloud drive)
+08_exports/dj_ready/*
+08_exports/mp3/*
+08_exports/wav/*
+
 # Python
-**/__pycache__/
-*.pyc
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+.env
 
-# Generated outputs
-04_generations/
-06_stems/
-08_exports/
+# OS
+.DS_Store
+Thumbs.db
 
+# Keep directory structure but ignore contents
+!04_generations/audio/raw/.gitkeep
+!04_generations/audio/selected/.gitkeep
+!04_generations/metadata/.gitkeep
+!08_exports/dj_ready/.gitkeep

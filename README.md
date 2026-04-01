@@ -1,49 +1,51 @@
-# dj 工作目录（AI 生成 + DJUCED 练习）
+# AI-DJ Workspace (2026 Edition) 🎧
 
-这是一个把「灵感 → 生成音频 → 导入 DJ 软件练习」串起来的工作目录结构。当前已提供：
-- 新手教程：`12_docs/ai_djuced_tutorial.md`
-- 一键生成脚本（MiniMax）：`13_tools/scripts/make_dj_track_minimax.py`
+> **Idea → AI Generation → DJ Practice**
+> A professional-grade workspace for the future of DJing. Optimized for Hercules controllers and DJUCED.
 
-## 快速开始（MiniMax）
+---
 
-1) 安装依赖：
+## 🌟 Key Features
 
+- 🤖 **MiniMax Music 2.5 Integration**: Precise control over 14+ track structure tags (Intro, Drop, Outro, etc.).
+- 🎚️ **DJ-Friendly Workflow**: Automated export to specialized directories recognized by DJ software.
+- 📜 **Lyrics & Metadata Tracking**: Automated archiving of generation prompts, lyrics, and API responses.
+- ⚖️ **Compliance Ready**: Includes checklists for 2026 C2PA and commercial licensing standards.
+- 🚀 **Python Automation**: One-command generation with auto-play and high-fidelity 320kbps output.
+
+## 📂 Workspace Structure
+
+```text
+├── 04_generations/      # Raw AI output and technical metadata
+├── 08_exports/          # Final tracks (MP3/WAV) ready for DJUCED
+├── 12_docs/             # Master tutorials and compliance checklists
+└── 13_tools/            # Generation scripts and environment configs
+```
+
+## 🛠️ Quick Start
+
+### 1. Prerequisites
+- Python 3.9+
+- [MiniMax API Key](https://platform.minimax.io/)
+
+### 2. Setup Environment
 ```powershell
+# Install dependencies
 python -m pip install -r requirements.txt
+
+# Configure API Key
+$env:MINIMAX_API_KEY = "your_key"
 ```
 
-2) 配置环境变量（二选一）：
-
-- 直接在 PowerShell 里设置：
-
+### 3. Generate Your First Track
 ```powershell
-$env:MINIMAX_API_KEY = "你的key"
-# 可选：如果你需要走其他域名
-$env:MINIMAX_API_BASE = "https://api.minimax.io"
+python 13_tools/scripts/make_dj_track_minimax.py --idea "Cyberpunk neon club" --style "Melodic Techno" --bpm 126 --play
 ```
 
-- 或复制模板并执行：
-  - 复制 `13_tools/configs/minimax_env.example.ps1` → `13_tools/configs/minimax_env.ps1`
-  - 填好 Key 后运行：`. .\13_tools\configs\minimax_env.ps1`
+## 📘 Documentation
+- [Full DJUCED Tutorial](./12_docs/ai_djuced_tutorial.md)
+- [DJ-Ready Checklist](./12_docs/release_checklist/dj_ready_checklist.md)
+- [Licensing & Compliance](./12_docs/licenses/terms_checklist.md)
 
-3) 生成并导出一首可练习的曲子：
-
-```powershell
-python 13_tools/scripts/make_dj_track_minimax.py --idea "赛博朋克夜店，霓虹雨夜，128BPM，鼓点清晰，适合新手练习混音" --instrumental --play
-```
-
-输出位置：
-- DJ 可用导出：`08_exports/dj_ready/`
-- 原始音频：`04_generations/audio/raw/`
-- 元数据：`04_generations/metadata/`
-
-## 下一步建议
-
-- 在 DJUCED 的 Prepare 模式做：beatgrid 校准 + Hot Cue（Intro/Break/Drop/Outro）。
-- 需要更“好混”的结构时：参考 `12_docs/release_checklist/dj_ready_checklist.md` 做成 Extended Mix / DJ Edit。
-
-## 许可与合规（重要）
-
-如果你计划公开发布/商用，请先阅读并维护：
-- `12_docs/licenses/README.md`
-
+## ⚖️ License
+[MIT License](./LICENSE)
