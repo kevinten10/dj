@@ -12,8 +12,9 @@
 ## 🌟 Core Capabilities
 
 - 🤖 **MiniMax Music 2.5 Flagship Support**: Leverage the latest 2026 models with 14+ structural tags for precise track arrangement.
+- 🏠 **Local Model Support**: Generate music offline using MusicGen (Meta) with multiple model sizes (300M to 3.3B params).
 - 🎚️ **DJ-Ready Arrangement**: Automated generation of `[Intro]` and `[Outro]` segments specifically designed for seamless mixing.
-- 🧪 **High-Fidelity Audio**: Generates 320kbps MP3s with 44.1kHz sample rates, ensuring club-ready low-end and clarity.
+- 🧪 **High-Fidelity Audio**: Generates 320kbps MP3s or WAV files with 44.1kHz sample rates, ensuring club-ready low-end and clarity.
 - 📊 **Automated Metadata**: Every track is archived with its full generation prompt, lyrics, and API response for future reference.
 - ⚖️ **2026 Compliance**: Pre-configured checklists for C2PA watermarking and commercial rights verification.
 - 📚 **Complete Learning Path**: From beginner to advanced, with structured lessons and practice plans.
