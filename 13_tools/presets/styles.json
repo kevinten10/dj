@@ -1,0 +1,124 @@
+{
+  "presets": {
+    "deep_house": {
+      "name": "Deep House",
+      "style": "Deep House",
+      "bpm_min": 110,
+      "bpm_max": 125,
+      "default_bpm": 118,
+      "description": "灵魂感、柔和、适合开场",
+      "prompt_template": "Deep House, soulful vibe, smooth bassline, warm pads, {idea}, DJ-friendly with clear intro and outro",
+      "energy_level": "low"
+    },
+    "tech_house": {
+      "name": "Tech House",
+      "style": "Tech House",
+      "bpm_min": 120,
+      "bpm_max": 130,
+      "default_bpm": 126,
+      "description": "科技感、节奏感强、适合主舞台",
+      "prompt_template": "Tech House, driving beat, rolling bassline, crisp percussion, {idea}, DJ-ready with clear structure",
+      "energy_level": "medium"
+    },
+    "progressive_house": {
+      "name": "Progressive House",
+      "style": "Progressive House",
+      "bpm_min": 125,
+      "bpm_max": 135,
+      "default_bpm": 128,
+      "description": "旋律化、渐进式、情感丰富",
+      "prompt_template": "Progressive House, melodic, uplifting, atmospheric build-ups, emotional chords, {idea}, perfect for journey mixing",
+      "energy_level": "medium-high"
+    },
+    "funky_house": {
+      "name": "Funky House",
+      "style": "Funky House",
+      "bpm_min": 118,
+      "bpm_max": 128,
+      "default_bpm": 122,
+      "description": "采样Funk、律动强、适合派对",
+      "prompt_template": "Funky House, funky guitar riffs, disco samples, groovy bassline, {idea}, feel-good party vibe",
+      "energy_level": "medium"
+    },
+    "techno": {
+      "name": "Techno",
+      "style": "Techno",
+      "bpm_min": 120,
+      "bpm_max": 140,
+      "default_bpm": 130,
+      "description": "极简、工业感、适合仓库派对",
+      "prompt_template": "Techno, minimalist, industrial vibe, hypnotic rhythm, {idea}, dark and driving",
+      "energy_level": "high"
+    },
+    "industrial_techno": {
+      "name": "Industrial Techno",
+      "style": "Industrial Techno",
+      "bpm_min": 125,
+      "bpm_max": 145,
+      "default_bpm": 135,
+      "description": "硬核、噪音元素、高能量",
+      "prompt_template": "Industrial Techno, hard-hitting, noisy textures, heavy percussion, {idea}, warehouse ready",
+      "energy_level": "very-high"
+    },
+    "melodic_techno": {
+      "name": "Melodic Techno",
+      "style": "Melodic Techno",
+      "bpm_min": 120,
+      "bpm_max": 130,
+      "default_bpm": 126,
+      "description": "旋律化、情感丰富、优美",
+      "prompt_template": "Melodic Techno, emotional melodies, arpeggiated synths, atmospheric pads, {idea}, cinematic and beautiful",
+      "energy_level": "medium-high"
+    },
+    "acid_techno": {
+      "name": "Acid Techno",
+      "style": "Acid Techno",
+      "bpm_min": 125,
+      "bpm_max": 140,
+      "default_bpm": 132,
+      "description": "TB-303、酸性音色、经典",
+      "prompt_template": "Acid Techno, squelchy 303 basslines, classic acid vibe, {idea}, retro-futuristic",
+      "energy_level": "high"
+    },
+    "trance": {
+      "name": "Trance",
+      "style": "Trance",
+      "bpm_min": 128,
+      "bpm_max": 140,
+      "default_bpm": 138,
+      "description": "Uplifting、旋律化、正能量",
+      "prompt_template": "Trance, uplifting, euphoric melodies, epic breakdowns, {idea}, emotional and uplifting",
+      "energy_level": "high"
+    },
+    "psytrance": {
+      "name": "Psytrance",
+      "style": "Psytrance",
+      "bpm_min": 135,
+      "bpm_max": 150,
+      "default_bpm": 145,
+      "description": "迷幻、快速节奏、精神之旅",
+      "prompt_template": "Psytrance, psychedelic, swirling arpeggios, driving bass, {idea}, mind-bending trip",
+      "energy_level": "very-high"
+    },
+    "drum_and_bass": {
+      "name": "Drum & Bass",
+      "style": "Drum & Bass",
+      "bpm_min": 160,
+      "bpm_max": 180,
+      "default_bpm": 174,
+      "description": "快速鼓点、重低音、能量十足",
+      "prompt_template": "Drum & Bass, fast breakbeats, heavy basslines, {idea}, high energy and dynamic",
+      "energy_level": "very-high"
+    },
+    "practice_track": {
+      "name": "练习专用",
+      "style": "House",
+      "bpm_min": 120,
+      "bpm_max": 128,
+      "default_bpm": 124,
+      "description": "专为新手练习设计，鼓点清晰",
+      "prompt_template": "Practice track for DJ beginners, extremely clear kick drum, simple 4/4 beat, minimal elements, {idea}, perfect for beatmatching practice",
+      "energy_level": "medium"
+    }
+  }
+}

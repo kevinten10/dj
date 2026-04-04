@@ -16,6 +16,9 @@
 - 🧪 **High-Fidelity Audio**: Generates 320kbps MP3s with 44.1kHz sample rates, ensuring club-ready low-end and clarity.
 - 📊 **Automated Metadata**: Every track is archived with its full generation prompt, lyrics, and API response for future reference.
 - ⚖️ **2026 Compliance**: Pre-configured checklists for C2PA watermarking and commercial rights verification.
+- 📚 **Complete Learning Path**: From beginner to advanced, with structured lessons and practice plans.
+- 🎨 **Style Presets**: 12+ pre-configured music styles (Deep House, Techno, Trance, etc.) with optimized prompts.
+- 📁 **Library Management**: Organize, filter, and create set lists from your AI-generated tracks.
 
 ---
 
@@ -75,6 +78,8 @@ python 13_tools/scripts/make_dj_track_minimax.py --idea "Peak hour techno, indus
 
 ## 📘 Documentation & Resources
 
+- 📚 **[Learning Path](./12_docs/learning_path.md)**: Complete beginner-to-advanced DJ curriculum.
+- 🎯 **[Techniques Library](./12_docs/techniques_library.md)**: Comprehensive reference for DJ techniques.
 - 📖 **[AI-DJ Tutorial](./12_docs/ai_djuced_tutorial.md)**: The complete guide from prompt to performance.
 - ✅ **[Quality Checklist](./12_docs/release_checklist/dj_ready_checklist.md)**: Standards for tracks before they enter your library.
 - ⚖️ **[Licensing Guide](./12_docs/licenses/terms_checklist.md)**: Understanding 2026 commercial rights and C2PA.
