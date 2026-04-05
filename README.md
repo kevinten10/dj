@@ -9,6 +9,34 @@
 
 ---
 
+## ⚡ 快速开始（30秒上手）
+
+### Windows 用户（最简单）
+
+双击运行：
+```
+start.ps1
+```
+
+或者在 PowerShell 中：
+```powershell
+.\start.ps1
+```
+
+### 所有人
+
+```powershell
+# 1. 安装依赖
+python -m pip install -r requirements.txt
+
+# 2. 启动交互式菜单
+python 13_tools/scripts/interactive_generator.py
+```
+
+就这么简单！剩下的交给菜单引导你完成！
+
+---
+
 ## 🌟 Core Capabilities
 
 - 🤖 **MiniMax Music 2.5 Flagship Support**: Leverage the latest 2026 models with 14+ structural tags for precise track arrangement.
@@ -81,6 +109,7 @@ python 13_tools/scripts/make_dj_track_minimax.py --idea "Peak hour techno, indus
 
 - 📚 **[Learning Path](./12_docs/learning_path.md)**: Complete beginner-to-advanced DJ curriculum.
 - 🎯 **[Techniques Library](./12_docs/techniques_library.md)**: Comprehensive reference for DJ techniques.
+- 🏠 **[Local Models Guide](./12_docs/local_models.md)**: Generate music offline with MusicGen.
 - 📖 **[AI-DJ Tutorial](./12_docs/ai_djuced_tutorial.md)**: The complete guide from prompt to performance.
 - ✅ **[Quality Checklist](./12_docs/release_checklist/dj_ready_checklist.md)**: Standards for tracks before they enter your library.
 - ⚖️ **[Licensing Guide](./12_docs/licenses/terms_checklist.md)**: Understanding 2026 commercial rights and C2PA.
