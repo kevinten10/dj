@@ -1,0 +1,37 @@
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    4/4 TIME SIGNATURE - THE FOUNDATION                       ║
+║                                                                              ║
+║  In electronic music, almost everything follows 4/4 time:                    ║
+║                                                                              ║
+║  ONE BAR (4 beats):                                                          ║
+║  ┌─────────────────────────────────────────────────────────────────────────┐ ║
+║  │                                                                         │ ║
+║  │   BEAT 1        BEAT 2        BEAT 3        BEAT 4                     │ ║
+║  │   ═══════       ═══════       ═══════       ═══════                    │ ║
+║  │      ●             ●             ●             ●                        │ ║
+║  │     KICK          CLAP          KICK          CLAP                     │ ║
+║  │    (Strong)      (Weak)       (Medium)       (Weak)                    │ ║
+║  │      ▼             ▼             ▼             ▼                        │ ║
+║  │   [====]        [----]        [====]        [----]                     │ ║
+║  │                                                                         │ ║
+║  └─────────────────────────────────────────────────────────────────────────┘ ║
+║                                                                              ║
+║  VISUAL REPRESENTATION IN WAVEFORM:                                          ║
+║                                                                              ║
+║  Volume ↑                                                                    ║
+║       │    ╱╲           ╱╲           ╱╲           ╱╲                        ║
+║       │   ╱  ╲         ╱  ╲         ╱  ╲         ╱  ╲                       ║
+║       │  ╱    ╲       ╱    ╲       ╱    ╲       ╱    ╲                      ║
+║       │ ╱      ╲     ╱      ╲     ╱      ╲     ╱      ╲                     ║
+║       │╱        ╲___╱        ╲___╱        ╲___╱        ╲___                 ║
+║       └──────────────────────────────────────────────────────────→ Time     ║
+║              1         2         3         4                                 ║
+║                                                                              ║
+║  PHRASE STRUCTURE:                                                           ║
+║  • 4 beats = 1 bar                                                           ║
+║  • 4 bars = 1 phrase (16 beats)                                              ║
+║  • 2 phrases = 1 section (32 beats) ← Most common mixing point!              ║
+║                                                                              ║
+║  MIXING TIP: Always start your mix at the beginning of a 32-beat section!    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
