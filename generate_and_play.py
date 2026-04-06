@@ -46,15 +46,15 @@ def generate_music(idea, style=DEFAULT_STYLE, bpm=DEFAULT_BPM, duration=DEFAULT_
     """
     repo_root = get_repo_root()
     
-    # 构建命令
+    # 构建命令（注意：make_dj_track_minimax.py 不支持 --duration 参数）
     cmd = [
         sys.executable,
         str(repo_root / "13_tools" / "scripts" / "make_dj_track_minimax.py"),
         "--idea", idea,
         "--style", style,
         "--bpm", str(bpm),
-        "--duration", str(duration),
-        "--instrumental"
+        "--instrumental",
+        "--play"
     ]
     
     print(f"🎵 正在生成音乐...")
