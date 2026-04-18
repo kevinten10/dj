@@ -97,24 +97,44 @@ def run_cloud_generate():
     idea = get_input("曲目创意/主题", "午夜 Tech House 派对")
     style = get_input("音乐风格", "Tech House")
     bpm = get_int_input("BPM", 128, 60, 200)
-    instrumental = get_yes_no("生成器乐曲目？", True)
-    play = get_yes_no("生成后自动播放？", True)
+    with_lyrics = get_yes_no("生成带歌词的曲目？", False)
     
-    cmd = [
-        sys.executable,
-        str(_repo_root() / "13_tools" / "scripts" / "make_dj_track_minimax.py"),
-        "--idea", idea,
-        "--style", style,
-        "--bpm", str(bpm)
-    ]
-    if instrumental:
-        cmd.append("--instrumental")
-    if play:
-        cmd.append("--play")
-    
-    print(f"\n🚀 执行命令: {' '.join(cmd)}")
-    import subprocess
-    subprocess.run(cmd)
+    if with_lyrics:
+        play = get_yes_no("生成后自动播放？", True)
+        
+        cmd = [
+            sys.executable,
+            str(_repo_root() / "13_tools" / "scripts" / "make_dj_track_with_lyrics.py"),
+            "--idea", idea,
+            "--style", style,
+            "--bpm", str(bpm),
+            "--with-lyrics"
+        ]
+        if play:
+            cmd.append("--play")
+        
+        print(f"\n🚀 执行命令: {' '.join(cmd)}")
+        import subprocess
+        subprocess.run(cmd)
+    else:
+        instrumental = get_yes_no("生成器乐曲目？", True)
+        play = get_yes_no("生成后自动播放？", True)
+        
+        cmd = [
+            sys.executable,
+            str(_repo_root() / "13_tools" / "scripts" / "make_dj_track_minimax.py"),
+            "--idea", idea,
+            "--style", style,
+            "--bpm", str(bpm)
+        ]
+        if instrumental:
+            cmd.append("--instrumental")
+        if play:
+            cmd.append("--play")
+        
+        print(f"\n🚀 执行命令: {' '.join(cmd)}")
+        import subprocess
+        subprocess.run(cmd)
 
 
 def run_cloud_preset():
