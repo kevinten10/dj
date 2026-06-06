@@ -896,9 +896,14 @@ A: MusicGen requires large dependencies:
    - Audiocraft (~500MB)
    
    Solutions:
-   1. Ensure Python version >= 3.9
-   2. Install PyTorch first: pip install torch torchvision torchaudio
-   3. Then install audiocraft: pip install audiocraft
+   1. For MusicGen/AudioCraft, use Python 3.10 or 3.11.
+   2. Avoid installing AudioCraft into the Python 3.12 ACE-Step environment.
+   3. AudioCraft 1.3.0 pins torch==2.1.0, which is not available for Python 3.12 on current pip indexes.
+   4. Create a separate venv:
+      py -3.11 -m venv .venv-musicgen
+      .\.venv-musicgen\Scripts\activate
+      python -m pip install --upgrade pip
+      python -m pip install torch torchvision torchaudio audiocraft
    
    Detailed guide: 12_docs/local_models.md
 ```

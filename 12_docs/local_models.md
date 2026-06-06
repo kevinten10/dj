@@ -43,12 +43,17 @@ pip install torch torchvision torchaudio
 
 #### 2. 安装 Audiocraft (MusicGen)
 
+> Compatibility note: AudioCraft 1.3.0 pins `torch==2.1.0`. On Python 3.12, current pip indexes do not provide that torch version, so `pip install audiocraft` fails. Use a separate Python 3.10 or 3.11 virtual environment for MusicGen/AudioCraft.
+
 ```powershell
-# 安装 audiocraft
-pip install audiocraft
+# Recommended Windows setup for MusicGen
+py -3.11 -m venv .venv-musicgen
+.\.venv-musicgen\Scripts\activate
+python -m pip install --upgrade pip
+python -m pip install torch torchvision torchaudio audiocraft
 
 # 可选：安装额外依赖
-pip install transformers accelerate
+python -m pip install transformers accelerate
 ```
 
 #### 3. 验证安装

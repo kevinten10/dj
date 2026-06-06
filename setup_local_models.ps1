@@ -1,139 +1,112 @@
 #!/usr/bin/env powershell
-# 一键部署本地 AI 音乐生成模型
-# 自动检测环境并安装所需依赖
+# One-shot setup for the optional local MusicGen/AudioCraft environment.
 
 $ErrorActionPreference = "Stop"
 
-Write-Host "========================================" -ForegroundColor Cyan
-Write-Host "  🎵 AI DJ 本地模型一键部署工具" -ForegroundColor Cyan
-Write-Host "========================================" -ForegroundColor Cyan
-Write-Host ""
+function Write-Step($Message) {
+    Write-Host ""
+    Write-Host $Message -ForegroundColor Cyan
+}
 
-# 检查 Python
-Write-Host "📋 检查 Python 环境..." -ForegroundColor Yellow
+function Require-Command($Command, $Hint) {
+    & $Command --version *> $null
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "Missing command: $Command" -ForegroundColor Red
+        Write-Host $Hint -ForegroundColor Yellow
+        exit 1
+    }
+}
+
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host "  AI DJ Local MusicGen Setup" -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
+
+Write-Step "Checking Python..."
+Require-Command "python" "Install Python 3.10 or 3.11 from https://www.python.org/downloads/"
+
 $pythonVersion = python --version 2>&1
+Write-Host "Detected: $pythonVersion" -ForegroundColor Green
+
+$pyVersionInfo = python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')"
 if ($LASTEXITCODE -ne 0) {
-    Write-Host "❌ 未找到 Python！请先安装 Python 3.9+" -ForegroundColor Red
-    Write-Host "   下载地址: https://www.python.org/downloads/" -ForegroundColor Gray
+    Write-Host "Unable to detect Python version." -ForegroundColor Red
     exit 1
 }
-Write-Host "✅ $pythonVersion" -ForegroundColor Green
 
-# 检查 pip
-Write-Host "📦 检查 pip..." -ForegroundColor Yellow
-$pipVersion = python -m pip --version 2>&1
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "❌ pip 未安装！" -ForegroundColor Red
+$pyParts = $pyVersionInfo.Trim().Split(".")
+$pyMajor = [int]$pyParts[0]
+$pyMinor = [int]$pyParts[1]
+
+if ($pyMajor -gt 3 -or ($pyMajor -eq 3 -and $pyMinor -ge 12)) {
+    Write-Host "AudioCraft/MusicGen setup is not supported on Python $pyVersionInfo." -ForegroundColor Red
+    Write-Host "AudioCraft 1.3.0 pins torch==2.1.0, which is not available for Python 3.12." -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "Create a separate Python 3.10 or 3.11 environment instead:" -ForegroundColor Yellow
+    Write-Host "  py -3.11 -m venv .venv-musicgen" -ForegroundColor Gray
+    Write-Host "  .\.venv-musicgen\Scripts\activate" -ForegroundColor Gray
+    Write-Host "  python -m pip install --upgrade pip" -ForegroundColor Gray
+    Write-Host "  python -m pip install torch torchvision torchaudio audiocraft" -ForegroundColor Gray
     exit 1
 }
-Write-Host "✅ pip 已安装" -ForegroundColor Green
 
-# 升级 pip
-Write-Host "⬆️  升级 pip..." -ForegroundColor Yellow
-python -m pip install --upgrade pip | Out-Null
-Write-Host "✅ pip 已升级" -ForegroundColor Green
-Write-Host ""
+Write-Step "Checking pip..."
+python -m pip --version
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "pip is not available for this Python." -ForegroundColor Red
+    exit 1
+}
 
-# 检测 CUDA
-Write-Host "🎮 检测 GPU/CUDA..." -ForegroundColor Yellow
+Write-Step "Upgrading pip..."
+python -m pip install --upgrade pip
+
+Write-Step "Checking GPU/CUDA..."
+$hasGPU = $false
 try {
-    $nvidiaOutput = nvidia-smi 2>&1
+    nvidia-smi
     if ($LASTEXITCODE -eq 0) {
-        Write-Host "✅ 检测到 NVIDIA GPU" -ForegroundColor Green
-        $cudaVersion = ($nvidiaOutput | Select-String "CUDA Version:").ToString()
-        Write-Host "   $cudaVersion" -ForegroundColor Gray
         $hasGPU = $true
-    } else {
-        Write-Host "⚠️  未检测到 NVIDIA GPU，将使用 CPU" -ForegroundColor Yellow
-        $hasGPU = $false
+        Write-Host "NVIDIA GPU detected." -ForegroundColor Green
     }
 } catch {
-    Write-Host "⚠️  未检测到 NVIDIA GPU，将使用 CPU" -ForegroundColor Yellow
     $hasGPU = $false
 }
-Write-Host ""
 
-# 安装 PyTorch
-Write-Host "🔥 安装 PyTorch..." -ForegroundColor Yellow
+Write-Step "Installing PyTorch..."
 if ($hasGPU) {
-    Write-Host "   安装 CUDA 版本..." -ForegroundColor Gray
     python -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 } else {
-    Write-Host "   安装 CPU 版本..." -ForegroundColor Gray
     python -m pip install torch torchvision torchaudio
 }
 if ($LASTEXITCODE -ne 0) {
-    Write-Host "❌ PyTorch 安装失败！" -ForegroundColor Red
+    Write-Host "PyTorch installation failed." -ForegroundColor Red
     exit 1
 }
-Write-Host "✅ PyTorch 安装完成" -ForegroundColor Green
-Write-Host ""
 
-# 验证 PyTorch
-Write-Host "🔍 验证 PyTorch 安装..." -ForegroundColor Yellow
-python -c "import torch; print(f'PyTorch: {torch.__version__}'); print(f'CUDA可用: {torch.cuda.is_available()}')" | ForEach-Object {
-    Write-Host "   $_" -ForegroundColor Gray
-}
-Write-Host ""
+Write-Step "Verifying PyTorch..."
+python -c "import torch; print(f'PyTorch: {torch.__version__}'); print(f'CUDA available: {torch.cuda.is_available()}')"
 
-# 安装 AudioCraft
-Write-Host "🎵 安装 AudioCraft..." -ForegroundColor Yellow
-python -m pip install audiocraft
+Write-Step "Installing AudioCraft and helpers..."
+python -m pip install audiocraft transformers accelerate psutil
 if ($LASTEXITCODE -ne 0) {
-    Write-Host "❌ AudioCraft 安装失败！" -ForegroundColor Red
+    Write-Host "AudioCraft installation failed." -ForegroundColor Red
     exit 1
 }
-Write-Host "✅ AudioCraft 安装完成" -ForegroundColor Green
-Write-Host ""
 
-# 安装额外依赖
-Write-Host "📚 安装额外依赖..." -ForegroundColor Yellow
-python -m pip install transformers accelerate psutil
-Write-Host "✅ 额外依赖安装完成" -ForegroundColor Green
-Write-Host ""
-
-# 预下载模型
-Write-Host "📥 预下载 MusicGen Small 模型..." -ForegroundColor Yellow
-Write-Host "   （约 1GB，请耐心等待）" -ForegroundColor Gray
-python -c "
-from audiocraft.models import MusicGen
-print('正在下载模型...')
-model = MusicGen.get_pretrained('facebook/musicgen-small')
-print('模型下载完成！')
-"
+Write-Step "Pre-downloading MusicGen Small..."
+python -c "from audiocraft.models import MusicGen; print('Downloading model...'); MusicGen.get_pretrained('facebook/musicgen-small'); print('Model ready.')"
 if ($LASTEXITCODE -ne 0) {
-    Write-Host "⚠️  模型下载失败，将在首次使用时自动下载" -ForegroundColor Yellow
-} else {
-    Write-Host "✅ 模型下载完成" -ForegroundColor Green
+    Write-Host "Model pre-download failed; it may still download on first use." -ForegroundColor Yellow
 }
-Write-Host ""
 
-# 测试生成
-Write-Host "🧪 测试生成..." -ForegroundColor Yellow
-Write-Host "   生成 5 秒测试音频..." -ForegroundColor Gray
-python 13_tools/scripts/make_dj_track_local.py --idea "test" --duration 5 --model facebook/musicgen-small 2>&1 | Out-Null
+Write-Step "Running a short generation smoke test..."
+python 13_tools/scripts/make_dj_track_local.py --idea "test" --duration 5 --model facebook/musicgen-small
 if ($LASTEXITCODE -eq 0) {
-    Write-Host "✅ 测试生成成功！" -ForegroundColor Green
+    Write-Host "Local MusicGen generation smoke test passed." -ForegroundColor Green
 } else {
-    Write-Host "⚠️  测试生成失败，但安装已完成" -ForegroundColor Yellow
+    Write-Host "Local MusicGen generation smoke test failed after installation." -ForegroundColor Yellow
 }
-Write-Host ""
 
-# 完成
-Write-Host "========================================" -ForegroundColor Green
-Write-Host "  🎉 部署完成！" -ForegroundColor Green
-Write-Host "========================================" -ForegroundColor Green
 Write-Host ""
-Write-Host "💡 使用方法:" -ForegroundColor Cyan
-Write-Host "   1. 一句话生成:" -ForegroundColor White
-Write-Host "      python generate_demo_local.py" -ForegroundColor Gray
-Write-Host ""
-Write-Host "   2. 使用本地模型脚本:" -ForegroundColor White
-Write-Host "      python 13_tools/scripts/make_dj_track_local.py --idea '你的想法' --cuda" -ForegroundColor Gray
-Write-Host ""
-Write-Host "   3. 启动交互式菜单:" -ForegroundColor White
-Write-Host "      .\start.ps1" -ForegroundColor Gray
-Write-Host ""
-Write-Host "📖 查看详细指南:" -ForegroundColor Cyan
-Write-Host "   LOCAL_DEPLOYMENT_GUIDE.md" -ForegroundColor Gray
-Write-Host ""
+Write-Host "Setup finished. Try:" -ForegroundColor Green
+Write-Host "  python generate_demo_local.py" -ForegroundColor Gray
+Write-Host "  python 13_tools/scripts/make_dj_track_local.py --idea 'your idea' --cuda" -ForegroundColor Gray

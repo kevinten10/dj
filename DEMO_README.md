@@ -26,7 +26,10 @@
 
 1. 安装依赖：
    ```powershell
-   pip install torch audiocraft
+   py -3.11 -m venv .venv-musicgen
+   .\.venv-musicgen\Scripts\activate
+   python -m pip install --upgrade pip
+   python -m pip install torch torchvision torchaudio audiocraft
    ```
 
 2. 运行本地生成脚本：

@@ -896,9 +896,14 @@ A: MusicGen 需要较大的依赖：
    - Audiocraft (~500MB)
    
    解决方案：
-   1. 确保 Python 版本 >= 3.9
-   2. 先安装 PyTorch：pip install torch torchvision torchaudio
-   3. 再安装 audiocraft：pip install audiocraft
+   1. MusicGen/AudioCraft 建议使用 Python 3.10 或 3.11。
+   2. 不要直接安装到当前 Python 3.12 的 ACE-Step 环境。
+   3. AudioCraft 1.3.0 固定依赖 torch==2.1.0，当前 pip 索引不提供 Python 3.12 对应包。
+   4. 建议创建单独环境：
+      py -3.11 -m venv .venv-musicgen
+      .\.venv-musicgen\Scripts\activate
+      python -m pip install --upgrade pip
+      python -m pip install torch torchvision torchaudio audiocraft
    
    详细指南：12_docs/local_models.md
 ```
