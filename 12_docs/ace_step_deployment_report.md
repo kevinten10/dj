@@ -26,7 +26,7 @@ python 13_tools/scripts/make_dj_track_ace_step.py --prompt "Electronic House mus
 
 ```powershell
 git clone https://github.com/ace-step/ACE-Step.git 13_tools/ace_step
-python -m pip install torchcodec
+python -m pip install --only-binary=:all: --no-deps --no-cache-dir torchcodec
 ```
 
 ### ✅ 已完成的步骤
@@ -39,13 +39,18 @@ python -m pip install torchcodec
 
 ### ⚠️ 遇到的问题
 
-**缺少 TorchCodec 保存后端**
+**TorchCodec 保存后端缺失或不可用**
 
-新版 `torchaudio.save` 会调用 TorchCodec。若短生成在保存阶段报 `No module named 'torchcodec'`，先安装：
+新版 `torchaudio.save` 会调用 TorchCodec。若短生成在保存阶段报 `No module named 'torchcodec'` 或 `Could not load libtorchcodec`，先安装：
 
 ```powershell
-python -m pip install torchcodec
+python -m pip install --only-binary=:all: --no-deps --no-cache-dir torchcodec
 ```
+
+如果已经安装但仍不可用，请确认：
+
+- Windows 上安装的是 FFmpeg `full-shared` 版本，并且 DLL 所在目录在 `PATH` 中。
+- TorchCodec 版本与当前 PyTorch 版本兼容；当前本机是 PyTorch `2.12.0.dev20260405+cu130`，可能需要等待或选择匹配该 nightly 版本的 TorchCodec。
 
 **RTX 5060 Ti 兼容性问题**
 

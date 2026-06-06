@@ -50,6 +50,18 @@ class AceStepParameterTests(unittest.TestCase):
 
         self.assertEqual(missing, ["torchcodec"])
 
+    def test_runtime_dependency_check_reports_broken_torchcodec(self):
+        ace_step = load_ace_step_module()
+
+        with mock.patch.object(ace_step.importlib.util, "find_spec", return_value=object()):
+            with mock.patch.object(ace_step.importlib, "import_module") as import_module:
+                import_module.side_effect = RuntimeError("Could not load libtorchcodec")
+
+                issues = ace_step._ace_step_runtime_package_issues()
+
+        self.assertIn("torchcodec", issues)
+        self.assertIn("Could not load libtorchcodec", issues["torchcodec"])
+
 
 if __name__ == "__main__":
     unittest.main()

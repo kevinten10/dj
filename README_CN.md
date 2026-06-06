@@ -791,7 +791,8 @@ ACE-Step 作为可选第三方本地 clone 放在 `13_tools/ace_step/`，该目�
 python 13_tools/scripts/make_dj_track_ace_step.py --check
 
 # 如果 --check 提示缺少保存音频所需依赖
-python -m pip install torchcodec
+python -m pip install --only-binary=:all: --no-deps --no-cache-dir torchcodec
+# Windows 还需要 FFmpeg full-shared，并确保 TorchCodec 与 PyTorch 版本匹配。
 
 # 如果本地还没有 ACE-Step，按需克隆
 git clone https://github.com/ace-step/ACE-Step.git 13_tools/ace_step
