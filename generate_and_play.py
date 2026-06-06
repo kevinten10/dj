@@ -5,6 +5,7 @@
 """
 
 import sys
+import argparse
 import subprocess
 import os
 import platform
@@ -69,7 +70,14 @@ def generate_music(idea, style=DEFAULT_STYLE, bpm=DEFAULT_BPM, duration=DEFAULT_
     
     try:
         # 运行生成命令
-        result = subprocess.run(cmd, capture_output=True, text=True, cwd=repo_root)
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            cwd=repo_root,
+        )
         
         if result.returncode != 0:
             print(f"❌ 生成失败: {result.stderr}")
@@ -93,17 +101,24 @@ def generate_music(idea, style=DEFAULT_STYLE, bpm=DEFAULT_BPM, duration=DEFAULT_
         print(f"❌ 错误: {e}")
         return None
 
-def main():
+def main(argv=None):
     """主函数"""
+    parser = argparse.ArgumentParser(
+        description="一句话生成 DJ 音乐并自动播放",
+        usage="%(prog)s [音乐想法]",
+    )
+    parser.add_argument("idea", nargs="*", help="音乐想法/描述")
+    args = parser.parse_args(argv)
+
     print("=" * 60)
     print("🎧 一句话生成DJ音乐")
     print("=" * 60)
     print()
     
     # 获取用户输入
-    if len(sys.argv) > 1:
+    if args.idea:
         # 从命令行参数获取
-        idea = " ".join(sys.argv[1:])
+        idea = " ".join(args.idea)
     else:
         # 交互式输入
         print("💡 请输入你的想法（描述你想要的音乐）：")
@@ -179,4 +194,4 @@ def main():
         return 1
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main(sys.argv[1:]))
