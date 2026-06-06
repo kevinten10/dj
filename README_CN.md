@@ -790,6 +790,9 @@ ACE-Step 作为可选第三方本地 clone 放在 `13_tools/ace_step/`，该目�
 # 不加载模型，只检查本地 ACE-Step 环境
 python 13_tools/scripts/make_dj_track_ace_step.py --check
 
+# 如果 --check 提示缺少保存音频所需依赖
+python -m pip install torchcodec
+
 # 如果本地还没有 ACE-Step，按需克隆
 git clone https://github.com/ace-step/ACE-Step.git 13_tools/ace_step
 

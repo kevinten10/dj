@@ -202,6 +202,26 @@ def _git_value(args: list[str]) -> str:
     return result.stdout.strip()
 
 
+def _missing_ace_step_runtime_packages() -> list[str]:
+    required_runtime_packages = ["torchcodec"]
+    return [
+        package
+        for package in required_runtime_packages
+        if importlib.util.find_spec(package) is None
+    ]
+
+
+def _print_ace_step_runtime_install_hint(missing_packages: list[str]) -> None:
+    if not missing_packages:
+        return
+
+    print("缺少 ACE-Step 运行时依赖:")
+    for package in missing_packages:
+        print(f"  - {package}")
+    print("建议安装:")
+    print(f"  python -m pip install {' '.join(missing_packages)}")
+
+
 def check_ace_step_setup() -> int:
     """Run a lightweight preflight without loading the ACE-Step model."""
     print("ACE-Step 本地环境检查")
@@ -238,8 +258,46 @@ def check_ace_step_setup() -> int:
         print("建议: 按 ACE-Step 文档安装 PyTorch 后再生成。")
         return 1
 
+    missing_runtime_packages = _missing_ace_step_runtime_packages()
+    if missing_runtime_packages:
+        _print_ace_step_runtime_install_hint(missing_runtime_packages)
+        return 1
+
     print("预检通过: 可以尝试生成或启动 Web UI。")
     return 0
+
+
+def _build_generation_kwargs(
+    *,
+    duration: int,
+    prompt: str,
+    lyrics: str,
+    infer_steps: int,
+    guidance_scale: float,
+    seed: int,
+    output_path: str,
+) -> dict:
+    return {
+        "audio_duration": duration,
+        "prompt": prompt,
+        "lyrics": lyrics,
+        "infer_step": infer_steps,
+        "guidance_scale": guidance_scale,
+        "scheduler_type": "euler",
+        "cfg_type": "cfg",
+        "omega_scale": 10.0,
+        "manual_seeds": str(seed) if seed != -1 else "",
+        "guidance_interval": 0.5,
+        "guidance_interval_decay": 0.0,
+        "min_guidance_scale": 3.0,
+        "use_erg_tag": False,
+        "use_erg_lyric": False,
+        "use_erg_diffusion": True,
+        "oss_steps": [],
+        "guidance_scale_text": 3.0,
+        "guidance_scale_lyric": 3.0,
+        "save_path": output_path,
+    }
 
 
 def generate_with_ace_step(
@@ -296,27 +354,22 @@ def generate_with_ace_step(
     # 生成音乐
     start_time = time.time()
 
-    pipeline(
-        audio_duration=duration,
-        prompt=prompt,
-        lyrics=lyrics,
-        infer_step=infer_steps,
-        guidance_scale=guidance_scale,
-        scheduler_type="euler",
-        cfg_type="cfg",
-        omega_scale=None,
-        manual_seeds=str(seed) if seed != -1 else "",
-        guidance_interval=7.5,
-        guidance_interval_decay=0.5,
-        min_guidance_scale=3.0,
-        use_erg_tag=False,
-        use_erg_lyric=False,
-        use_erg_diffusion=True,
-        oss_steps=[],
-        guidance_scale_text=3.0,
-        guidance_scale_lyric=3.0,
-        save_path=output_path
-    )
+    try:
+        pipeline(
+            **_build_generation_kwargs(
+                duration=duration,
+                prompt=prompt,
+                lyrics=lyrics,
+                infer_steps=infer_steps,
+                guidance_scale=guidance_scale,
+                seed=seed,
+                output_path=output_path,
+            )
+        )
+    except ImportError as exc:
+        if "torchcodec" in str(exc).lower():
+            _print_ace_step_runtime_install_hint(["torchcodec"])
+        raise
 
     elapsed = time.time() - start_time
     print(f"{'='*50}")
@@ -368,17 +421,22 @@ def main():
         return 0
 
     # 生成
-    output_path = generate_with_ace_step(
-        lyrics=lyrics,
-        prompt=prompt,
-        duration=args.duration,
-        infer_steps=args.steps,
-        guidance_scale=args.guidance,
-        seed=args.seed,
-        output_path=args.output,
-        cpu_offload=not args.no_cpu_offload,
-        bf16=not args.fp32
-    )
+    try:
+        output_path = generate_with_ace_step(
+            lyrics=lyrics,
+            prompt=prompt,
+            duration=args.duration,
+            infer_steps=args.steps,
+            guidance_scale=args.guidance,
+            seed=args.seed,
+            output_path=args.output,
+            cpu_offload=not args.no_cpu_offload,
+            bf16=not args.fp32
+        )
+    except ImportError as exc:
+        if "torchcodec" in str(exc).lower():
+            return 1
+        raise
 
     print(f"\n🎉 完成！音乐已保存到: {output_path}")
     return 0

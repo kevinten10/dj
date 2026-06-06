@@ -26,17 +26,26 @@ python 13_tools/scripts/make_dj_track_ace_step.py --prompt "Electronic House mus
 
 ```powershell
 git clone https://github.com/ace-step/ACE-Step.git 13_tools/ace_step
+python -m pip install torchcodec
 ```
 
 ### ✅ 已完成的步骤
 
 1. **✅ 克隆仓库** - ACE-Step 仓库已成功克隆到 `13_tools/ace_step/`
-2. **✅ 安装依赖** - 所有依赖已安装（PyTorch 2.12 + CUDA 13.0）
+2. **⚠️ 安装依赖** - PyTorch 2.12 + CUDA 13.0 可用；当前 `torchaudio.save` 还需要 `torchcodec`
 3. **✅ 下载模型** - ACE-Step-v1-3.5B 模型 (~8GB) 已下载到缓存
 4. **✅ 创建集成脚本** - `make_dj_track_ace_step.py` 已创建
 5. **✅ 修复 Gradio 问题** - Web UI 兼容性问题已修复
 
 ### ⚠️ 遇到的问题
+
+**缺少 TorchCodec 保存后端**
+
+新版 `torchaudio.save` 会调用 TorchCodec。若短生成在保存阶段报 `No module named 'torchcodec'`，先安装：
+
+```powershell
+python -m pip install torchcodec
+```
 
 **RTX 5060 Ti 兼容性问题**
 
