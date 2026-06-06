@@ -72,7 +72,7 @@ def main(argv: list[str]) -> int:
                         help="生成器乐曲目")
     parser.add_argument("--play", action="store_true",
                         help="生成后自动播放")
-    parser.add_argument("--model", default="music-2.5",
+    parser.add_argument("--model", default="music-2.6-free",
                         help="MiniMax 模型")
     parser.add_argument("--dry-run", action="store_true",
                         help="仅显示命令，不执行")

@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
-[![MiniMax Music 2.5](https://img.shields.io/badge/AI--Model-MiniMax%20Music%202.5-orange.svg)](https://platform.minimax.io/)
+[![MiniMax Music 2.6](https://img.shields.io/badge/AI--Model-MiniMax%20Music%202.6-orange.svg)](https://platform.minimax.io/)
 [![Hercules Inpulse 200 MK2](https://img.shields.io/badge/Controller-Hercules%20Inpulse%20200%20MK2-green.svg)](https://www.hercules.com/dj)
 
 > **The Bridge Between AI Creativity and Professional DJ Performance** 💫
@@ -686,7 +686,7 @@ Minor → 1A-12A
 
 | Feature | Cloud API | Local Model |
 |---------|-----------|-------------|
-| **Model** | MiniMax Music 2.5 | MusicGen (Meta) |
+| **Model** | MiniMax Music 2.6 | MusicGen (Meta) |
 | **Quality** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ ~ ⭐⭐⭐⭐⭐ |
 | **Speed** | Fast (~1min) | Depends on hardware (CPU/GPU) |
 | **Network** | Requires internet | Completely offline |

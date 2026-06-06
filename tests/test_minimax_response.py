@@ -1,0 +1,93 @@
+import importlib.util
+import os
+import tempfile
+import unittest
+from pathlib import Path
+from unittest import mock
+
+
+SCRIPT_PATH = (
+    Path(__file__).resolve().parents[1]
+    / "13_tools"
+    / "scripts"
+    / "make_dj_track_minimax.py"
+)
+
+
+def load_minimax_module():
+    spec = importlib.util.spec_from_file_location("make_dj_track_minimax", SCRIPT_PATH)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    return module
+
+
+class MiniMaxResponseTests(unittest.TestCase):
+    def test_writes_hex_audio_response_to_file(self):
+        minimax = load_minimax_module()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            out_path = Path(tmp) / "track.mp3"
+            minimax._write_audio_payload("494433040000", out_path)
+
+            self.assertEqual(out_path.read_bytes(), bytes.fromhex("494433040000"))
+
+    def test_url_audio_response_uses_downloader(self):
+        minimax = load_minimax_module()
+        calls = []
+
+        def fake_download(url, out_path):
+            calls.append((url, out_path))
+            out_path.write_bytes(b"downloaded")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            out_path = Path(tmp) / "track.mp3"
+            minimax._write_audio_payload(
+                "https://example.com/audio.mp3",
+                out_path,
+                download_func=fake_download,
+            )
+
+            self.assertEqual(calls, [("https://example.com/audio.mp3", out_path)])
+            self.assertEqual(out_path.read_bytes(), b"downloaded")
+
+    def test_instrumental_main_uses_current_minimax_payload(self):
+        minimax = load_minimax_module()
+        captured = {}
+
+        def fake_post(url, api_key, payload):
+            captured["url"] = url
+            captured["api_key"] = api_key
+            captured["payload"] = payload
+            return {"data": {"audio": "494433040000"}, "base_resp": {"status_code": 0}}
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            with mock.patch.dict(os.environ, {"MINIMAX_API_KEY": "test-key"}, clear=False):
+                with mock.patch.object(minimax, "_repo_root", return_value=tmp_path):
+                    with mock.patch.object(minimax, "_minimax_post", side_effect=fake_post):
+                        exit_code = minimax.main(
+                            [
+                                "--idea",
+                                "smoke",
+                                "--style",
+                                "House",
+                                "--bpm",
+                                "120",
+                                "--instrumental",
+                            ]
+                        )
+
+            self.assertEqual(exit_code, 0)
+            self.assertEqual(captured["url"], "https://api.minimax.io/v1/music_generation")
+            self.assertEqual(captured["api_key"], "test-key")
+            self.assertEqual(captured["payload"]["model"], "music-2.6-free")
+            self.assertEqual(captured["payload"]["output_format"], "url")
+            self.assertIs(captured["payload"]["is_instrumental"], True)
+            self.assertNotIn("lyrics", captured["payload"])
+            self.assertNotIn("lyrics_optimizer", captured["payload"])
+            self.assertTrue(list((tmp_path / "08_exports" / "dj_ready").glob("*.mp3")))
+
+
+if __name__ == "__main__":
+    unittest.main()

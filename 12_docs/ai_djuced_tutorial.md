@@ -28,7 +28,7 @@ python -m pip install -r requirements.txt
 4. 一句话生成并播放：
 
 ```powershell
-python 13_tools/scripts/make_dj_track_minimax.py --idea "赛博朋克夜店，霓虹雨夜，128BPM，鼓点清晰，适合新手练习混音" --model "music-2.5" --play
+python 13_tools/scripts/make_dj_track_minimax.py --idea "赛博朋克夜店，霓虹雨夜，128BPM，鼓点清晰，适合新手练习混音" --model "music-2.6-free" --play
 ```
 
 ---
@@ -55,12 +55,12 @@ python 13_tools/scripts/make_dj_track_minimax.py --idea "赛博朋克夜店，�
 
 MiniMax 提供专业的 API 流程：
 1. `lyrics_generation`：自动生成结构化歌词。
-2. `music_generation`：使用 **MiniMax Music 2.5** 旗舰模型。
+2. `music_generation`：使用 **MiniMax Music 2.6** / `music-2.6-free` 模型。
 
-### 3.2 Music 2.5 核心优势 (2026)
+### 3.2 Music 2.6 核心优势 (2026)
 
 - **精细化控制**：支持 14 种结构标签（`[Intro]`, `[Drop]`, `[Outro]` 等）。
-- **Music 2.5+ (Instrumental)**：专为 DJ 设计的器乐模型，支持 100+ 乐器，输出纯净。
+- **Music 2.6 (Instrumental)**：专为 DJ 设计的器乐模型，支持器乐模式，输出纯净。
 - **高保真**：解决了音频浑浊问题，适合俱乐部系统播放。
 
 ---
