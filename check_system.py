@@ -11,6 +11,9 @@ import importlib.util
 from pathlib import Path
 
 
+REPO_ROOT = Path(__file__).resolve().parent
+
+
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 if hasattr(sys.stderr, "reconfigure"):
@@ -114,6 +117,63 @@ def check_dependencies():
     return len(missing) == 0, missing
 
 
+def get_minimax_config_status(environ=os.environ):
+    api_key = environ.get("MINIMAX_API_KEY", "").strip()
+    if not api_key:
+        return False, "MINIMAX_API_KEY is not set."
+    if api_key == "PASTE_YOUR_MINIMAX_API_KEY_HERE":
+        return False, "MINIMAX_API_KEY is still the placeholder value."
+    return True, "MINIMAX_API_KEY is configured."
+
+
+def check_minimax_config():
+    ready, message = get_minimax_config_status(os.environ)
+    if ready:
+        print(f"✅ {message}")
+        print(f"   API base: {os.environ.get('MINIMAX_API_BASE', 'https://api.minimax.io')}")
+    else:
+        print(f"⚠️  {message}")
+        print("   配置示例:")
+        print("     cp 13_tools/configs/minimax_env.example.ps1 13_tools/configs/minimax_env.ps1")
+        print("     notepad 13_tools/configs/minimax_env.ps1")
+        print("     . .\\13_tools\\configs\\minimax_env.ps1")
+    return ready
+
+
+def get_ace_step_status(repo_root: Path = REPO_ROOT):
+    issues = []
+    ace_step_path = repo_root / "13_tools" / "ace_step"
+    if not ace_step_path.exists():
+        issues.append("13_tools/ace_step local clone is missing.")
+        return False, issues
+
+    if str(ace_step_path) not in sys.path:
+        sys.path.insert(0, str(ace_step_path))
+
+    for module_name in ("acestep", "torch", "soundfile"):
+        if importlib.util.find_spec(module_name) is None:
+            issues.append(f"Python module '{module_name}' is missing.")
+
+    return len(issues) == 0, issues
+
+
+def check_ace_step_readiness():
+    ready, issues = get_ace_step_status(REPO_ROOT)
+    if ready:
+        print("✅ ACE-Step clone and runtime dependencies are available.")
+        print("   Smoke test:")
+        print("     python 13_tools/scripts/make_dj_track_ace_step.py --check")
+    else:
+        print("⚠️  ACE-Step is not ready:")
+        for issue in issues:
+            print(f"   - {issue}")
+        print("   安装/检查:")
+        print("     git clone https://github.com/ace-step/ACE-Step.git 13_tools/ace_step")
+        print("     python -m pip install soundfile")
+        print("     python 13_tools/scripts/make_dj_track_ace_step.py --check")
+    return ready
+
+
 def print_audiocraft_install_hint():
     if sys.version_info >= (3, 12):
         print("  AudioCraft/MusicGen note:")
@@ -193,6 +253,16 @@ def main():
     print("📦 依赖检查")
     print("-" * 40)
     has_deps, missing = check_dependencies()
+    print()
+
+    print("☁️  MiniMax 云端 API")
+    print("-" * 40)
+    check_minimax_config()
+    print()
+
+    print("🎤 ACE-Step 本地歌词模型")
+    print("-" * 40)
+    check_ace_step_readiness()
     print()
     
     # 推荐模型
