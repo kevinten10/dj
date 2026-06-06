@@ -1,0 +1,52 @@
+name: CLI smoke tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  smoke:
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install lightweight dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Compile Python entrypoints
+        shell: bash
+        run: |
+          python -m py_compile \
+            check_system.py \
+            generate_and_play.py \
+            generate_demo_local.py \
+            manage_models.py \
+            13_tools/scripts/continuous_research.py \
+            13_tools/scripts/generate_visualizations.py \
+            13_tools/scripts/generate_with_preset.py \
+            13_tools/scripts/interactive_generator.py \
+            13_tools/scripts/library_manager.py \
+            13_tools/scripts/make_dj_track_ace_step.py \
+            13_tools/scripts/make_dj_track_local.py \
+            13_tools/scripts/make_dj_track_minimax.py \
+            13_tools/scripts/make_dj_track_with_lyrics.py \
+            13_tools/scripts/practice_plan.py
+
+      - name: Run safe CLI smoke commands
+        shell: bash
+        run: |
+          python check_system.py
+          python 13_tools/scripts/make_dj_track_ace_step.py --help
+          python 13_tools/scripts/make_dj_track_ace_step.py --prompt "Custom prompt" --dry-run
+          python 13_tools/scripts/make_dj_track_minimax.py --help
+          python 13_tools/scripts/make_dj_track_local.py --help
+          python 13_tools/scripts/generate_with_preset.py --preset tech_house --idea smoke --dry-run
+          python 13_tools/scripts/continuous_research.py --help
+          printf "0\n" | python 13_tools/scripts/interactive_generator.py
