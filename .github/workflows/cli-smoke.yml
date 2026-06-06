@@ -58,3 +58,5 @@ jobs:
           python 13_tools/scripts/generate_visualizations.py
           python 13_tools/scripts/continuous_research.py --help
           printf "0\n" | python 13_tools/scripts/interactive_generator.py
+          printf "0\n" | powershell -NoProfile -ExecutionPolicy Bypass -File ./start.ps1
+          printf "1\n" | powershell -NoProfile -ExecutionPolicy Bypass -File ./start.ps1
