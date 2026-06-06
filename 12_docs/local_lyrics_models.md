@@ -200,7 +200,7 @@ python -m venv ace_env
 
 # 3. 安装依赖
 pip install torch torchaudio
-pip install torchcodec
+pip install --only-binary=:all: --no-deps --no-cache-dir torchcodec
 pip install -r requirements.txt
 
 # 4. 下载模型

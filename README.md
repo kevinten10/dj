@@ -791,7 +791,8 @@ ACE-Step is treated as an optional local third-party clone under `13_tools/ace_s
 python 13_tools/scripts/make_dj_track_ace_step.py --check
 
 # If --check reports a missing save backend dependency
-python -m pip install torchcodec
+python -m pip install --only-binary=:all: --no-deps --no-cache-dir torchcodec
+# On Windows, install FFmpeg full-shared and make sure TorchCodec matches PyTorch.
 
 # Clone ACE-Step if it is not installed locally
 git clone https://github.com/ace-step/ACE-Step.git 13_tools/ace_step

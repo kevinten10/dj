@@ -11,6 +11,7 @@ import os
 import sys
 import argparse
 import datetime
+import importlib
 import importlib.util
 import subprocess
 import time
@@ -202,24 +203,40 @@ def _git_value(args: list[str]) -> str:
     return result.stdout.strip()
 
 
-def _missing_ace_step_runtime_packages() -> list[str]:
+def _ace_step_runtime_package_issues() -> dict[str, str]:
     required_runtime_packages = ["torchcodec"]
-    return [
-        package
-        for package in required_runtime_packages
-        if importlib.util.find_spec(package) is None
-    ]
+    issues = {}
+    for package in required_runtime_packages:
+        if importlib.util.find_spec(package) is None:
+            issues[package] = "not installed"
+            continue
+
+        if package == "torchcodec":
+            try:
+                importlib.import_module("torchcodec.encoders")
+            except Exception as exc:
+                issues[package] = str(exc).splitlines()[0]
+
+    return issues
+
+
+def _missing_ace_step_runtime_packages() -> list[str]:
+    return list(_ace_step_runtime_package_issues())
 
 
 def _print_ace_step_runtime_install_hint(missing_packages: list[str]) -> None:
     if not missing_packages:
         return
 
-    print("缺少 ACE-Step 运行时依赖:")
+    issues = _ace_step_runtime_package_issues()
+    print("ACE-Step 运行时依赖缺失或不可用:")
     for package in missing_packages:
-        print(f"  - {package}")
+        issue = issues.get(package, "unknown issue")
+        print(f"  - {package}: {issue}")
     print("建议安装:")
-    print(f"  python -m pip install {' '.join(missing_packages)}")
+    print(f"  python -m pip install --only-binary=:all: --no-deps --no-cache-dir {' '.join(missing_packages)}")
+    if "torchcodec" in missing_packages:
+        print("如果已安装但仍不可用，请确认 FFmpeg full-shared DLL 在 PATH 中，并安装与当前 PyTorch 版本兼容的 TorchCodec。")
 
 
 def check_ace_step_setup() -> int:
