@@ -758,11 +758,10 @@ python 13_tools/scripts/make_dj_track_minimax.py `
   --idea "Peak hour techno, industrial warehouse vibe" `
   --style "Techno" --bpm 128 --instrumental --play
 
-# Advanced (custom structure)
+# With key control
 python 13_tools/scripts/make_dj_track_minimax.py `
   --idea "Epic trance journey with emotional buildup" `
-  --style "Trance" --bpm 138 --duration 180 `
-  --structure "[Intro:8][BuildUp:16][Drop:32][Breakdown:16][Drop:32][Outro:8]" `
+  --style "Trance" --bpm 138 --key "8A" --instrumental `
   --play
 ```
 
@@ -783,7 +782,29 @@ python 13_tools/scripts/make_dj_track_local.py `
 
 Detailed guide: [Local Models Guide](12_docs/local_models.md)
 
-#### 🎨 Method 4: Style Presets (One-click Generation)
+#### 🎤 Method 4: Local Lyrics Model (ACE-Step, Optional)
+
+ACE-Step is treated as an optional local third-party clone under `13_tools/ace_step/`; it is ignored by Git so local model files and ACE-Step experiments are not accidentally committed.
+
+```powershell
+# Check local ACE-Step setup without loading the model
+python 13_tools/scripts/make_dj_track_ace_step.py --check
+
+# Clone ACE-Step if it is not installed locally
+git clone https://github.com/ace-step/ACE-Step.git 13_tools/ace_step
+
+# Generate a lyrics-based track after setup
+python 13_tools/scripts/make_dj_track_ace_step.py `
+  --theme "DJ party" --style "House" --duration 30 --steps 30
+
+# Preview resolved prompt and lyrics without loading the model
+python 13_tools/scripts/make_dj_track_ace_step.py `
+  --prompt "Electronic House music, upbeat, 120 BPM" --dry-run
+```
+
+Details: [ACE-Step Deployment Report](12_docs/ace_step_deployment_report.md), [Local Lyrics Models](12_docs/local_lyrics_models.md)
+
+#### 🎨 Method 5: Style Presets (One-click Generation)
 
 ```powershell
 # View all presets

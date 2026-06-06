@@ -12,6 +12,12 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional
 
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
+
 def _repo_root() -> Path:
     return Path(__file__).resolve().parents[2]
 
