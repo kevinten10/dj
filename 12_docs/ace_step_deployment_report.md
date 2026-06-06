@@ -26,31 +26,28 @@ python 13_tools/scripts/make_dj_track_ace_step.py --prompt "Electronic House mus
 
 ```powershell
 git clone https://github.com/ace-step/ACE-Step.git 13_tools/ace_step
-python -m pip install --only-binary=:all: --no-deps --no-cache-dir torchcodec
+python -m pip install soundfile
 ```
 
 ### ✅ 已完成的步骤
 
 1. **✅ 克隆仓库** - ACE-Step 仓库已成功克隆到 `13_tools/ace_step/`
-2. **⚠️ 安装依赖** - PyTorch 2.12 + CUDA 13.0 可用；当前 `torchaudio.save` 还需要 `torchcodec`
+2. **✅ 安装依赖** - PyTorch 2.12 + CUDA 13.0 可用；主脚本使用 `soundfile` 保存 WAV
 3. **✅ 下载模型** - ACE-Step-v1-3.5B 模型 (~8GB) 已下载到缓存
 4. **✅ 创建集成脚本** - `make_dj_track_ace_step.py` 已创建
 5. **✅ 修复 Gradio 问题** - Web UI 兼容性问题已修复
 
 ### ⚠️ 遇到的问题
 
-**TorchCodec 保存后端缺失或不可用**
+**TorchCodec 保存后端不可用**
 
-新版 `torchaudio.save` 会调用 TorchCodec。若短生成在保存阶段报 `No module named 'torchcodec'` 或 `Could not load libtorchcodec`，先安装：
+新版 `torchaudio.save` 会调用 TorchCodec；在当前 Windows + nightly PyTorch 环境里，`torchcodec==0.14.0` 仍可能因为 FFmpeg shared DLL 或版本匹配问题无法加载 `libtorchcodec`。主仓库包装脚本已对 ACE-Step 的 WAV 输出安装 `soundfile` 兜底，不再要求默认生成路径依赖 TorchCodec。
 
 ```powershell
-python -m pip install --only-binary=:all: --no-deps --no-cache-dir torchcodec
+python -m pip install soundfile
 ```
 
-如果已经安装但仍不可用，请确认：
-
-- Windows 上安装的是 FFmpeg `full-shared` 版本，并且 DLL 所在目录在 `PATH` 中。
-- TorchCodec 版本与当前 PyTorch 版本兼容；当前本机是 PyTorch `2.12.0.dev20260405+cu130`，可能需要等待或选择匹配该 nightly 版本的 TorchCodec。
+如果直接运行第三方 ACE-Step 仓库，而不是本项目包装脚本，则仍需按 TorchCodec 文档处理 FFmpeg `full-shared` 与 Torch/TorchCodec 版本兼容。
 
 **RTX 5060 Ti 兼容性问题**
 

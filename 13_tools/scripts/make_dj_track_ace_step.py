@@ -204,16 +204,16 @@ def _git_value(args: list[str]) -> str:
 
 
 def _ace_step_runtime_package_issues() -> dict[str, str]:
-    required_runtime_packages = ["torchcodec"]
+    required_runtime_packages = ["soundfile"]
     issues = {}
     for package in required_runtime_packages:
         if importlib.util.find_spec(package) is None:
             issues[package] = "not installed"
             continue
 
-        if package == "torchcodec":
+        if package == "soundfile":
             try:
-                importlib.import_module("torchcodec.encoders")
+                importlib.import_module("soundfile")
             except Exception as exc:
                 issues[package] = str(exc).splitlines()[0]
 
@@ -234,9 +234,7 @@ def _print_ace_step_runtime_install_hint(missing_packages: list[str]) -> None:
         issue = issues.get(package, "unknown issue")
         print(f"  - {package}: {issue}")
     print("建议安装:")
-    print(f"  python -m pip install --only-binary=:all: --no-deps --no-cache-dir {' '.join(missing_packages)}")
-    if "torchcodec" in missing_packages:
-        print("如果已安装但仍不可用，请确认 FFmpeg full-shared DLL 在 PATH 中，并安装与当前 PyTorch 版本兼容的 TorchCodec。")
+    print(f"  python -m pip install {' '.join(missing_packages)}")
 
 
 def check_ace_step_setup() -> int:
@@ -317,6 +315,61 @@ def _build_generation_kwargs(
     }
 
 
+def _save_wav_with_soundfile(
+    output_path: str,
+    target_wav,
+    *,
+    sample_rate: int,
+    format: str = "wav",
+) -> str:
+    if format != "wav":
+        raise ValueError(f"soundfile fallback only supports wav output, got: {format}")
+
+    import numpy as np
+    import soundfile as sf
+
+    if hasattr(target_wav, "detach"):
+        audio = target_wav.detach().cpu().float().numpy()
+    else:
+        audio = np.asarray(target_wav, dtype=np.float32)
+
+    if audio.ndim == 2:
+        audio = audio.T
+    elif audio.ndim != 1:
+        raise ValueError(f"Expected 1D or 2D audio, got shape: {audio.shape}")
+
+    output = Path(output_path)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    sf.write(str(output), audio, sample_rate)
+    return str(output)
+
+
+def _patch_torchaudio_wav_save() -> None:
+    import torchaudio
+
+    if getattr(torchaudio.save, "_ai_dj_soundfile_fallback", False):
+        return
+
+    original_save = torchaudio.save
+
+    def save_with_soundfile_fallback(uri, src, sample_rate, *args, **kwargs):
+        output_format = kwargs.get("format")
+        backend = kwargs.get("backend")
+        uri_text = str(uri)
+        if (output_format == "wav" or uri_text.lower().endswith(".wav")) and backend == "soundfile":
+            return _save_wav_with_soundfile(
+                uri_text,
+                src,
+                sample_rate=sample_rate,
+                format="wav",
+            )
+
+        return original_save(uri, src, sample_rate, *args, **kwargs)
+
+    save_with_soundfile_fallback._ai_dj_soundfile_fallback = True
+    torchaudio.save = save_with_soundfile_fallback
+
+
 def generate_with_ace_step(
     lyrics: str,
     prompt: str,
@@ -337,6 +390,7 @@ def generate_with_ace_step(
         sys.path.insert(0, str(ACE_STEP_PATH))
 
     from acestep.pipeline_ace_step import ACEStepPipeline
+    _patch_torchaudio_wav_save()
 
     if output_path is None:
         output_dir = REPO_ROOT / "04_generations" / "audio" / "raw"
@@ -383,9 +437,7 @@ def generate_with_ace_step(
                 output_path=output_path,
             )
         )
-    except ImportError as exc:
-        if "torchcodec" in str(exc).lower():
-            _print_ace_step_runtime_install_hint(["torchcodec"])
+    except ImportError:
         raise
 
     elapsed = time.time() - start_time
@@ -450,9 +502,7 @@ def main():
             cpu_offload=not args.no_cpu_offload,
             bf16=not args.fp32
         )
-    except ImportError as exc:
-        if "torchcodec" in str(exc).lower():
-            return 1
+    except ImportError:
         raise
 
     print(f"\n🎉 完成！音乐已保存到: {output_path}")
