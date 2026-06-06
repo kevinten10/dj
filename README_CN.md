@@ -1092,6 +1092,7 @@ dj/
 │   ├── learning_path.md         # 📖 完整学习路径
 │   ├── techniques_library.md    # 🎯 DJ 技巧大全
 │   ├── local_models.md          # 🏠 本地模型使用指南
+│   ├── project_handoff_status.md # 📌 当前交付状态
 │   └── checklists/              # ✅ 质量和合规检查
 │
 └── 13_tools/                    # 🛠️ 自动化工具
@@ -1131,6 +1132,7 @@ dj/
 
 8. **[质量检查清单](12_docs/release_checklist/dj_ready_checklist.md)** - 曲目发布前检查
 9. **[许可指南](12_docs/licenses/terms_checklist.md)** - 2026 商业权利和 C2PA
+10. **[项目交付状态](12_docs/project_handoff_status.md)** - 当前仓库、验证和风险摘要
 
 ---
 
