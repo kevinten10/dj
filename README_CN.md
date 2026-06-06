@@ -758,11 +758,10 @@ python 13_tools/scripts/make_dj_track_minimax.py `
   --idea "Peak hour techno, industrial warehouse vibe" `
   --style "Techno" --bpm 128 --instrumental --play
 
-# 高级（自定义结构）
+# 指定调性
 python 13_tools/scripts/make_dj_track_minimax.py `
   --idea "Epic trance journey with emotional buildup" `
-  --style "Trance" --bpm 138 --duration 180 `
-  --structure "[Intro:8][BuildUp:16][Drop:32][Breakdown:16][Drop:32][Outro:8]" `
+  --style "Trance" --bpm 138 --key "8A" --instrumental `
   --play
 ```
 
@@ -783,7 +782,29 @@ python 13_tools/scripts/make_dj_track_local.py `
 
 详细说明：[本地模型指南](12_docs/local_models.md)
 
-#### 🎨 方式四：风格预设（一键生成）
+#### 🎤 方式四：本地歌词模型（ACE-Step，可选）
+
+ACE-Step 作为可选第三方本地 clone 放在 `13_tools/ace_step/`，该目录已被 Git 忽略，避免把模型仓库、本地测试和实验改动误提交到主仓库。
+
+```powershell
+# 不加载模型，只检查本地 ACE-Step 环境
+python 13_tools/scripts/make_dj_track_ace_step.py --check
+
+# 如果本地还没有 ACE-Step，按需克隆
+git clone https://github.com/ace-step/ACE-Step.git 13_tools/ace_step
+
+# 环境准备好后生成带歌词曲目
+python 13_tools/scripts/make_dj_track_ace_step.py `
+  --theme "DJ派对" --style "House" --duration 30 --steps 30
+
+# 不加载模型，预览解析后的提示词和歌词
+python 13_tools/scripts/make_dj_track_ace_step.py `
+  --prompt "Electronic House music, upbeat, 120 BPM" --dry-run
+```
+
+详细说明：[ACE-Step 部署报告](12_docs/ace_step_deployment_report.md)、[本地歌词模型对比](12_docs/local_lyrics_models.md)
+
+#### 🎨 方式五：风格预设（一键生成）
 
 ```powershell
 # 查看所有预设

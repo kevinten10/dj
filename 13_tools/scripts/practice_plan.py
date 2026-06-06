@@ -11,6 +11,11 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Any
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 PRACTICE_PLANS = {
     "beginner": {
         "name": "新手入门计划",

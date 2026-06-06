@@ -8,19 +8,31 @@ import time
 import json
 import logging
 import os
+import argparse
+import sys
 from datetime import datetime
 from pathlib import Path
 
-# Setup logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('research_log.txt'),
-        logging.StreamHandler()
-    ]
-)
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 logger = logging.getLogger(__name__)
+
+
+def configure_logging() -> None:
+    """Configure logging only when the tool actually runs."""
+    if logger.handlers:
+        return
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler('research_log.txt', encoding='utf-8'),
+            logging.StreamHandler()
+        ]
+    )
 
 class ContinuousResearcher:
     def __init__(self):
@@ -188,7 +200,7 @@ class ContinuousResearcher:
         
         self.log_status(f"Iteration {self.iteration} complete. State saved.")
         
-    def run_forever(self):
+    def run_forever(self, interval_seconds: int = 60):
         """Run continuous research loop"""
         logger.info("="*60)
         logger.info("Starting Continuous Research & Optimization")
@@ -200,7 +212,7 @@ class ContinuousResearcher:
                 self.run_iteration()
                 
                 # Wait before next iteration
-                wait_time = 60  # 1 minute between iterations
+                wait_time = interval_seconds
                 logger.info(f"Waiting {wait_time} seconds before next iteration...")
                 time.sleep(wait_time)
                 
@@ -208,6 +220,20 @@ class ContinuousResearcher:
             logger.info("\nResearch stopped by user")
             logger.info(f"Total iterations: {self.iteration}")
             
-if __name__ == "__main__":
+def main(argv=None):
+    parser = argparse.ArgumentParser(description="Continuous README research and optimization helper")
+    parser.add_argument("--once", action="store_true", help="Run one research iteration and exit")
+    parser.add_argument("--interval", type=int, default=60, help="Seconds between iterations in continuous mode")
+    args = parser.parse_args(argv)
+
+    configure_logging()
     researcher = ContinuousResearcher()
-    researcher.run_forever()
+    if args.once:
+        researcher.run_iteration()
+    else:
+        researcher.run_forever(args.interval)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

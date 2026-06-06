@@ -23,6 +23,13 @@ env/
 venv/
 .env
 
+# Third-party local model worktrees
+13_tools/ace_step/
+
+# Tool runtime state
+research_log.txt
+research_state.json
+
 # OS
 .DS_Store
 Thumbs.db

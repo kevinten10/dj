@@ -8,6 +8,12 @@ import sys
 from pathlib import Path
 
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
+
 def _repo_root() -> Path:
     return Path(__file__).resolve().parents[2]
 
@@ -33,9 +39,10 @@ def print_main_menu():
     print("\n请选择:")
     print("1. 🎵 使用云端 API (MiniMax) 生成")
     print("2. 🏠 使用本地模型 (MusicGen) 生成")
-    print("3. 📋 获取练习计划")
-    print("4. 📁 管理曲目库")
-    print("5. 📚 查看文档")
+    print("3. 🎤 使用本地歌词模型 (ACE-Step) 生成 ⭐NEW")
+    print("4. 📋 获取练习计划")
+    print("5. 📁 管理曲目库")
+    print("6. 📚 查看文档")
     print("0. 退出")
 
 
@@ -338,10 +345,12 @@ def show_docs():
     print("1. DJ 学习路径")
     print("2. DJ 技巧库")
     print("3. 本地模型使用指南")
-    print("4. AI-DJ 教程")
+    print("4. 本地歌词模型对比")
+    print("5. ACE-Step 部署报告")
+    print("6. AI-DJ 教程")
     print("0. 返回")
     
-    choice = get_int_input("选择文档", 0, 0, 4)
+    choice = get_int_input("选择文档", 0, 0, 6)
     if choice == 0:
         return
     
@@ -349,7 +358,9 @@ def show_docs():
         1: "12_docs/learning_path.md",
         2: "12_docs/techniques_library.md",
         3: "12_docs/local_models.md",
-        4: "12_docs/ai_djuced_tutorial.md"
+        4: "12_docs/local_lyrics_models.md",
+        5: "12_docs/ace_step_deployment_report.md",
+        6: "12_docs/ai_djuced_tutorial.md"
     }
     
     doc_path = _repo_root() / doc_map[choice]
@@ -369,12 +380,118 @@ def show_docs():
         print(f"⚠️  文档未找到: {doc_path}")
 
 
+def print_ace_menu():
+    print("\n--- 本地歌词生成 (ACE-Step) ---")
+    print("⚠️  注意：RTX 5060 Ti 可能存在兼容性问题")
+    print("1. 生成 House 音乐（带歌词）")
+    print("2. 生成 Techno 音乐（带歌词）")
+    print("3. 生成 Trance 音乐（带歌词）")
+    print("4. 自定义生成")
+    print("5. 启动 Web UI (Gradio)")
+    print("6. 检查 ACE-Step 环境")
+    print("0. 返回主菜单")
+
+
+def run_ace_step_generate(style: str = "House"):
+    print(f"\n--- ACE-Step 生成 ({style}) ---")
+
+    theme = get_input("主题/创意", "DJ派对")
+    duration = get_int_input("时长（秒，-1为随机）", 30, -1, 300)
+    steps = get_int_input("推理步骤（30-50，越多质量越好）", 30, 10, 100)
+
+    print("\n高级设置:")
+    cpu_offload = get_yes_no("启用 CPU Offload（减少显存使用）", True)
+    bf16 = get_yes_no("使用 BF16 精度（更快）", True)
+
+    cmd = [
+        sys.executable,
+        str(_repo_root() / "13_tools" / "scripts" / "make_dj_track_ace_step.py"),
+        "--theme", theme,
+        "--style", style,
+        "--duration", str(duration),
+        "--steps", str(steps)
+    ]
+
+    if not cpu_offload:
+        cmd.append("--no-cpu-offload")
+    if not bf16:
+        cmd.append("--fp32")
+
+    print(f"\n🚀 执行命令: {' '.join(cmd)}")
+    import subprocess
+    subprocess.run(cmd)
+
+
+def run_ace_step_custom():
+    print("\n--- ACE-Step 自定义生成 ---")
+
+    lyrics = get_input("输入歌词（或留空使用模板）", "")
+    prompt = get_input("风格描述", "Electronic House music, upbeat, dance, 120 BPM")
+    duration = get_int_input("时长（秒）", 30, -1, 300)
+    steps = get_int_input("推理步骤", 30, 10, 100)
+    guidance = get_float_input("引导系数", 7.0, 1.0, 20.0)
+    seed = get_int_input("随机种子（-1为随机）", -1, -1, 999999)
+
+    cmd = [
+        sys.executable,
+        str(_repo_root() / "13_tools" / "scripts" / "make_dj_track_ace_step.py"),
+        "--prompt", prompt,
+        "--duration", str(duration),
+        "--steps", str(steps),
+        "--guidance", str(guidance),
+        "--seed", str(seed)
+    ]
+
+    if lyrics:
+        cmd.extend(["--lyrics", lyrics])
+
+    print(f"\n🚀 执行命令: {' '.join(cmd)}")
+    import subprocess
+    subprocess.run(cmd)
+
+
+def run_ace_step_webui():
+    print("\n--- 启动 ACE-Step Web UI ---")
+    print("🌐 启动后访问: http://localhost:7865")
+
+    port = get_int_input("端口号", 7865, 1000, 99999)
+    cpu_offload = get_yes_no("启用 CPU Offload", True)
+
+    cmd = [
+        sys.executable, "-m", "acestep.gui",
+        "--port", str(port)
+    ]
+
+    if cpu_offload:
+        cmd.extend(["--cpu_offload", "true"])
+
+    cmd.extend(["--bf16", "true", "--overlapped_decode", "true"])
+
+    print(f"\n🚀 执行命令: {' '.join(cmd)}")
+    print("⚠️  Web UI 启动后，请在浏览器中使用生成")
+
+    import subprocess
+    import os
+    subprocess.run(cmd, cwd=str(_repo_root() / "13_tools" / "ace_step"))
+
+
+def run_ace_step_check():
+    print("\n--- 检查 ACE-Step 环境 ---")
+    cmd = [
+        sys.executable,
+        str(_repo_root() / "13_tools" / "scripts" / "make_dj_track_ace_step.py"),
+        "--check",
+    ]
+    import subprocess
+    subprocess.run(cmd)
+
+
 def main():
     while True:
         print_header()
         print_main_menu()
         
-        choice = get_int_input("\n请输入选项", 0, 0, 5)
+        choice = get_int_input("\n请输入选项", 0, 0, 6)
         
         if choice == 0:
             print("\n👋 再见！")
@@ -404,10 +521,28 @@ def main():
                 elif sub_choice == 4:
                     run_local_custom()
         elif choice == 3:
-            run_practice_plan()
+            while True:
+                print_ace_menu()
+                sub_choice = get_int_input("请输入选项", 0, 0, 6)
+                if sub_choice == 0:
+                    break
+                elif sub_choice == 1:
+                    run_ace_step_generate("House")
+                elif sub_choice == 2:
+                    run_ace_step_generate("Techno")
+                elif sub_choice == 3:
+                    run_ace_step_generate("Trance")
+                elif sub_choice == 4:
+                    run_ace_step_custom()
+                elif sub_choice == 5:
+                    run_ace_step_webui()
+                elif sub_choice == 6:
+                    run_ace_step_check()
         elif choice == 4:
-            run_library_manager()
+            run_practice_plan()
         elif choice == 5:
+            run_library_manager()
+        elif choice == 6:
             show_docs()
         
         input("\n按 Enter 继续...")

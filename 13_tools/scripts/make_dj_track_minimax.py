@@ -19,7 +19,10 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-import requests
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 # Configure logging
 logging.basicConfig(
@@ -54,6 +57,8 @@ def _ensure_v1(base: str) -> str:
     return base + "/v1"
 
 def _minimax_post(url: str, api_key: str, payload: dict, timeout_s: int = 180) -> dict:
+    import requests
+
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
@@ -77,6 +82,8 @@ def _minimax_post(url: str, api_key: str, payload: dict, timeout_s: int = 180) -
     return data
 
 def _download(url: str, out_path: Path, timeout_s: int = 300) -> None:
+    import requests
+
     out_path.parent.mkdir(parents=True, exist_ok=True)
     logger.info(f"Downloading audio from {url[:50]}...")
     with requests.get(url, stream=True, timeout=timeout_s) as r:

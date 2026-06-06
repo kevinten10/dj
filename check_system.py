@@ -7,7 +7,14 @@
 import sys
 import subprocess
 import os
+import importlib.util
 from pathlib import Path
+
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 def check_python_version():
     """检查 Python 版本"""
@@ -94,10 +101,9 @@ def check_dependencies():
     missing = []
     
     for module, name in deps.items():
-        try:
-            __import__(module)
+        if importlib.util.find_spec(module):
             installed.append(name)
-        except ImportError:
+        else:
             missing.append(name)
     
     if installed:

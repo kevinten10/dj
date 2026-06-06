@@ -8,6 +8,11 @@ import sys
 import subprocess
 from pathlib import Path
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 MODELS = {
     "1": {"name": "MusicGen Small", "id": "facebook/musicgen-small", "size": "~1GB", "quality": "⭐⭐⭐", "speed": "⚡⚡⚡", "vram": "4GB"},
     "2": {"name": "MusicGen Medium", "id": "facebook/musicgen-medium", "size": "~3GB", "quality": "⭐⭐⭐⭐", "speed": "⚡⚡", "vram": "8GB"},

@@ -10,6 +10,11 @@ import os
 import platform
 from pathlib import Path
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 # 配置默认参数
 DEFAULT_STYLE = "House"
 DEFAULT_BPM = 120

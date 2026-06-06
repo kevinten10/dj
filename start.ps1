@@ -43,15 +43,19 @@ switch ($choice) {
         Write-Host "1. DJ 学习路径" -ForegroundColor White
         Write-Host "2. DJ 技巧库" -ForegroundColor White
         Write-Host "3. 本地模型使用指南" -ForegroundColor White
-        Write-Host "4. AI-DJ 教程" -ForegroundColor White
-        $docChoice = Read-Host "选择文档 (1-4, 默认: 1)"
+        Write-Host "4. 本地歌词模型对比" -ForegroundColor White
+        Write-Host "5. ACE-Step 部署报告" -ForegroundColor White
+        Write-Host "6. AI-DJ 教程" -ForegroundColor White
+        $docChoice = Read-Host "选择文档 (1-6, 默认: 1)"
         if ([string]::IsNullOrWhiteSpace($docChoice)) { $docChoice = "1" }
         
         $docMap = @{
             "1" = "12_docs/learning_path.md"
             "2" = "12_docs/techniques_library.md"
             "3" = "12_docs/local_models.md"
-            "4" = "12_docs/ai_djuced_tutorial.md"
+            "4" = "12_docs/local_lyrics_models.md"
+            "5" = "12_docs/ace_step_deployment_report.md"
+            "6" = "12_docs/ai_djuced_tutorial.md"
         }
         
         if ($docMap.ContainsKey($docChoice)) {
