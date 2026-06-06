@@ -5,6 +5,8 @@ Easy to use menu-driven interface for generating DJ music.
 """
 
 import sys
+import importlib.util
+import subprocess
 from pathlib import Path
 
 
@@ -16,6 +18,27 @@ if hasattr(sys.stderr, "reconfigure"):
 
 def _repo_root() -> Path:
     return Path(__file__).resolve().parents[2]
+
+
+def _ace_step_path() -> Path:
+    return _repo_root() / "13_tools" / "ace_step"
+
+
+def _ace_step_importable(ace_step_path: Path) -> bool:
+    path_text = str(ace_step_path)
+    added_path = False
+    if path_text not in sys.path:
+        sys.path.insert(0, path_text)
+        added_path = True
+
+    try:
+        return importlib.util.find_spec("acestep") is not None
+    finally:
+        if added_path:
+            try:
+                sys.path.remove(path_text)
+            except ValueError:
+                pass
 
 
 def load_presets() -> dict:
@@ -454,6 +477,17 @@ def run_ace_step_webui():
     print("\n--- 启动 ACE-Step Web UI ---")
     print("🌐 启动后访问: http://localhost:7865")
 
+    ace_step_path = _ace_step_path()
+    if not ace_step_path.exists():
+        print(f"❌ ACE-Step 目录不存在: {ace_step_path}")
+        print("请先克隆 ACE-Step，或运行环境检查: python 13_tools/scripts/make_dj_track_ace_step.py --check")
+        return
+
+    if not _ace_step_importable(ace_step_path):
+        print("❌ Python 包 acestep 不可导入。")
+        print("请先安装 ACE-Step 依赖，或运行环境检查: python 13_tools/scripts/make_dj_track_ace_step.py --check")
+        return
+
     port = get_int_input("端口号", 7865, 1000, 99999)
     cpu_offload = get_yes_no("启用 CPU Offload", True)
 
@@ -470,9 +504,11 @@ def run_ace_step_webui():
     print(f"\n🚀 执行命令: {' '.join(cmd)}")
     print("⚠️  Web UI 启动后，请在浏览器中使用生成")
 
-    import subprocess
-    import os
-    subprocess.run(cmd, cwd=str(_repo_root() / "13_tools" / "ace_step"))
+    try:
+        subprocess.run(cmd, cwd=str(ace_step_path), check=False)
+    except OSError as exc:
+        print(f"❌ ACE-Step Web UI 启动失败: {exc}")
+        print("请先运行环境检查: python 13_tools/scripts/make_dj_track_ace_step.py --check")
 
 
 def run_ace_step_check():

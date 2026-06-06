@@ -49,7 +49,7 @@ git clone https://github.com/ace-step/ACE-Step.git 13_tools/ace_step
 | **原因** | RTX 50xx 系列是最新架构，PyTorch 支持尚不完善 |
 
 **崩溃位置：**
-```
+```text
 正在加载管道... ✅ 管道加载成功
 开始生成...
 ⚠️ Checkpoint not loaded, loading checkpoint...

@@ -13,6 +13,7 @@ import argparse
 import datetime
 import importlib.util
 import subprocess
+import time
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -248,7 +249,7 @@ def generate_with_ace_step(
     infer_steps: int = 50,
     guidance_scale: float = 7.0,
     seed: int = -1,
-    output_path: str = None,
+    output_path: str | None = None,
     cpu_offload: bool = True,
     bf16: bool = True
 ):
@@ -384,5 +385,4 @@ def main():
 
 
 if __name__ == "__main__":
-    import time
     sys.exit(main())

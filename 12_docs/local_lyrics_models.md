@@ -21,7 +21,7 @@
 
 | 属性 | 详情 |
 |------|------|
-| **GitHub** | https://github.com/open-mmlab/YuE |
+| **GitHub** | https://github.com/multimodal-art-projection/YuE |
 | **提供商** | OpenMMLab |
 | **许可证** | Apache 2.0 |
 | **技术** | 基于LLM的音乐生成 |
@@ -29,7 +29,7 @@
 
 ### 工作原理
 
-```
+```text
 用户提供歌词 → 选择风格 → YuE生成旋律和伴奏 → 输出完整歌曲
 ```
 
@@ -37,7 +37,7 @@
 
 ```powershell
 # 1. 克隆仓库
-git clone https://github.com/open-mmlab/YuE.git
+git clone https://github.com/multimodal-art-projection/YuE.git
 cd YuE
 
 # 2. 创建虚拟环境
@@ -80,7 +80,7 @@ python generate.py --input "your_lyrics.txt" --output "output.mp3"
 
 ### 工作原理
 
-```
+```text
 歌词输入 → ComfyUI工作流 → AI生成演唱+伴奏 → 输出完整歌曲
 ```
 
@@ -88,7 +88,7 @@ python generate.py --input "your_lyrics.txt" --output "output.mp3"
 
 ```powershell
 # 1. 安装ComfyUI
-git clone https://github.com/comfyanonymous/ComfyUI.git
+git clone https://github.com/Comfy-Org/ComfyUI.git
 cd ComfyUI
 
 # 2. 安装依赖
@@ -132,7 +132,7 @@ python main.py --listen 127.0.0.1
 
 ### 工作原理
 
-```
+```text
 歌词+描述 → LeVo框架 → 生成人声+伴奏 → 多轨输出
 ```
 
@@ -183,7 +183,7 @@ python generate.py --lyrics "你的歌词" --description "风格描述"
 
 ### 工作原理
 
-```
+```text
 歌词输入 → Flow Matching扩散 → 快速生成完整歌曲 → 支持编辑
 ```
 
@@ -295,8 +295,8 @@ python app.py
 - [ACE-Step GitHub](https://github.com/ace-step/ACE-Step)
 - [HeartMuLa ComfyUI](https://github.com/benjiyaya/HeartMuLa_ComfyUI)
 - [SongGeneration](https://github.com/tencent-ailab/SongGeneration)
-- [YuE](https://github.com/open-mmlab/YuE)
-- [ComfyUI](https://github.com/comfyanonymous/ComfyUI)
+- [YuE](https://github.com/multimodal-art-projection/YuE)
+- [ComfyUI](https://github.com/Comfy-Org/ComfyUI)
 
 ---
 

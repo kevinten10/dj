@@ -220,10 +220,20 @@ class ContinuousResearcher:
             logger.info("\nResearch stopped by user")
             logger.info(f"Total iterations: {self.iteration}")
             
+def positive_int(value: str) -> int:
+    try:
+        parsed = int(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("must be an integer greater than 0") from exc
+    if parsed <= 0:
+        raise argparse.ArgumentTypeError("must be an integer greater than 0")
+    return parsed
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Continuous README research and optimization helper")
     parser.add_argument("--once", action="store_true", help="Run one research iteration and exit")
-    parser.add_argument("--interval", type=int, default=60, help="Seconds between iterations in continuous mode")
+    parser.add_argument("--interval", type=positive_int, default=60, help="Seconds between iterations in continuous mode")
     args = parser.parse_args(argv)
 
     configure_logging()
