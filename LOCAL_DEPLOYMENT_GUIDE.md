@@ -144,10 +144,15 @@ GPU: NVIDIA GeForce RTX 3060
 
 AudioCraft 是 Meta 开源的音频生成库，包含 MusicGen 模型。
 
+> Compatibility note: AudioCraft 1.3.0 pins `torch==2.1.0`. On Python 3.12, current pip indexes do not provide that torch version, so `pip install audiocraft` fails. Use a separate Python 3.10 or 3.11 virtual environment for MusicGen/AudioCraft.
+
 ### 安装方式
 
 ```powershell
-pip install audiocraft
+py -3.11 -m venv .venv-musicgen
+.\.venv-musicgen\Scripts\activate
+python -m pip install --upgrade pip
+python -m pip install torch torchvision torchaudio audiocraft
 ```
 
 ### 验证安装
@@ -308,8 +313,8 @@ python generate_demo_local.py
 **解决方案：**
 ```powershell
 # 重新安装
-pip uninstall audiocraft
-pip install audiocraft
+python -m pip uninstall audiocraft
+python -m pip install torch torchvision torchaudio audiocraft
 
 # 或者使用 conda
 conda install -c conda-forge audiocraft

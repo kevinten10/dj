@@ -19,6 +19,16 @@ if hasattr(sys.stderr, "reconfigure"):
 def get_repo_root():
     return Path(__file__).parent.resolve()
 
+
+def audiocraft_install_hint() -> str:
+    if sys.version_info >= (3, 12):
+        return (
+            "Use a separate Python 3.10 or 3.11 virtual environment for MusicGen/AudioCraft. "
+            "AudioCraft 1.3.0 pins torch==2.1.0, which is not available for Python 3.12."
+        )
+    return "Install MusicGen dependencies with: python -m pip install torch torchvision torchaudio audiocraft"
+
+
 def play_audio(file_path):
     """播放音频文件"""
     system = platform.system().lower()
@@ -82,7 +92,7 @@ def main(argv=None):
             print("   2. 内存不足")
             print()
             print("🔧 解决方法：")
-            print("   pip install torch audiocraft")
+            print(f"   {audiocraft_install_hint()}")
             return 1
         
         # 查找生成的文件

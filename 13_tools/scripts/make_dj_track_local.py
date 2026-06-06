@@ -31,6 +31,21 @@ logging.basicConfig(
 logger = logging.getLogger("ai-dj-local")
 
 
+def _audiocraft_install_hint() -> str:
+    if sys.version_info >= (3, 12):
+        return (
+            "AudioCraft/MusicGen is not installed. AudioCraft 1.3.0 pins torch==2.1.0, "
+            "which is not available for Python 3.12 on current pip indexes. Use a separate "
+            "Python 3.10 or 3.11 virtual environment for MusicGen, then install torch and "
+            "audiocraft there. See 12_docs/local_models.md."
+        )
+    return (
+        "AudioCraft/MusicGen is not installed. Install it with: "
+        "python -m pip install torch torchvision torchaudio audiocraft. "
+        "See 12_docs/local_models.md."
+    )
+
+
 def _repo_root() -> Path:
     return Path(__file__).resolve().parents[2]
 
@@ -92,9 +107,9 @@ def generate_with_musicgen(
         from audiocraft.models import MusicGen
         from audiocraft.data.audio import audio_write
     except ImportError:
-        logger.error("❌ 缺少依赖! 请运行: pip install torch audiocraft")
-        logger.error("或者查看文档: 12_docs/local_models.md")
-        raise RuntimeError("需要安装 audiocraft 和 torch")
+        hint = _audiocraft_install_hint()
+        logger.error(f"❌ {hint}")
+        raise RuntimeError(hint)
     
     # Set device
     if use_cuda and torch.cuda.is_available():

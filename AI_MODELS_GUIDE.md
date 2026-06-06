@@ -175,7 +175,10 @@ python 13_tools/scripts/make_dj_track_local.py --idea "你的想法" --model fac
 
 **安装方法：**
 ```powershell
-pip install torch audiocraft
+py -3.11 -m venv .venv-musicgen
+.\.venv-musicgen\Scripts\activate
+python -m pip install --upgrade pip
+python -m pip install torch torchvision torchaudio audiocraft
 ```
 
 ---
@@ -333,7 +336,10 @@ python 13_tools/scripts/make_dj_track_minimax.py --idea "你的想法"
 
 ```powershell
 # 1. 安装依赖
-pip install torch audiocraft
+py -3.11 -m venv .venv-musicgen
+.\.venv-musicgen\Scripts\activate
+python -m pip install --upgrade pip
+python -m pip install torch torchvision torchaudio audiocraft
 
 # 2. 生成音乐（首次会自动下载模型）
 python 13_tools/scripts/make_dj_track_local.py --idea "你的想法" --model facebook/musicgen-small

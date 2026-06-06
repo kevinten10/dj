@@ -113,6 +113,21 @@ def check_dependencies():
     
     return len(missing) == 0, missing
 
+
+def print_audiocraft_install_hint():
+    if sys.version_info >= (3, 12):
+        print("  AudioCraft/MusicGen note:")
+        print("    AudioCraft 1.3.0 pins torch==2.1.0, which is not available for Python 3.12.")
+        print("    Use a separate Python 3.10 or 3.11 virtual environment for MusicGen.")
+        print("    Example:")
+        print("      py -3.11 -m venv .venv-musicgen")
+        print("      .\\.venv-musicgen\\Scripts\\activate")
+        print("      python -m pip install --upgrade pip")
+        print("      python -m pip install torch torchvision torchaudio audiocraft")
+    else:
+        print("  python -m pip install torch torchvision torchaudio audiocraft")
+
+
 def recommend_model(has_cuda, vram_gb, has_deps):
     """推荐合适的模型"""
     print("\n" + "="*60)
@@ -121,7 +136,7 @@ def recommend_model(has_cuda, vram_gb, has_deps):
     
     if not has_deps:
         print("\n请先安装依赖:")
-        print("  pip install torch audiocraft")
+        print_audiocraft_install_hint()
         return
     
     if has_cuda:
@@ -194,7 +209,7 @@ def main():
         print("   # CPU 版本:")
         print("   pip install torch torchvision torchaudio")
         print("\n2. 安装 AudioCraft:")
-        print("   pip install audiocraft")
+        print_audiocraft_install_hint()
         print("\n3. 验证安装:")
         print("   python -c \"import torch; print('PyTorch:', torch.__version__); print('CUDA:', torch.cuda.is_available())\"")
     
