@@ -86,10 +86,13 @@ def print_local_menu():
 
 
 def get_input(prompt: str, default: str = "") -> str:
-    if default:
-        result = input(f"{prompt} [{default}]: ").strip()
-        return result if result else default
-    return input(f"{prompt}: ").strip()
+    try:
+        if default:
+            result = input(f"{prompt} [{default}]: ").strip()
+            return result if result else default
+        return input(f"{prompt}: ").strip()
+    except EOFError:
+        return default
 
 
 def get_int_input(prompt: str, default: int, min_val: int = None, max_val: int = None) -> int:

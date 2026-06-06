@@ -1,54 +1,72 @@
-# AI-DJ 启动脚本
+# AI-DJ workspace launcher
+
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
+
+function Wait-BeforeExit {
+    if (-not [Console]::IsInputRedirected) {
+        Read-Host "Press Enter to exit" | Out-Null
+    }
+}
+
+function Exit-WithPause {
+    param([int]$Code = 0)
+    Write-Host ""
+    Wait-BeforeExit
+    exit $Code
+}
+
 Write-Host "========================================" -ForegroundColor Cyan
-Write-Host "  🎧 AI-DJ 工作区启动器" -ForegroundColor Cyan
+Write-Host "  AI-DJ Workspace Launcher" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 
-# 检查Python
 try {
     $pythonPath = Get-Command python -ErrorAction Stop
-    Write-Host "✅ Python 已找到: $($pythonPath.Source)" -ForegroundColor Green
+    Write-Host "OK: Python found at $($pythonPath.Source)" -ForegroundColor Green
 }
 catch {
-    Write-Host "❌ 未找到 Python！请先安装 Python 3.9+" -ForegroundColor Red
-    Read-Host "按 Enter 退出"
-    exit 1
+    Write-Host "ERROR: Python was not found. Install Python 3.9+ first." -ForegroundColor Red
+    Exit-WithPause 1
 }
 
-# 切换到脚本目录
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $scriptDir
 
 Write-Host ""
-Write-Host "请选择操作:" -ForegroundColor Yellow
-Write-Host "1. 🎨 启动交互式生成器（推荐）" -ForegroundColor White
-Write-Host "2. 📖 查看文档" -ForegroundColor White
-Write-Host "3. ⚙️  配置 MiniMax API" -ForegroundColor White
-Write-Host "0. 退出" -ForegroundColor White
+Write-Host "Choose an action:" -ForegroundColor Yellow
+Write-Host "1. Start interactive generator (recommended)" -ForegroundColor White
+Write-Host "2. Open documentation" -ForegroundColor White
+Write-Host "3. Configure MiniMax API" -ForegroundColor White
+Write-Host "4. Run system check" -ForegroundColor White
+Write-Host "0. Exit" -ForegroundColor White
 Write-Host ""
 
-$choice = Read-Host "请输入选项 (默认: 1)"
+$choice = Read-Host "Enter option (default: 1)"
 if ([string]::IsNullOrWhiteSpace($choice)) { $choice = "1" }
 
 switch ($choice) {
     "1" {
         Write-Host ""
-        Write-Host "🚀 启动交互式生成器..." -ForegroundColor Cyan
+        Write-Host "Starting interactive generator..." -ForegroundColor Cyan
         Write-Host ""
         python 13_tools/scripts/interactive_generator.py
+        Exit-WithPause $LASTEXITCODE
     }
     "2" {
         Write-Host ""
-        Write-Host "📖 可用文档:" -ForegroundColor Yellow
-        Write-Host "1. DJ 学习路径" -ForegroundColor White
-        Write-Host "2. DJ 技巧库" -ForegroundColor White
-        Write-Host "3. 本地模型使用指南" -ForegroundColor White
-        Write-Host "4. 本地歌词模型对比" -ForegroundColor White
-        Write-Host "5. ACE-Step 部署报告" -ForegroundColor White
-        Write-Host "6. AI-DJ 教程" -ForegroundColor White
-        $docChoice = Read-Host "选择文档 (1-6, 默认: 1)"
+        Write-Host "Available documents:" -ForegroundColor Yellow
+        Write-Host "1. Learning path" -ForegroundColor White
+        Write-Host "2. Techniques library" -ForegroundColor White
+        Write-Host "3. Local model guide" -ForegroundColor White
+        Write-Host "4. Local lyrics model guide" -ForegroundColor White
+        Write-Host "5. ACE-Step deployment report" -ForegroundColor White
+        Write-Host "6. AI-DJ tutorial" -ForegroundColor White
+        Write-Host "7. Project handoff status" -ForegroundColor White
+
+        $docChoice = Read-Host "Choose document (1-7, default: 1)"
         if ([string]::IsNullOrWhiteSpace($docChoice)) { $docChoice = "1" }
-        
+
         $docMap = @{
             "1" = "12_docs/learning_path.md"
             "2" = "12_docs/techniques_library.md"
@@ -56,47 +74,57 @@ switch ($choice) {
             "4" = "12_docs/local_lyrics_models.md"
             "5" = "12_docs/ace_step_deployment_report.md"
             "6" = "12_docs/ai_djuced_tutorial.md"
+            "7" = "12_docs/project_handoff_status.md"
         }
-        
+
         if ($docMap.ContainsKey($docChoice)) {
-            Write-Host "📖 打开文档..." -ForegroundColor Cyan
-            Start-Process $docMap[$docChoice]
+            Write-Host "Opening documentation..." -ForegroundColor Cyan
+            Invoke-Item $docMap[$docChoice]
+            Exit-WithPause 0
         }
-        else {
-            Write-Host "⚠️  无效选项" -ForegroundColor Yellow
-        }
+
+        Write-Host "Invalid document option." -ForegroundColor Yellow
+        Exit-WithPause 1
     }
     "3" {
         Write-Host ""
-        Write-Host "⚙️  配置 MiniMax API" -ForegroundColor Yellow
+        Write-Host "Configure MiniMax API" -ForegroundColor Yellow
+
         $envFile = "13_tools/configs/minimax_env.ps1"
         $exampleFile = "13_tools/configs/minimax_env.example.ps1"
-        
+
         if (-not (Test-Path $envFile)) {
             if (Test-Path $exampleFile) {
                 Copy-Item $exampleFile $envFile
-                Write-Host "✅ 已创建配置文件: $envFile" -ForegroundColor Green
+                Write-Host "Created config file: $envFile" -ForegroundColor Green
             }
             else {
-                Write-Host "❌ 找不到示例配置文件!" -ForegroundColor Red
+                Write-Host "Example config file not found: $exampleFile" -ForegroundColor Red
+                Exit-WithPause 1
             }
         }
-        
-        if (Test-Path $envFile) {
-            Write-Host "📝 打开配置文件..." -ForegroundColor Cyan
-            Start-Process notepad $envFile
-            Write-Host ""
-            Write-Host "💡 编辑完成后，运行: . .\13_tools\configs\minimax_env.ps1" -ForegroundColor Gray
-        }
+
+        Write-Host "Opening config file..." -ForegroundColor Cyan
+        Start-Process notepad $envFile
+        Write-Host ""
+        Write-Host "After editing, load it with:" -ForegroundColor Gray
+        Write-Host ". .\13_tools\configs\minimax_env.ps1" -ForegroundColor Gray
+        Exit-WithPause 0
+    }
+    "4" {
+        Write-Host ""
+        Write-Host "Running system check..." -ForegroundColor Cyan
+        Write-Host ""
+        python check_system.py
+        Exit-WithPause $LASTEXITCODE
     }
     "0" {
         Write-Host ""
-        Write-Host "👋 再见！" -ForegroundColor Cyan
+        Write-Host "Goodbye." -ForegroundColor Cyan
+        Exit-WithPause 0
     }
     default {
-        Write-Host "⚠️  无效选项" -ForegroundColor Yellow
+        Write-Host "Invalid option." -ForegroundColor Yellow
+        Exit-WithPause 1
     }
 }
-
-Write-Host ""
-Read-Host "按 Enter 退出"
