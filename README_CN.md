@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
-[![MiniMax Music 2.5](https://img.shields.io/badge/AI--Model-MiniMax%20Music%202.5-orange.svg)](https://platform.minimax.io/)
+[![MiniMax Music 2.6](https://img.shields.io/badge/AI--Model-MiniMax%20Music%202.6-orange.svg)](https://platform.minimax.io/)
 [![Hercules Inpulse 200 MK2](https://img.shields.io/badge/Controller-Hercules%20Inpulse%20200%20MK2-green.svg)](https://www.hercules.com/dj)
 
 > **AI 创意与专业 DJ 表演之间的桥梁** 💫
@@ -686,7 +686,7 @@ python 13_tools/scripts/make_dj_track_minimax.py `
 
 | 功能 | 云端 API | 本地模型 |
 |------|----------|----------|
-| **模型** | MiniMax Music 2.5 | MusicGen (Meta) |
+| **模型** | MiniMax Music 2.6 | MusicGen (Meta) |
 | **质量** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ ~ ⭐⭐⭐⭐⭐ |
 | **速度** | 快（~1分钟） | 取决于硬件（CPU/GPU） |
 | **网络** | 需要联网 | 完全离线 |

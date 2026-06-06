@@ -7,13 +7,13 @@ This project is a structured workspace designed for generating AI music tracks (
 - **Purpose:** Automate the "Idea → AI Generation → DJ Practice" workflow using 2026-gen music models.
 - **Main Technologies:**
     - **Python:** For automation scripts.
-    - **MiniMax Music 2.5 API:** 2026 flagship model for high-fidelity music generation with structure control.
+    - **MiniMax Music 2.6 API:** current flagship model for high-fidelity music generation with structure control.
     - **DJUCED 6.5.x:** Advanced DJ software with AI-assisted autohotcue and stem mixing.
 - **Architecture:** A numbered directory structure (00-99) representing the full lifecycle of a track, from inbox to library and archives.
 
 ## Directory Structure Highlights
 
-- `04_generations/`: Stores raw AI-generated audio and JSON metadata (Music 2.5 structure tags, prompts).
+- `04_generations/`: Stores raw AI-generated audio and JSON metadata (MiniMax structure tags, prompts).
 - `08_exports/dj_ready/`: 2026-ready tracks (MP3/WAV) with embedded C2PA metadata where applicable.
 - `12_docs/`: Tutorials, checklists, and licensing information (updated for 2026 standards).
 - `13_tools/`: Configuration templates and Python automation scripts.
@@ -22,7 +22,7 @@ This project is a structured workspace designed for generating AI music tracks (
 
 ### Prerequisites
 - Python 3.x
-- MiniMax API Key (supports Music 2.5)
+- MiniMax API Key (supports Music 2.6 / music-2.6-free)
 
 ### Setup
 1. Install dependencies:
@@ -37,9 +37,9 @@ This project is a structured workspace designed for generating AI music tracks (
    ```
 
 ### Key Commands
-- **Generate a DJ-ready track (Music 2.5):**
+- **Generate a DJ-ready track (Music 2.6):**
   ```powershell
-  python 13_tools/scripts/make_dj_track_minimax.py --idea "Cyberpunk club" --model "music-2.5" --instrumental --play
+  python 13_tools/scripts/make_dj_track_minimax.py --idea "Cyberpunk club" --model "music-2.6-free" --instrumental --play
   ```
   *Outputs will be saved to `08_exports/dj_ready/` and `04_generations/`.*
 

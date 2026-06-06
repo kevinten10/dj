@@ -42,6 +42,7 @@ jobs:
       - name: Run safe CLI smoke commands
         shell: bash
         run: |
+          python -m unittest discover -s tests
           python check_system.py
           python generate_and_play.py --help
           python generate_demo_local.py --help

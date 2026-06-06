@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 DJ-ready track generator using MiniMax (2026 Edition).
-Optimized for high-fidelity Music 2.5 models and professional workflow.
+Optimized for high-fidelity Music 2.6 models and professional workflow.
 """
 
 from __future__ import annotations
@@ -93,6 +93,28 @@ def _download(url: str, out_path: Path, timeout_s: int = 300) -> None:
                 if chunk:
                     f.write(chunk)
 
+def _looks_like_url(value: str) -> bool:
+    return value.startswith(("http://", "https://"))
+
+def _write_audio_payload(
+    audio_payload: str,
+    out_path: Path,
+    download_func=_download,
+) -> None:
+    """Write MiniMax audio payloads returned as either a URL or hex data."""
+    if _looks_like_url(audio_payload):
+        download_func(audio_payload, out_path)
+        return
+
+    try:
+        audio_bytes = bytes.fromhex(audio_payload)
+    except ValueError as exc:
+        preview = audio_payload[:32] + ("..." if len(audio_payload) > 32 else "")
+        raise RuntimeError(f"Unsupported MiniMax audio payload format: {preview}") from exc
+
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_bytes(audio_bytes)
+
 def _start_file(path: Path) -> None:
     system = platform.system().lower()
     try:
@@ -114,14 +136,30 @@ def _slim_response(resp: dict) -> dict:
             data["audio"] = f"<{len(audio)} chars omitted>"
     return resp2
 
+def _build_lyrics(args: argparse.Namespace) -> tuple[Optional[str], bool]:
+    if args.instrumental:
+        return None, False
+
+    if args.lyrics_file:
+        lyrics_path = Path(args.lyrics_file)
+        return lyrics_path.read_text(encoding="utf-8"), False
+
+    if args.lyrics:
+        return args.lyrics, False
+
+    return "", True
+
 def main(argv: list[str]) -> int:
     p = argparse.ArgumentParser(description="Professional AI DJ Track Generator")
     p.add_argument("--idea", required=True, help="Idea or theme for the track.")
     p.add_argument("--style", default="", help="Genre, e.g. Techno, House, Melodic")
     p.add_argument("--bpm", type=int, default=128, help="BPM target.")
     p.add_argument("--key", default="", help="Musical key (e.g., Amin, 8A).")
-    p.add_argument("--instrumental", action="store_true", help="Generate instrumental track (Music 2.5+ Recommended).")
-    p.add_argument("--model", default="music-2.5", help="MiniMax model, default: music-2.5")
+    p.add_argument("--instrumental", action="store_true", help="Generate instrumental track.")
+    p.add_argument("--model", default="music-2.6-free", help="MiniMax model, default: music-2.6-free")
+    p.add_argument("--output-format", choices=["url", "hex"], default="url", help="MiniMax audio output format.")
+    p.add_argument("--lyrics", default="", help="Lyrics text for vocal generation. Ignored with --instrumental.")
+    p.add_argument("--lyrics-file", default="", help="UTF-8 lyrics file for vocal generation. Ignored with --instrumental.")
     p.add_argument("--play", action="store_true", help="Auto-play after generation.")
     p.add_argument("--verbose", action="store_true", help="Enable debug logging.")
 
@@ -146,7 +184,7 @@ def main(argv: list[str]) -> int:
     out_audio_path = root / "08_exports" / "dj_ready" / f"{stamp}_{slug}.mp3"
     meta_path = root / "04_generations" / "metadata" / f"{stamp}_{slug}.json"
 
-    # Precise structural prompt for Music 2.5
+    # Precise structural prompt for MiniMax Music generation.
     prompt_parts = [f"Genre: {args.style or 'Electronic'}", f"BPM: {args.bpm}"]
     if args.key: prompt_parts.append(f"Key: {args.key}")
     prompt_parts.append("Structure: [Intro], [Verse], [Build Up], [Drop], [Break], [Drop], [Outro]")
@@ -158,20 +196,27 @@ def main(argv: list[str]) -> int:
     logger.info(f"Generating track with model {args.model}...")
     logger.debug(f"Prompt: {music_prompt}")
 
-    payload = {
+    lyrics, lyrics_optimizer = _build_lyrics(args)
+
+    payload: dict[str, Any] = {
         "model": args.model,
         "prompt": music_prompt,
-        "lyrics": "[Inst]" if args.instrumental else "[Intro]\n[Verse]\n[Chorus]\n[Drop]\n[Outro]",
+        "output_format": args.output_format,
         "audio_setting": {"sample_rate": 44100, "bitrate": 320000, "format": "mp3"},
+        "is_instrumental": args.instrumental,
     }
+    if lyrics is not None:
+        payload["lyrics"] = lyrics
+    if lyrics_optimizer:
+        payload["lyrics_optimizer"] = True
 
     try:
         resp = _minimax_post(music_url, api_key, payload)
-        audio_url = resp.get("data", {}).get("audio")
-        if not audio_url:
-            raise RuntimeError("No audio URL in response data.")
+        audio_payload = resp.get("data", {}).get("audio")
+        if not audio_payload:
+            raise RuntimeError("No audio payload in response data.")
 
-        _download(audio_url, raw_audio_path)
+        _write_audio_payload(audio_payload, raw_audio_path)
         
         # Deploy to exports
         out_audio_path.parent.mkdir(parents=True, exist_ok=True)
