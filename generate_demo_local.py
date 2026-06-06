@@ -5,6 +5,7 @@
 """
 
 import sys
+import argparse
 import subprocess
 import os
 import platform
@@ -33,7 +34,10 @@ def play_audio(file_path):
         print(f"❌ 播放失败: {e}")
         return False
 
-def main():
+def main(argv=None):
+    parser = argparse.ArgumentParser(description="使用本地模型生成一段 Tech House demo")
+    parser.parse_args(argv)
+
     print("=" * 60)
     print("🎧 AI DJ Demo 生成器（本地模型版）")
     print("=" * 60)
@@ -61,7 +65,14 @@ def main():
     ]
     
     try:
-        result = subprocess.run(cmd, capture_output=True, text=True, cwd=repo_root)
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            cwd=repo_root,
+        )
         
         if result.returncode != 0:
             print(f"❌ 生成失败: {result.stderr}")
@@ -109,4 +120,4 @@ def main():
         return 1
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main(sys.argv[1:]))

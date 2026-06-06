@@ -43,10 +43,17 @@ jobs:
         shell: bash
         run: |
           python check_system.py
+          python generate_and_play.py --help
+          python generate_demo_local.py --help
+          python manage_models.py --help
+          python manage_models.py --list
           python 13_tools/scripts/make_dj_track_ace_step.py --help
           python 13_tools/scripts/make_dj_track_ace_step.py --prompt "Custom prompt" --dry-run
           python 13_tools/scripts/make_dj_track_minimax.py --help
           python 13_tools/scripts/make_dj_track_local.py --help
           python 13_tools/scripts/generate_with_preset.py --preset tech_house --idea smoke --dry-run
+          python 13_tools/scripts/practice_plan.py --help
+          python 13_tools/scripts/library_manager.py --help
+          python 13_tools/scripts/generate_visualizations.py
           python 13_tools/scripts/continuous_research.py --help
           printf "0\n" | python 13_tools/scripts/interactive_generator.py

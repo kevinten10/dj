@@ -5,6 +5,7 @@
 """
 
 import sys
+import argparse
 import subprocess
 from pathlib import Path
 
@@ -66,7 +67,7 @@ def test_model(model_id):
     ]
     
     try:
-        result = subprocess.run(cmd, capture_output=True, text=True)
+        result = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace")
         if result.returncode == 0:
             print("✅ 测试成功！")
             return True
@@ -93,61 +94,80 @@ def get_model_cache_size():
     
     return total_size / (1024**3)  # Convert to GB
 
-def main():
+def main(argv=None):
+    parser = argparse.ArgumentParser(description="AI DJ 本地模型管理工具")
+    parser.add_argument("--list", action="store_true", help="列出可用模型后退出")
+    parser.add_argument("--cache-size", action="store_true", help="显示 Hugging Face 模型缓存大小后退出")
+    args = parser.parse_args(argv)
+
     print_header()
+
+    if args.list:
+        list_models()
+        return 0
+
+    if args.cache_size:
+        size = get_model_cache_size()
+        print(f"💾 模型缓存大小: {size:.2f} GB")
+        print("   缓存位置: ~/.cache/huggingface/hub/")
+        return 0
     
-    while True:
-        print("请选择操作:")
-        print("1. 📋 查看可用模型")
-        print("2. 📥 下载模型")
-        print("3. 🧪 测试模型")
-        print("4. 💾 查看缓存大小")
-        print("0. 退出")
-        print()
-        
-        choice = input("请输入选项: ").strip()
-        
-        if choice == "0":
-            print("👋 再见！")
-            break
-        
-        elif choice == "1":
-            list_models()
-        
-        elif choice == "2":
-            list_models()
-            model_choice = input("请输入要下载的模型ID (1-4): ").strip()
-            
-            if model_choice in MODELS:
-                model_id = MODELS[model_choice]["id"]
-                if download_model(model_id):
-                    test = input("是否测试生成? (y/n): ").strip().lower()
-                    if test == "y":
-                        test_model(model_id)
-            else:
-                print("❌ 无效的选项")
-        
-        elif choice == "3":
-            list_models()
-            model_choice = input("请输入要测试的模型ID (1-4): ").strip()
-            
-            if model_choice in MODELS:
-                model_id = MODELS[model_choice]["id"]
-                test_model(model_id)
-            else:
-                print("❌ 无效的选项")
-        
-        elif choice == "4":
-            size = get_model_cache_size()
-            print(f"💾 模型缓存大小: {size:.2f} GB")
-            print(f"   缓存位置: ~/.cache/huggingface/hub/")
+    try:
+        while True:
+            print("请选择操作:")
+            print("1. 📋 查看可用模型")
+            print("2. 📥 下载模型")
+            print("3. 🧪 测试模型")
+            print("4. 💾 查看缓存大小")
+            print("0. 退出")
             print()
-        
-        else:
-            print("❌ 无效的选项")
-        
-        input("\n按 Enter 继续...")
-        print()
+
+            choice = input("请输入选项: ").strip()
+
+            if choice == "0":
+                print("👋 再见！")
+                return 0
+
+            elif choice == "1":
+                list_models()
+
+            elif choice == "2":
+                list_models()
+                model_choice = input("请输入要下载的模型ID (1-4): ").strip()
+
+                if model_choice in MODELS:
+                    model_id = MODELS[model_choice]["id"]
+                    if download_model(model_id):
+                        test = input("是否测试生成? (y/n): ").strip().lower()
+                        if test == "y":
+                            test_model(model_id)
+                else:
+                    print("❌ 无效的选项")
+
+            elif choice == "3":
+                list_models()
+                model_choice = input("请输入要测试的模型ID (1-4): ").strip()
+
+                if model_choice in MODELS:
+                    model_id = MODELS[model_choice]["id"]
+                    test_model(model_id)
+                else:
+                    print("❌ 无效的选项")
+
+            elif choice == "4":
+                size = get_model_cache_size()
+                print(f"💾 模型缓存大小: {size:.2f} GB")
+                print("   缓存位置: ~/.cache/huggingface/hub/")
+                print()
+
+            else:
+                print("❌ 无效的选项")
+
+            input("\n按 Enter 继续...")
+            print()
+    except EOFError:
+        print("\n未收到交互输入，已退出。可使用 --help 查看非交互命令。")
+        return 0
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main(sys.argv[1:]))
