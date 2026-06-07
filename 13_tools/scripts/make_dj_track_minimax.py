@@ -174,6 +174,7 @@ def main(argv: list[str]) -> int:
     p.add_argument("--style", default="", help="Genre, e.g. Techno, House, Melodic")
     p.add_argument("--bpm", type=int, default=128, help="BPM target.")
     p.add_argument("--key", default="", help="Musical key (e.g., Amin, 8A).")
+    p.add_argument("--structure", default="", help="Song structure, e.g. [Intro:16][Verse:32][Drop:32][Outro:16].")
     p.add_argument("--instrumental", action="store_true", help="Generate instrumental track.")
     p.add_argument("--model", default="music-2.6-free", help="MiniMax model, default: music-2.6-free")
     p.add_argument("--output-format", choices=["url", "hex"], default="url", help="MiniMax audio output format.")
@@ -208,9 +209,10 @@ def main(argv: list[str]) -> int:
     meta_path = root / "04_generations" / "metadata" / f"{stamp}_{slug}.json"
 
     # Precise structural prompt for MiniMax Music generation.
+    structure = args.structure.strip() or "[Intro], [Verse], [Build Up], [Drop], [Break], [Drop], [Outro]"
     prompt_parts = [f"Genre: {args.style or 'Electronic'}", f"BPM: {args.bpm}"]
     if args.key: prompt_parts.append(f"Key: {args.key}")
-    prompt_parts.append("Structure: [Intro], [Verse], [Build Up], [Drop], [Break], [Drop], [Outro]")
+    prompt_parts.append(f"Structure: {structure}")
     prompt_parts.append("Mix: Clear kicks, professional mixing, DJ-friendly")
     if args.instrumental: prompt_parts.append("Mode: Instrumental, no vocals")
     prompt_parts.append(f"Theme: {args.idea}")
