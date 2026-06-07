@@ -1,21 +1,19 @@
-"""
-ACE-Step 本地歌词生成器
-用于生成本地带歌词的 DJ 音乐
+"""ACE-Step local lyrics/song generation entry point.
 
-用法:
-    python make_dj_track_ace_step.py --lyrics "你的歌词" --prompt "风格描述"
-    python make_dj_track_ace_step.py --theme "DJ派对" --style "House"
+Examples:
+    python make_dj_track_ace_step.py --lyrics "your lyrics" --prompt "style prompt"
+    python make_dj_track_ace_step.py --theme "DJ party" --style House
 """
 
-import os
-import sys
 import argparse
 import datetime
 import importlib
 import importlib.util
 import subprocess
+import sys
 import time
 from pathlib import Path
+
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ACE_STEP_PATH = REPO_ROOT / "13_tools" / "ace_step"
@@ -27,7 +25,6 @@ if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 
-# 歌词模板库
 LYRICS_TEMPLATES = {
     "House": {
         "prompt": "Electronic House music, upbeat, dance, club, bass, 120 BPM",
@@ -72,7 +69,7 @@ Keep on dancing
 Keep on moving
 House music
 Forever grooving
-"""
+""",
     },
     "Techno": {
         "prompt": "Electronic Techno music, dark, industrial, repetitive, heavy bass, 130 BPM",
@@ -117,7 +114,7 @@ Repeat
 Reset
 Reload
 Techno
-"""
+""",
     },
     "Trance": {
         "prompt": "Electronic Trance music, uplifting, melodic, ethereal, emotional, 138 BPM",
@@ -162,24 +159,23 @@ Fly away
 Dream again
 Trance forever
 Amen
-"""
-    }
+""",
+    },
 }
 
 
-def create_dj_lyrics(theme: str, style: str = "House") -> tuple:
-    """根据主题和风格创建歌词"""
+def create_dj_lyrics(theme: str, style: str = "House") -> tuple[str, str]:
+    """Create lyrics and a generation prompt for a supported style."""
     if style in LYRICS_TEMPLATES:
         template = LYRICS_TEMPLATES[style]
         return template["lyrics"], template["prompt"]
 
-    # 默认 House 风格
     return LYRICS_TEMPLATES["House"]["lyrics"], LYRICS_TEMPLATES["House"]["prompt"]
 
 
 def resolve_lyrics_and_prompt(args: argparse.Namespace) -> tuple[str, str]:
     """Resolve user input while allowing prompt-only or lyrics-only custom runs."""
-    template_lyrics, template_prompt = create_dj_lyrics(args.theme or "DJ派对", args.style)
+    template_lyrics, template_prompt = create_dj_lyrics(args.theme or "DJ party", args.style)
     lyrics = args.lyrics if args.lyrics else template_lyrics
     prompt = args.prompt if args.prompt else template_prompt
     return lyrics, prompt
@@ -229,48 +225,48 @@ def _print_ace_step_runtime_install_hint(missing_packages: list[str]) -> None:
         return
 
     issues = _ace_step_runtime_package_issues()
-    print("ACE-Step 运行时依赖缺失或不可用:")
+    print("ACE-Step runtime dependencies are missing or unavailable.")
     for package in missing_packages:
         issue = issues.get(package, "unknown issue")
         print(f"  - {package}: {issue}")
-    print("建议安装:")
+    print("Suggested install command:")
     print(f"  python -m pip install {' '.join(missing_packages)}")
 
 
 def check_ace_step_setup() -> int:
     """Run a lightweight preflight without loading the ACE-Step model."""
-    print("ACE-Step 本地环境检查")
+    print("ACE-Step local environment check")
     print("=" * 50)
-    print(f"项目根目录: {REPO_ROOT}")
-    print(f"ACE-Step 目录: {ACE_STEP_PATH}")
+    print(f"Project root: {REPO_ROOT}")
+    print(f"ACE-Step directory: {ACE_STEP_PATH}")
 
     if not ACE_STEP_PATH.exists():
-        print("状态: 未安装")
-        print("安装命令:")
+        print("Status: not installed")
+        print("Install command:")
         print("  git clone https://github.com/ace-step/ACE-Step.git 13_tools/ace_step")
         return 1
 
-    print("状态: 已找到本地 clone")
+    print("Status: local clone found")
     remote = _git_value(["remote", "get-url", "origin"])
     revision = _git_value(["rev-parse", "--short", "HEAD"])
     branch = _git_value(["branch", "--show-current"])
-    print(f"远端: {remote}")
-    print(f"分支: {branch}")
-    print(f"版本: {revision}")
+    print(f"Remote: {remote}")
+    print(f"Branch: {branch}")
+    print(f"Revision: {revision}")
 
     if str(ACE_STEP_PATH) not in sys.path:
         sys.path.insert(0, str(ACE_STEP_PATH))
 
     ace_spec = importlib.util.find_spec("acestep")
     torch_spec = importlib.util.find_spec("torch")
-    print(f"Python 包 acestep: {'可导入' if ace_spec else '不可导入'}")
-    print(f"Python 包 torch: {'已安装' if torch_spec else '未安装'}")
+    print(f"Python package 'acestep': {'importable' if ace_spec else 'not importable'}")
+    print(f"Python package 'torch': {'installed' if torch_spec else 'not installed'}")
 
     if not ace_spec:
-        print("建议: 确认 13_tools/ace_step/acestep 存在，或重新克隆 ACE-Step。")
+        print("Suggestion: confirm 13_tools/ace_step/acestep exists, or reclone ACE-Step.")
         return 1
     if not torch_spec:
-        print("建议: 按 ACE-Step 文档安装 PyTorch 后再生成。")
+        print("Suggestion: install PyTorch according to the ACE-Step documentation.")
         return 1
 
     missing_runtime_packages = _missing_ace_step_runtime_packages()
@@ -278,7 +274,7 @@ def check_ace_step_setup() -> int:
         _print_ace_step_runtime_install_hint(missing_runtime_packages)
         return 1
 
-    print("预检通过: 可以尝试生成或启动 Web UI。")
+    print("Preflight passed: generation or Web UI startup can be attempted.")
     return 0
 
 
@@ -379,17 +375,18 @@ def generate_with_ace_step(
     seed: int = -1,
     output_path: str | None = None,
     cpu_offload: bool = True,
-    bf16: bool = True
+    bf16: bool = True,
 ):
-    """使用 ACE-Step 生成带歌词的音乐"""
+    """Generate a lyrics-driven track with ACE-Step."""
 
     if not ACE_STEP_PATH.exists():
-        raise FileNotFoundError(f"ACE-Step 目录不存在: {ACE_STEP_PATH}")
+        raise FileNotFoundError(f"ACE-Step directory does not exist: {ACE_STEP_PATH}")
 
     if str(ACE_STEP_PATH) not in sys.path:
         sys.path.insert(0, str(ACE_STEP_PATH))
 
     from acestep.pipeline_ace_step import ACEStepPipeline
+
     _patch_torchaudio_wav_save()
 
     if output_path is None:
@@ -398,31 +395,28 @@ def generate_with_ace_step(
         timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         output_path = str(output_dir / f"ace_step_{timestamp}.wav")
 
-    print(f"🎵 ACE-Step 本地歌词生成器")
-    print(f"{'='*50}")
-    print(f"📝 歌词: {len(lyrics)} 字符")
-    print(f"🎨 风格: {prompt}")
-    print(f"⏱️ 时长: {duration if duration > 0 else '随机'} 秒")
-    print(f"🔢 步骤: {infer_steps}")
-    print(f"🎯 引导: {guidance_scale}")
-    print(f"🌱 种子: {seed}")
-    print(f"💾 输出: {output_path}")
-    print(f"{'='*50}")
+    print("ACE-Step local lyrics/song generator")
+    print("=" * 50)
+    print(f"Lyrics length: {len(lyrics)} characters")
+    print(f"Prompt: {prompt}")
+    print(f"Duration: {duration if duration > 0 else 'random'} seconds")
+    print(f"Inference steps: {infer_steps}")
+    print(f"Guidance scale: {guidance_scale}")
+    print(f"Seed: {seed}")
+    print(f"Output: {output_path}")
+    print("=" * 50)
 
-    # 初始化管道
-    print("🔄 正在加载模型...")
+    print("Loading model...")
     pipeline = ACEStepPipeline(
-        checkpoint_dir=None,  # 会自动下载
+        checkpoint_dir=None,
         dtype="bfloat16" if bf16 else "float32",
         torch_compile=False,
         cpu_offload=cpu_offload,
-        overlapped_decode=False
+        overlapped_decode=False,
     )
 
-    print("✅ 模型加载完成!")
-    print("🎶 开始生成音乐...")
-
-    # 生成音乐
+    print("Model loaded.")
+    print("Starting audio generation...")
     start_time = time.time()
 
     try:
@@ -441,55 +435,58 @@ def generate_with_ace_step(
         raise
 
     elapsed = time.time() - start_time
-    print(f"{'='*50}")
-    print(f"✅ 生成成功!")
-    print(f"⏱️ 用时: {elapsed:.2f} 秒")
-    print(f"💾 文件: {output_path}")
-    print(f"{'='*50}")
+    print("=" * 50)
+    print("Generation succeeded.")
+    print(f"Elapsed: {elapsed:.2f} seconds")
+    print(f"File: {output_path}")
+    print("=" * 50)
 
     return output_path
 
 
-def main():
-    parser = argparse.ArgumentParser(description="ACE-Step 本地歌词生成器")
-    parser.add_argument("--check", action="store_true", help="检查 ACE-Step 本地环境，不加载模型")
-    parser.add_argument("--lyrics", type=str, help="歌词文本")
-    parser.add_argument("--prompt", type=str, help="风格描述")
-    parser.add_argument("--theme", type=str, help="主题名称")
-    parser.add_argument("--style", type=str, default="House", choices=["House", "Techno", "Trance"],
-                        help="音乐风格")
-    parser.add_argument("--duration", type=int, default=-1, help="音频时长（秒，-1为随机）")
-    parser.add_argument("--steps", type=int, default=50, help="推理步骤数")
-    parser.add_argument("--guidance", type=float, default=7.0, help="引导系数")
-    parser.add_argument("--seed", type=int, default=-1, help="随机种子")
-    parser.add_argument("--output", type=str, help="输出文件路径")
-    parser.add_argument("--no-cpu-offload", action="store_true", help="禁用CPU offload（需要更多显存）")
-    parser.add_argument("--fp32", action="store_true", help="使用float32精度（更慢但更兼容）")
-    parser.add_argument("--dry-run", action="store_true", help="只解析参数并显示配置，不加载模型")
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="ACE-Step local lyrics/song generator")
+    parser.add_argument("--check", action="store_true", help="Check the ACE-Step environment without loading the model")
+    parser.add_argument("--lyrics", type=str, help="Lyrics text")
+    parser.add_argument("--prompt", type=str, help="Style prompt")
+    parser.add_argument("--theme", type=str, help="Theme name")
+    parser.add_argument(
+        "--style",
+        type=str,
+        default="House",
+        choices=["House", "Techno", "Trance"],
+        help="Music style",
+    )
+    parser.add_argument("--duration", type=int, default=-1, help="Audio duration in seconds; -1 means random")
+    parser.add_argument("--steps", type=int, default=50, help="Inference step count")
+    parser.add_argument("--guidance", type=float, default=7.0, help="Guidance scale")
+    parser.add_argument("--seed", type=int, default=-1, help="Random seed; -1 means random")
+    parser.add_argument("--output", type=str, help="Output file path")
+    parser.add_argument("--no-cpu-offload", action="store_true", help="Disable CPU offload; requires more VRAM")
+    parser.add_argument("--fp32", action="store_true", help="Use float32 precision; slower but more compatible")
+    parser.add_argument("--dry-run", action="store_true", help="Resolve parameters and print configuration without loading the model")
 
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     if args.check:
         return check_ace_step_setup()
 
-    # 确定歌词和提示
     lyrics, prompt = resolve_lyrics_and_prompt(args)
 
     if args.dry_run:
-        print("ACE-Step 参数预览")
+        print("ACE-Step parameter preview")
         print("=" * 50)
-        print(f"风格: {args.style}")
-        print(f"提示: {prompt}")
-        print(f"歌词字符数: {len(lyrics)}")
-        print(f"时长: {args.duration if args.duration > 0 else '随机'}")
-        print(f"步骤: {args.steps}")
-        print(f"引导: {args.guidance}")
-        print(f"种子: {args.seed}")
-        print(f"CPU Offload: {not args.no_cpu_offload}")
-        print(f"精度: {'float32' if args.fp32 else 'bfloat16'}")
+        print(f"Style: {args.style}")
+        print(f"Prompt: {prompt}")
+        print(f"Lyrics characters: {len(lyrics)}")
+        print(f"Duration: {args.duration if args.duration > 0 else 'random'}")
+        print(f"Inference steps: {args.steps}")
+        print(f"Guidance scale: {args.guidance}")
+        print(f"Seed: {args.seed}")
+        print(f"CPU offload: {not args.no_cpu_offload}")
+        print(f"Precision: {'float32' if args.fp32 else 'bfloat16'}")
         return 0
 
-    # 生成
     try:
         output_path = generate_with_ace_step(
             lyrics=lyrics,
@@ -500,12 +497,12 @@ def main():
             seed=args.seed,
             output_path=args.output,
             cpu_offload=not args.no_cpu_offload,
-            bf16=not args.fp32
+            bf16=not args.fp32,
         )
     except ImportError:
         raise
 
-    print(f"\n🎉 完成！音乐已保存到: {output_path}")
+    print(f"\nDone. Music saved to: {output_path}")
     return 0
 
 
