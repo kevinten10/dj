@@ -20,6 +20,17 @@ def load_interactive_generator():
 
 
 class InteractiveGeneratorTests(unittest.TestCase):
+    def test_interactive_generator_cli_text_is_ascii(self):
+        script_path = (
+            Path(__file__).resolve().parents[1]
+            / "13_tools"
+            / "scripts"
+            / "interactive_generator.py"
+        )
+        source = script_path.read_text(encoding="utf-8")
+
+        self.assertTrue(source.isascii())
+
     def test_get_input_uses_default_on_eof(self):
         generator = load_interactive_generator()
 
@@ -27,6 +38,16 @@ class InteractiveGeneratorTests(unittest.TestCase):
             result = generator.get_input("option", "0")
 
         self.assertEqual(result, "0")
+
+    def test_main_handles_eof_during_continue_prompt(self):
+        generator = load_interactive_generator()
+
+        with (
+            patch.object(generator, "get_int_input", side_effect=[4, 0, 0]),
+            patch.object(generator, "input", side_effect=EOFError),
+            redirect_stdout(StringIO()),
+        ):
+            generator.main()
 
     def test_local_generate_uses_musicgen_venv_python(self):
         generator = load_interactive_generator()
