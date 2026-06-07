@@ -241,6 +241,14 @@ def _repo_root() -> Path:
     return Path(__file__).resolve().parents[2]
 
 
+def _next_start_date(today: datetime, start_day: int) -> datetime:
+    if not 1 <= start_day <= 7:
+        raise ValueError("start_day must be between 1 and 7, where 1=Monday and 7=Sunday")
+    requested_weekday = start_day - 1
+    days_until_start = (requested_weekday - today.weekday()) % 7
+    return today + timedelta(days=days_until_start)
+
+
 def generate_practice_plan(level: str, start_day: int = 1) -> Dict[str, Any]:
     """Generate a practice plan based on skill level."""
     if level not in PRACTICE_PLANS:
@@ -249,14 +257,11 @@ def generate_practice_plan(level: str, start_day: int = 1) -> Dict[str, Any]:
     plan = PRACTICE_PLANS[level]
     
     today = datetime.now()
+    start_date = _next_start_date(today, start_day)
     schedule = []
     
     for exercise in plan["exercises"]:
-        day_offset = exercise["day"] - start_day
-        if day_offset < 0:
-            day_offset += 7
-        
-        exercise_date = today + timedelta(days=day_offset)
+        exercise_date = start_date + timedelta(days=exercise["day"] - 1)
         schedule.append({
             **exercise,
             "date": exercise_date.strftime("%Y-%m-%d"),

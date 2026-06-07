@@ -10,8 +10,8 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - Remote default branch: `master`
 - GitHub repository: `https://github.com/kevinten10/dj`
 - Repository visibility: public
-- Latest reviewed master commit before this update: `33f69c3`
-- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27091591425`
+- Latest reviewed master commit before this update: `99639d6`
+- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27091788281`
 - Open GitHub PRs: none
 - Open GitHub issues: none
 - Local working tree: clean
@@ -78,6 +78,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - `make_dj_track_with_lyrics.py` reports useful child-process stdout/stderr details when MiniMax generation fails.
 - `library_manager.py` scans both MP3 and WAV DJ-ready exports so local MusicGen/ACE-Step WAV tracks appear in the library.
 - `generate_with_preset.py --dry-run` prints copy-paste safe commands with quoted arguments that contain spaces.
+- `practice_plan.py --start-day` schedules from the next requested weekday, matching the `1=Monday` help text.
 - ACE-Step preflight: `python 13_tools/scripts/make_dj_track_ace_step.py --check`
 - ACE-Step local generation smoke:
   - Command: `python 13_tools/scripts/make_dj_track_ace_step.py --style House --duration 10 --steps 5 --seed 123 --output 04_generations/audio/raw/ace_step_10s_smoke.wav`
@@ -114,6 +115,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - PR #30: quoted interactive generator displayed commands so arguments with spaces are copy-paste safe.
 - PR #31: surfaced child-process stdout/stderr details from `generate_demo_local.py` failures.
 - PR #32: surfaced child-process stdout/stderr details from `manage_models.py` download and smoke-test failures.
+- PR #33: accepted `--theme` as a compatibility alias for `make_dj_track_with_lyrics.py --idea`.
 
 All merged PRs were followed by successful master `CLI smoke tests`.
 
