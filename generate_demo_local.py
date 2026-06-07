@@ -74,6 +74,16 @@ def extract_exported_path(output: str) -> Path | None:
     return Path(match.group(1).strip())
 
 
+def child_failure_message(result: subprocess.CompletedProcess) -> str:
+    messages = []
+    for stream in (result.stderr, result.stdout):
+        if stream:
+            text = str(stream).strip()
+            if text:
+                messages.append(text)
+    return "\n".join(messages) or f"child process exited with code {result.returncode}"
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Generate a short local MusicGen Tech House demo")
     parser.add_argument("--no-play", action="store_true", help="Do not open the generated audio automatically")
@@ -112,7 +122,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     if result.returncode != 0:
-        print(f"Generation failed: {result.stderr.strip()}")
+        print(f"Generation failed: {child_failure_message(result)}")
         print()
         print("Possible causes:")
         print("  1. MusicGen/AudioCraft dependencies are not installed in .venv-musicgen.")
