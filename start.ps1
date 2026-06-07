@@ -107,7 +107,8 @@ switch ($choice) {
         Write-Host "Opening config file..." -ForegroundColor Cyan
         Start-Process notepad $envFile
         Write-Host ""
-        Write-Host "After editing, load it with:" -ForegroundColor Gray
+        Write-Host "Python tools read this local config automatically." -ForegroundColor Gray
+        Write-Host "For the current PowerShell session, you can still load it with:" -ForegroundColor Gray
         Write-Host ". .\13_tools\configs\minimax_env.ps1" -ForegroundColor Gray
         Exit-WithPause 0
     }

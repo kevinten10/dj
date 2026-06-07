@@ -28,6 +28,7 @@ jobs:
             generate_and_play.py \
             generate_demo_local.py \
             manage_models.py \
+            minimax_config.py \
             13_tools/scripts/continuous_research.py \
             13_tools/scripts/generate_visualizations.py \
             13_tools/scripts/generate_with_preset.py \

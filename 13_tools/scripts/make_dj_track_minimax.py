@@ -35,6 +35,25 @@ logger = logging.getLogger("ai-dj-gen")
 def _repo_root() -> Path:
     return Path(__file__).resolve().parents[2]
 
+def _load_project_minimax_env(root: Path) -> str:
+    root_text = str(root)
+    added_path = False
+    if root_text not in sys.path:
+        sys.path.insert(0, root_text)
+        added_path = True
+
+    try:
+        from minimax_config import MINIMAX_API_KEY_PLACEHOLDER, load_minimax_env_file
+
+        load_minimax_env_file(root)
+        return MINIMAX_API_KEY_PLACEHOLDER
+    finally:
+        if added_path:
+            try:
+                sys.path.remove(root_text)
+            except ValueError:
+                pass
+
 def _now_stamp() -> str:
     return _dt.datetime.now().strftime("%Y%m%d_%H%M%S")
 
@@ -167,16 +186,20 @@ def main(argv: list[str]) -> int:
     if args.verbose:
         logger.setLevel(logging.DEBUG)
 
+    root = _repo_root()
+    placeholder_key = _load_project_minimax_env(root)
     api_key = os.environ.get("MINIMAX_API_KEY", "").strip()
     if not api_key:
         logger.critical("MINIMAX_API_KEY environment variable is missing.")
+        return 1
+    if api_key == placeholder_key:
+        logger.critical("MINIMAX_API_KEY is still the placeholder value.")
         return 1
 
     base = os.environ.get("MINIMAX_API_BASE", "https://api.minimax.io")
     base_v1 = _ensure_v1(base)
     music_url = base_v1 + "/music_generation"
 
-    root = _repo_root()
     stamp = _now_stamp()
     slug = _slugify(args.style or args.idea)
 
