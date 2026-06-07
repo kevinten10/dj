@@ -20,6 +20,10 @@ def _repo_root() -> Path:
     return Path(__file__).resolve().parents[2]
 
 
+def _format_command(cmd: list[str]) -> str:
+    return subprocess.list2cmdline(cmd)
+
+
 def _ace_step_path() -> Path:
     return _repo_root() / "13_tools" / "ace_step"
 
@@ -173,7 +177,7 @@ def run_cloud_generate():
         if play:
             cmd.append("--play")
         
-        print(f"\n🚀 执行命令: {' '.join(cmd)}")
+        print(f"\n🚀 执行命令: {_format_command(cmd)}")
         import subprocess
         subprocess.run(cmd)
     else:
@@ -192,7 +196,7 @@ def run_cloud_generate():
         if play:
             cmd.append("--play")
         
-        print(f"\n🚀 执行命令: {' '.join(cmd)}")
+        print(f"\n🚀 执行命令: {_format_command(cmd)}")
         import subprocess
         subprocess.run(cmd)
 
@@ -232,7 +236,7 @@ def run_cloud_preset():
     if play:
         cmd.append("--play")
     
-    print(f"\n🚀 执行命令: {' '.join(cmd)}")
+    print(f"\n🚀 执行命令: {_format_command(cmd)}")
     import subprocess
     subprocess.run(cmd)
 
@@ -273,7 +277,7 @@ def run_local_generate(model_size: str = "small"):
     if play:
         cmd.append("--play")
     
-    print(f"\n🚀 执行命令: {' '.join(cmd)}")
+    print(f"\n🚀 执行命令: {_format_command(cmd)}")
     import subprocess
     subprocess.run(cmd)
 
@@ -325,7 +329,7 @@ def run_local_custom():
     if play:
         cmd.append("--play")
     
-    print(f"\n🚀 执行命令: {' '.join(cmd)}")
+    print(f"\n🚀 执行命令: {_format_command(cmd)}")
     import subprocess
     subprocess.run(cmd)
 
@@ -480,7 +484,7 @@ def run_ace_step_generate(style: str = "House"):
     if not bf16:
         cmd.append("--fp32")
 
-    print(f"\n🚀 执行命令: {' '.join(cmd)}")
+    print(f"\n🚀 执行命令: {_format_command(cmd)}")
     import subprocess
     subprocess.run(cmd)
 
@@ -508,7 +512,7 @@ def run_ace_step_custom():
     if lyrics:
         cmd.extend(["--lyrics", lyrics])
 
-    print(f"\n🚀 执行命令: {' '.join(cmd)}")
+    print(f"\n🚀 执行命令: {_format_command(cmd)}")
     import subprocess
     subprocess.run(cmd)
 
@@ -541,7 +545,7 @@ def run_ace_step_webui():
 
     cmd.extend(["--bf16", "true", "--overlapped_decode", "true"])
 
-    print(f"\n🚀 执行命令: {' '.join(cmd)}")
+    print(f"\n🚀 执行命令: {_format_command(cmd)}")
     print("⚠️  Web UI 启动后，请在浏览器中使用生成")
 
     try:
