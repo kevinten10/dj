@@ -96,6 +96,16 @@ def print_musicgen_setup_hint() -> None:
     print("Then retry this command.")
 
 
+def child_failure_message(result: subprocess.CompletedProcess) -> str:
+    messages = []
+    for stream in (result.stderr, result.stdout):
+        if stream:
+            text = str(stream).strip()
+            if text:
+                messages.append(text)
+    return "\n".join(messages) or f"child process exited with code {result.returncode}"
+
+
 def print_header() -> None:
     print("=" * 60)
     print("AI-DJ Local Model Manager")
@@ -150,12 +160,12 @@ def download_model(model_id: str) -> bool:
         print(f"Download failed: {exc}")
         return False
 
-    if result.stdout:
-        print(result.stdout.strip())
     if result.returncode != 0:
-        print(f"Download failed: {result.stderr.strip()}")
+        print(f"Download failed: {child_failure_message(result)}")
         return False
 
+    if result.stdout:
+        print(result.stdout.strip())
     print(f"Model downloaded: {model_id}")
     return True
 
@@ -196,7 +206,7 @@ def test_model(model_id: str) -> bool:
         print("Test succeeded.")
         return True
 
-    print(f"Test failed: {result.stderr.strip()}")
+    print(f"Test failed: {child_failure_message(result)}")
     return False
 
 

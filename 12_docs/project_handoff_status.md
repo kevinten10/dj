@@ -10,8 +10,8 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - Remote default branch: `master`
 - GitHub repository: `https://github.com/kevinten10/dj`
 - Repository visibility: public
-- Latest reviewed master commit before this update: `e3765d2`
-- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27091242982`
+- Latest reviewed master commit before this update: `3e45cb6`
+- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27091375383`
 - Open GitHub PRs: none
 - Open GitHub issues: none
 - Local working tree: clean
@@ -60,6 +60,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - MusicGen environment status check in `check_system.py`: reports `.venv-musicgen` readiness and Python 3.10/3.11 availability.
 - `manage_models.py` uses the dedicated `.venv-musicgen` Python when downloading or testing MusicGen models.
 - `manage_models.py` has a clean ASCII CLI surface for model listing, cache size, environment status, download, and smoke testing.
+- `manage_models.py` reports useful child-process stdout/stderr details when MusicGen model download or smoke testing fails.
 - `generate_demo_local.py` uses the dedicated `.venv-musicgen` Python for local MusicGen demo generation.
 - `generate_demo_local.py` returns the exact local MusicGen child-process export path instead of selecting a potentially stale newest WAV file.
 - `generate_demo_local.py` reports useful child-process stdout/stderr details when local MusicGen generation fails.
@@ -110,6 +111,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - PR #28: surfaced child-process stdout/stderr details from `make_dj_track_with_lyrics.py` failures.
 - PR #29: surfaced child-process stdout/stderr details from `generate_and_play.py` failures.
 - PR #30: quoted interactive generator displayed commands so arguments with spaces are copy-paste safe.
+- PR #31: surfaced child-process stdout/stderr details from `generate_demo_local.py` failures.
 
 All merged PRs were followed by successful master `CLI smoke tests`.
 
