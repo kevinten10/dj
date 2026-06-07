@@ -10,8 +10,8 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - Remote default branch: `master`
 - GitHub repository: `https://github.com/kevinten10/dj`
 - Repository visibility: public
-- Latest reviewed master commit before this update: `c8aae72`
-- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27090236789`
+- Latest reviewed master commit before this update: `1e0b1d8`
+- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27090388051`
 - Open GitHub PRs: none
 - Open GitHub issues: none
 - Local working tree: clean
@@ -71,6 +71,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - `generate_and_play.py` returns the exact MiniMax child-process export path instead of selecting a potentially stale newest file.
 - `make_dj_track_with_lyrics.py --with-lyrics` forwards the generated lyrics file to the MiniMax child process.
 - `library_manager.py` scans both MP3 and WAV DJ-ready exports so local MusicGen/ACE-Step WAV tracks appear in the library.
+- `generate_with_preset.py --dry-run` prints copy-paste safe commands with quoted arguments that contain spaces.
 - ACE-Step preflight: `python 13_tools/scripts/make_dj_track_ace_step.py --check`
 - ACE-Step local generation smoke:
   - Command: `python 13_tools/scripts/make_dj_track_ace_step.py --style House --duration 10 --steps 5 --seed 123 --output 04_generations/audio/raw/ace_step_10s_smoke.wav`
@@ -100,6 +101,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - PR #23: forwarded generated lyrics files into MiniMax generation for `--with-lyrics`.
 - PR #24: included WAV exports in `library_manager.py` scans.
 - PR #25: handled missing/unreadable MiniMax `--lyrics-file` inputs before API calls.
+- PR #26: added the MiniMax `--structure` CLI argument promised by the README examples.
 
 All merged PRs were followed by successful master `CLI smoke tests`.
 

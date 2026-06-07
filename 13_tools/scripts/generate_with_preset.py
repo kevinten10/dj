@@ -120,7 +120,7 @@ def main(argv: list[str]) -> int:
         cmd.append("--play")
 
     print(f"\n📝 执行命令:")
-    print(f"   {' '.join(cmd)}")
+    print(f"   {subprocess.list2cmdline(cmd)}")
 
     if args.dry_run:
         print("\n✅ --dry-run: 命令未执行")
