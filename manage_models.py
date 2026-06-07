@@ -7,6 +7,7 @@
 import sys
 import argparse
 import subprocess
+import os
 from pathlib import Path
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -20,6 +21,48 @@ MODELS = {
     "3": {"name": "MusicGen Large", "id": "facebook/musicgen-large", "size": "~6GB", "quality": "⭐⭐⭐⭐⭐", "speed": "⚡", "vram": "12GB+"},
     "4": {"name": "MusicGen Melody", "id": "facebook/musicgen-melody", "size": "~6GB", "quality": "⭐⭐⭐⭐⭐", "speed": "⚡", "vram": "12GB+"},
 }
+
+REPO_ROOT = Path(__file__).resolve().parent
+MUSICGEN_VENV_DIR = ".venv-musicgen"
+
+
+def musicgen_venv_python(repo_root: Path = REPO_ROOT) -> Path:
+    if os.name == "nt":
+        return repo_root / MUSICGEN_VENV_DIR / "Scripts" / "python.exe"
+    return repo_root / MUSICGEN_VENV_DIR / "bin" / "python"
+
+
+def python_has_audiocraft(python_executable: str | Path = sys.executable) -> bool:
+    try:
+        result = subprocess.run(
+            [
+                str(python_executable),
+                "-c",
+                "import importlib.util; raise SystemExit(0 if importlib.util.find_spec('audiocraft') else 1)",
+            ],
+            capture_output=True,
+            text=True,
+            timeout=20,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return result.returncode == 0
+
+
+def get_musicgen_python(repo_root: Path = REPO_ROOT) -> str | None:
+    venv_python = musicgen_venv_python(repo_root)
+    if venv_python.exists():
+        return str(venv_python)
+    if python_has_audiocraft(sys.executable):
+        return sys.executable
+    return None
+
+
+def print_musicgen_setup_hint():
+    print("MusicGen/AudioCraft environment is not ready.")
+    print("Run:")
+    print("  .\\setup_local_models.ps1")
+    print("Then retry this command.")
 
 def print_header():
     print("=" * 60)
@@ -94,10 +137,94 @@ def get_model_cache_size():
     
     return total_size / (1024**3)  # Convert to GB
 
+
+def download_model(model_id):
+    """Download a MusicGen model with the configured MusicGen Python."""
+    print(f"Downloading model: {model_id}")
+    print("This may take a few minutes.")
+    print()
+
+    python_executable = get_musicgen_python()
+    if python_executable is None:
+        print_musicgen_setup_hint()
+        return False
+
+    try:
+        result = subprocess.run(
+            [
+                python_executable,
+                "-c",
+                (
+                    "import sys; "
+                    "from audiocraft.models import MusicGen; "
+                    "MusicGen.get_pretrained(sys.argv[1]); "
+                    "print('Model ready.')"
+                ),
+                model_id,
+            ],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            cwd=REPO_ROOT,
+            timeout=60 * 60,
+        )
+        if result.stdout:
+            print(result.stdout.strip())
+        if result.returncode != 0:
+            print(f"Download failed: {result.stderr.strip()}")
+            return False
+        print(f"Model downloaded: {model_id}")
+        return True
+    except Exception as e:
+        print(f"Download failed: {e}")
+        return False
+
+
+def test_model(model_id):
+    """Run a short MusicGen generation smoke test."""
+    print(f"Testing model: {model_id}")
+
+    python_executable = get_musicgen_python()
+    if python_executable is None:
+        print_musicgen_setup_hint()
+        return False
+
+    cmd = [
+        python_executable,
+        str(REPO_ROOT / "13_tools" / "scripts" / "make_dj_track_local.py"),
+        "--idea",
+        "test audio",
+        "--duration",
+        "5",
+        "--model",
+        model_id,
+    ]
+
+    try:
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            cwd=REPO_ROOT,
+        )
+        if result.returncode == 0:
+            print("Test succeeded.")
+            return True
+        print(f"Test failed: {result.stderr.strip()}")
+        return False
+    except Exception as e:
+        print(f"Test failed: {e}")
+        return False
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description="AI DJ 本地模型管理工具")
     parser.add_argument("--list", action="store_true", help="列出可用模型后退出")
     parser.add_argument("--cache-size", action="store_true", help="显示 Hugging Face 模型缓存大小后退出")
+    parser.add_argument("--status", action="store_true", help="Check MusicGen/AudioCraft environment")
     args = parser.parse_args(argv)
 
     print_header()
@@ -112,6 +239,14 @@ def main(argv=None):
         print("   缓存位置: ~/.cache/huggingface/hub/")
         return 0
     
+    if args.status:
+        python_executable = get_musicgen_python()
+        if python_executable:
+            print(f"MusicGen Python: {python_executable}")
+            return 0
+        print_musicgen_setup_hint()
+        return 1
+
     try:
         while True:
             print("请选择操作:")
