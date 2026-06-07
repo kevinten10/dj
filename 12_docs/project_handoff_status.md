@@ -10,8 +10,8 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - Remote default branch: `master`
 - GitHub repository: `https://github.com/kevinten10/dj`
 - Repository visibility: public
-- Latest reviewed master commit before this update: `3373061`
-- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27089542566`
+- Latest reviewed master commit before this update: `d38c85d`
+- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27089701075`
 - Open GitHub PRs: none
 - Open GitHub issues: none
 - Local working tree: clean
@@ -61,6 +61,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - `manage_models.py` uses the dedicated `.venv-musicgen` Python when downloading or testing MusicGen models.
 - `manage_models.py` has a clean ASCII CLI surface for model listing, cache size, environment status, download, and smoke testing.
 - `generate_demo_local.py` uses the dedicated `.venv-musicgen` Python for local MusicGen demo generation.
+- `generate_demo_local.py` returns the exact local MusicGen child-process export path instead of selecting a potentially stale newest WAV file.
 - `interactive_generator.py` uses the dedicated `.venv-musicgen` Python for local MusicGen menu generation.
 - Safe CLI smoke commands matching `.github/workflows/cli-smoke.yml`
 - MiniMax missing-key path: exits with `MINIMAX_API_KEY environment variable is missing.`
@@ -90,6 +91,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - PR #18: routed the local demo generator through the dedicated MusicGen venv.
 - PR #19: routed the interactive local MusicGen menu through the dedicated MusicGen venv.
 - PR #20: added shared MiniMax local config loading from the ignored PowerShell env file.
+- PR #21: fixed `generate_and_play.py` to return the exact MiniMax child-process export path.
 
 All merged PRs were followed by successful master `CLI smoke tests`.
 

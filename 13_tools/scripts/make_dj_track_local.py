@@ -224,6 +224,8 @@ def main(argv: list[str]) -> int:
         
         logger.info(f"🎉 成功! 曲目已导出到: {out_audio_path}")
         
+        logger.info(f"Track exported to: {out_audio_path}")
+
         if args.play and out_audio_path.exists():
             _start_file(out_audio_path)
         
