@@ -101,6 +101,26 @@ class InteractiveGeneratorTests(unittest.TestCase):
         self.assertIn('--style "Tech House"', printed)
         self.assertIn('--idea Idea', printed)
 
+    def test_show_docs_can_open_project_handoff_status(self):
+        generator = load_interactive_generator()
+        opened_paths = []
+
+        def fake_startfile(path):
+            opened_paths.append(Path(path))
+
+        with (
+            patch.object(generator, "get_int_input", return_value=7),
+            patch.object(generator.platform, "system", return_value="Windows"),
+            patch.object(generator.os, "startfile", side_effect=fake_startfile, create=True),
+            redirect_stdout(StringIO()),
+        ):
+            generator.show_docs()
+
+        self.assertEqual(
+            generator._repo_root() / "12_docs" / "project_handoff_status.md",
+            opened_paths[0],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

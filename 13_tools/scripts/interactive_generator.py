@@ -444,9 +444,10 @@ def show_docs() -> None:
     print("4. Local lyrics model guide")
     print("5. ACE-Step deployment report")
     print("6. AI-DJ tutorial")
+    print("7. Project handoff status")
     print("0. Back")
 
-    choice = get_int_input("Choose document", 0, 0, 6)
+    choice = get_int_input("Choose document", 0, 0, 7)
     if choice == 0:
         return
 
@@ -457,6 +458,7 @@ def show_docs() -> None:
         4: "12_docs/local_lyrics_models.md",
         5: "12_docs/ace_step_deployment_report.md",
         6: "12_docs/ai_djuced_tutorial.md",
+        7: "12_docs/project_handoff_status.md",
     }
 
     doc_path = _repo_root() / doc_map[choice]
