@@ -2,7 +2,9 @@ import os
 import subprocess
 import tempfile
 import unittest
+from io import StringIO
 from pathlib import Path
+from contextlib import redirect_stdout
 from unittest import mock
 
 import generate_and_play
@@ -36,6 +38,25 @@ class GenerateAndPlayTests(unittest.TestCase):
                 result = generate_and_play.generate_music("smoke")
 
         self.assertEqual(generated_file, result)
+
+    def test_generate_music_reports_child_stdout_when_generation_fails(self):
+        def fake_run(args, **kwargs):
+            return subprocess.CompletedProcess(
+                args,
+                1,
+                stdout="MINIMAX_API_KEY environment variable is missing.\n",
+                stderr="",
+            )
+
+        stdout = StringIO()
+        with (
+            mock.patch.object(generate_and_play.subprocess, "run", side_effect=fake_run),
+            redirect_stdout(stdout),
+        ):
+            result = generate_and_play.generate_music("smoke")
+
+        self.assertIsNone(result)
+        self.assertIn("MINIMAX_API_KEY environment variable is missing.", stdout.getvalue())
 
 
 if __name__ == "__main__":

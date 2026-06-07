@@ -10,8 +10,8 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - Remote default branch: `master`
 - GitHub repository: `https://github.com/kevinten10/dj`
 - Repository visibility: public
-- Latest reviewed master commit before this update: `d078ca9`
-- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27090531499`
+- Latest reviewed master commit before this update: `c5a84b9`
+- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27090951299`
 - Open GitHub PRs: none
 - Open GitHub issues: none
 - Local working tree: clean
@@ -69,6 +69,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - MiniMax custom structure path: `--structure` is accepted by the CLI and included in the generation prompt.
 - MiniMax local config path: `make_dj_track_minimax.py` and `check_system.py` can read ignored local PowerShell config values without printing secrets.
 - `generate_and_play.py` returns the exact MiniMax child-process export path instead of selecting a potentially stale newest file.
+- `generate_and_play.py` reports useful child-process stdout/stderr details when MiniMax generation fails.
 - `make_dj_track_with_lyrics.py --with-lyrics` forwards the generated lyrics file to the MiniMax child process.
 - `make_dj_track_with_lyrics.py` reports useful child-process stdout/stderr details when MiniMax generation fails.
 - `library_manager.py` scans both MP3 and WAV DJ-ready exports so local MusicGen/ACE-Step WAV tracks appear in the library.
@@ -104,6 +105,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - PR #25: handled missing/unreadable MiniMax `--lyrics-file` inputs before API calls.
 - PR #26: added the MiniMax `--structure` CLI argument promised by the README examples.
 - PR #27: quoted `generate_with_preset.py --dry-run` commands so arguments with spaces are copy-paste safe.
+- PR #28: surfaced child-process stdout/stderr details from `make_dj_track_with_lyrics.py` failures.
 
 All merged PRs were followed by successful master `CLI smoke tests`.
 
