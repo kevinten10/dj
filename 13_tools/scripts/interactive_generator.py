@@ -41,6 +41,33 @@ def _ace_step_importable(ace_step_path: Path) -> bool:
                 pass
 
 
+def get_musicgen_python() -> str | None:
+    root = _repo_root()
+    root_text = str(root)
+    added_path = False
+    if root_text not in sys.path:
+        sys.path.insert(0, root_text)
+        added_path = True
+
+    try:
+        from manage_models import get_musicgen_python as _get_musicgen_python
+
+        return _get_musicgen_python(root)
+    finally:
+        if added_path:
+            try:
+                sys.path.remove(root_text)
+            except ValueError:
+                pass
+
+
+def print_musicgen_setup_hint() -> None:
+    print("MusicGen/AudioCraft environment is not ready.")
+    print("Run:")
+    print("  .\\setup_local_models.ps1")
+    print("Then retry local MusicGen generation.")
+
+
 def load_presets() -> dict:
     """Load style presets."""
     try:
@@ -227,8 +254,13 @@ def run_local_generate(model_size: str = "small"):
     use_cuda = get_yes_no("使用 GPU (CUDA) 加速？", False)
     play = get_yes_no("生成后自动播放？", True)
     
+    python_executable = get_musicgen_python()
+    if python_executable is None:
+        print_musicgen_setup_hint()
+        return
+
     cmd = [
-        sys.executable,
+        python_executable,
         str(_repo_root() / "13_tools" / "scripts" / "make_dj_track_local.py"),
         "--idea", idea,
         "--style", style,
@@ -272,8 +304,13 @@ def run_local_custom():
     use_cuda = get_yes_no("使用 GPU (CUDA) 加速？", False)
     play = get_yes_no("生成后自动播放？", True)
     
+    python_executable = get_musicgen_python()
+    if python_executable is None:
+        print_musicgen_setup_hint()
+        return
+
     cmd = [
-        sys.executable,
+        python_executable,
         str(_repo_root() / "13_tools" / "scripts" / "make_dj_track_local.py"),
         "--idea", idea,
         "--style", style,

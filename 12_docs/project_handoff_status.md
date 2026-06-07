@@ -10,8 +10,8 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - Remote default branch: `master`
 - GitHub repository: `https://github.com/kevinten10/dj`
 - Repository visibility: public
-- Latest reviewed master commit before this update: `980b820`
-- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27088768740`
+- Latest reviewed master commit before this update: `a45af80`
+- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27088904041`
 - Open GitHub PRs: none
 - Open GitHub issues: none
 - Local working tree: clean
@@ -59,6 +59,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - `manage_models.py` uses the dedicated `.venv-musicgen` Python when downloading or testing MusicGen models.
 - `manage_models.py` has a clean ASCII CLI surface for model listing, cache size, environment status, download, and smoke testing.
 - `generate_demo_local.py` uses the dedicated `.venv-musicgen` Python for local MusicGen demo generation.
+- `interactive_generator.py` uses the dedicated `.venv-musicgen` Python for local MusicGen menu generation.
 - Safe CLI smoke commands matching `.github/workflows/cli-smoke.yml`
 - MiniMax missing-key path: exits with `MINIMAX_API_KEY environment variable is missing.`
 - ACE-Step preflight: `python 13_tools/scripts/make_dj_track_ace_step.py --check`
@@ -82,6 +83,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - PR #15: added MusicGen environment readiness reporting to `check_system.py`.
 - PR #16: routed the model manager through the dedicated MusicGen venv.
 - PR #17: cleaned the local model manager CLI and removed duplicate model operations.
+- PR #18: routed the local demo generator through the dedicated MusicGen venv.
 
 All merged PRs were followed by successful master `CLI smoke tests`.
 
