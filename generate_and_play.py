@@ -9,6 +9,7 @@ import argparse
 import subprocess
 import os
 import platform
+import re
 from pathlib import Path
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -39,6 +40,13 @@ def play_audio(file_path):
     except Exception as e:
         print(f"❌ 播放失败: {e}")
         return False
+
+def extract_exported_path(output):
+    """Extract the exported track path from MiniMax CLI output."""
+    match = re.search(r"Track exported to:\s*(.+)", output)
+    if not match:
+        return None
+    return Path(match.group(1).strip())
 
 def generate_music(idea, style=DEFAULT_STYLE, bpm=DEFAULT_BPM, duration=DEFAULT_DURATION):
     """
@@ -85,6 +93,9 @@ def generate_music(idea, style=DEFAULT_STYLE, bpm=DEFAULT_BPM, duration=DEFAULT_
         
         # 从输出中提取文件路径
         output = result.stdout
+        exported_path = extract_exported_path(output)
+        if exported_path is not None and exported_path.exists():
+            return exported_path
         
         # 查找生成的文件（通常在 08_exports/dj_ready/）
         exports_dir = repo_root / "08_exports" / "dj_ready"
@@ -155,7 +166,6 @@ def main(argv=None):
         bpm = 174
     
     # 如果用户指定了BPM，提取它
-    import re
     bpm_match = re.search(r'(\d+)\s*bpm', idea_lower)
     if bpm_match:
         bpm = int(bpm_match.group(1))
