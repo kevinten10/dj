@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 import os
 import platform
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -66,6 +67,13 @@ def find_latest_demo_file(repo_root: Path) -> Path | None:
     return files[0] if files else None
 
 
+def extract_exported_path(output: str) -> Path | None:
+    match = re.search(r"Track exported to:\s*(.+)", output)
+    if not match:
+        return None
+    return Path(match.group(1).strip())
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Generate a short local MusicGen Tech House demo")
     parser.add_argument("--no-play", action="store_true", help="Do not open the generated audio automatically")
@@ -114,7 +122,11 @@ def main(argv: list[str] | None = None) -> int:
         print("  .\\setup_local_models.ps1")
         return 1
 
-    music_file = find_latest_demo_file(repo_root)
+    music_file = extract_exported_path(result.stdout)
+    if music_file is not None and not music_file.exists():
+        music_file = None
+    if music_file is None:
+        music_file = find_latest_demo_file(repo_root)
     if music_file is None:
         print("Generation command completed, but no WAV file was found in 08_exports/dj_ready/.")
         return 1
