@@ -1,5 +1,7 @@
 import importlib.util
 import unittest
+from contextlib import redirect_stdout
+from io import StringIO
 from pathlib import Path
 from unittest.mock import patch
 
@@ -59,6 +61,24 @@ class InteractiveGeneratorTests(unittest.TestCase):
 
         print_hint.assert_called_once()
         run.assert_not_called()
+
+    def test_cloud_generate_prints_copy_paste_safe_command(self):
+        generator = load_interactive_generator()
+        stdout = StringIO()
+
+        with (
+            patch.object(generator, "get_input", side_effect=["Idea", "Tech House"]),
+            patch.object(generator, "get_int_input", return_value=126),
+            patch.object(generator, "get_yes_no", side_effect=[False, True, False]),
+            patch.object(generator.subprocess, "run") as run,
+            redirect_stdout(stdout),
+        ):
+            generator.run_cloud_generate()
+
+        run.assert_called_once()
+        printed = stdout.getvalue()
+        self.assertIn('--style "Tech House"', printed)
+        self.assertIn('--idea Idea', printed)
 
 
 if __name__ == "__main__":

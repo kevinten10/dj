@@ -10,8 +10,8 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - Remote default branch: `master`
 - GitHub repository: `https://github.com/kevinten10/dj`
 - Repository visibility: public
-- Latest reviewed master commit before this update: `c5a84b9`
-- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27090951299`
+- Latest reviewed master commit before this update: `c48ba0d`
+- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27091100210`
 - Open GitHub PRs: none
 - Open GitHub issues: none
 - Local working tree: clean
@@ -63,6 +63,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - `generate_demo_local.py` uses the dedicated `.venv-musicgen` Python for local MusicGen demo generation.
 - `generate_demo_local.py` returns the exact local MusicGen child-process export path instead of selecting a potentially stale newest WAV file.
 - `interactive_generator.py` uses the dedicated `.venv-musicgen` Python for local MusicGen menu generation.
+- `interactive_generator.py` prints copy-paste safe commands with quoted arguments that contain spaces.
 - Safe CLI smoke commands matching `.github/workflows/cli-smoke.yml`
 - MiniMax missing-key path: exits with `MINIMAX_API_KEY environment variable is missing.`
 - MiniMax missing lyrics-file path: exits cleanly before the API call when `--lyrics-file` cannot be read.
@@ -106,6 +107,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - PR #26: added the MiniMax `--structure` CLI argument promised by the README examples.
 - PR #27: quoted `generate_with_preset.py --dry-run` commands so arguments with spaces are copy-paste safe.
 - PR #28: surfaced child-process stdout/stderr details from `make_dj_track_with_lyrics.py` failures.
+- PR #29: surfaced child-process stdout/stderr details from `generate_and_play.py` failures.
 
 All merged PRs were followed by successful master `CLI smoke tests`.
 
