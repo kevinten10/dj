@@ -1,29 +1,60 @@
 #!/usr/bin/env python3
 """
-本地AI模型管理工具
-管理、切换、删除本地音乐生成模型
+Manage local MusicGen models for the AI-DJ workspace.
 """
 
-import sys
+from __future__ import annotations
+
 import argparse
-import subprocess
 import os
+import subprocess
+import sys
 from pathlib import Path
+
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
-MODELS = {
-    "1": {"name": "MusicGen Small", "id": "facebook/musicgen-small", "size": "~1GB", "quality": "⭐⭐⭐", "speed": "⚡⚡⚡", "vram": "4GB"},
-    "2": {"name": "MusicGen Medium", "id": "facebook/musicgen-medium", "size": "~3GB", "quality": "⭐⭐⭐⭐", "speed": "⚡⚡", "vram": "8GB"},
-    "3": {"name": "MusicGen Large", "id": "facebook/musicgen-large", "size": "~6GB", "quality": "⭐⭐⭐⭐⭐", "speed": "⚡", "vram": "12GB+"},
-    "4": {"name": "MusicGen Melody", "id": "facebook/musicgen-melody", "size": "~6GB", "quality": "⭐⭐⭐⭐⭐", "speed": "⚡", "vram": "12GB+"},
-}
 
 REPO_ROOT = Path(__file__).resolve().parent
 MUSICGEN_VENV_DIR = ".venv-musicgen"
+
+MODELS = {
+    "1": {
+        "name": "MusicGen Small",
+        "id": "facebook/musicgen-small",
+        "size": "~1GB",
+        "quality": "starter",
+        "speed": "fast",
+        "vram": "4GB",
+    },
+    "2": {
+        "name": "MusicGen Medium",
+        "id": "facebook/musicgen-medium",
+        "size": "~3GB",
+        "quality": "balanced",
+        "speed": "medium",
+        "vram": "8GB",
+    },
+    "3": {
+        "name": "MusicGen Large",
+        "id": "facebook/musicgen-large",
+        "size": "~6GB",
+        "quality": "best",
+        "speed": "slow",
+        "vram": "12GB+",
+    },
+    "4": {
+        "name": "MusicGen Melody",
+        "id": "facebook/musicgen-melody",
+        "size": "~6GB",
+        "quality": "best",
+        "speed": "slow",
+        "vram": "12GB+",
+    },
+}
 
 
 def musicgen_venv_python(repo_root: Path = REPO_ROOT) -> Path:
@@ -58,88 +89,34 @@ def get_musicgen_python(repo_root: Path = REPO_ROOT) -> str | None:
     return None
 
 
-def print_musicgen_setup_hint():
+def print_musicgen_setup_hint() -> None:
     print("MusicGen/AudioCraft environment is not ready.")
     print("Run:")
     print("  .\\setup_local_models.ps1")
     print("Then retry this command.")
 
-def print_header():
+
+def print_header() -> None:
     print("=" * 60)
-    print("🎵 AI DJ 本地模型管理工具")
+    print("AI-DJ Local Model Manager")
     print("=" * 60)
     print()
 
-def list_models():
-    """列出所有可用模型"""
-    print("📋 可用模型列表:")
+
+def list_models() -> None:
+    print("Available models:")
     print()
-    print(f"{'ID':<4} {'名称':<20} {'大小':<8} {'音质':<8} {'速度':<8} {'显存需求':<10}")
-    print("-" * 60)
+    print(f"{'ID':<4} {'Name':<20} {'Size':<8} {'Quality':<10} {'Speed':<8} {'VRAM':<8}")
+    print("-" * 70)
     for key, model in MODELS.items():
-        print(f"{key:<4} {model['name']:<20} {model['size']:<8} {model['quality']:<8} {model['speed']:<8} {model['vram']:<10}")
+        print(
+            f"{key:<4} {model['name']:<20} {model['size']:<8} "
+            f"{model['quality']:<10} {model['speed']:<8} {model['vram']:<8}"
+        )
     print()
 
-def download_model(model_id):
-    """下载指定模型"""
-    print(f"📥 正在下载模型: {model_id}")
-    print("   这可能需要几分钟，请耐心等待...")
-    print()
-    
-    try:
-        from audiocraft.models import MusicGen
-        model = MusicGen.get_pretrained(model_id)
-        print(f"✅ 模型下载完成: {model_id}")
-        return True
-    except Exception as e:
-        print(f"❌ 下载失败: {e}")
-        return False
 
-def test_model(model_id):
-    """测试模型生成"""
-    print(f"🧪 测试模型: {model_id}")
-    print("   生成 5 秒测试音频...")
-    
-    repo_root = Path(__file__).parent.resolve()
-    cmd = [
-        sys.executable,
-        str(repo_root / "13_tools" / "scripts" / "make_dj_track_local.py"),
-        "--idea", "test audio",
-        "--duration", "5",
-        "--model", model_id
-    ]
-    
-    try:
-        result = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace")
-        if result.returncode == 0:
-            print("✅ 测试成功！")
-            return True
-        else:
-            print(f"❌ 测试失败: {result.stderr}")
-            return False
-    except Exception as e:
-        print(f"❌ 错误: {e}")
-        return False
-
-def get_model_cache_size():
-    """获取模型缓存大小"""
-    import os
-    cache_dir = Path.home() / ".cache" / "huggingface" / "hub"
-    
-    if not cache_dir.exists():
-        return 0
-    
-    total_size = 0
-    for dirpath, dirnames, filenames in os.walk(cache_dir):
-        for f in filenames:
-            fp = Path(dirpath) / f
-            total_size += fp.stat().st_size
-    
-    return total_size / (1024**3)  # Convert to GB
-
-
-def download_model(model_id):
-    """Download a MusicGen model with the configured MusicGen Python."""
+def download_model(model_id: str) -> bool:
     print(f"Downloading model: {model_id}")
     print("This may take a few minutes.")
     print()
@@ -169,20 +146,21 @@ def download_model(model_id):
             cwd=REPO_ROOT,
             timeout=60 * 60,
         )
-        if result.stdout:
-            print(result.stdout.strip())
-        if result.returncode != 0:
-            print(f"Download failed: {result.stderr.strip()}")
-            return False
-        print(f"Model downloaded: {model_id}")
-        return True
-    except Exception as e:
-        print(f"Download failed: {e}")
+    except (OSError, subprocess.SubprocessError) as exc:
+        print(f"Download failed: {exc}")
         return False
 
+    if result.stdout:
+        print(result.stdout.strip())
+    if result.returncode != 0:
+        print(f"Download failed: {result.stderr.strip()}")
+        return False
 
-def test_model(model_id):
-    """Run a short MusicGen generation smoke test."""
+    print(f"Model downloaded: {model_id}")
+    return True
+
+
+def test_model(model_id: str) -> bool:
     print(f"Testing model: {model_id}")
 
     python_executable = get_musicgen_python()
@@ -210,20 +188,48 @@ def test_model(model_id):
             errors="replace",
             cwd=REPO_ROOT,
         )
-        if result.returncode == 0:
-            print("Test succeeded.")
-            return True
-        print(f"Test failed: {result.stderr.strip()}")
-        return False
-    except Exception as e:
-        print(f"Test failed: {e}")
+    except (OSError, subprocess.SubprocessError) as exc:
+        print(f"Test failed: {exc}")
         return False
 
+    if result.returncode == 0:
+        print("Test succeeded.")
+        return True
 
-def main(argv=None):
-    parser = argparse.ArgumentParser(description="AI DJ 本地模型管理工具")
-    parser.add_argument("--list", action="store_true", help="列出可用模型后退出")
-    parser.add_argument("--cache-size", action="store_true", help="显示 Hugging Face 模型缓存大小后退出")
+    print(f"Test failed: {result.stderr.strip()}")
+    return False
+
+
+def get_model_cache_size() -> float:
+    cache_dir = Path.home() / ".cache" / "huggingface" / "hub"
+    if not cache_dir.exists():
+        return 0.0
+
+    total_size = 0
+    for dirpath, _, filenames in os.walk(cache_dir):
+        for filename in filenames:
+            file_path = Path(dirpath) / filename
+            try:
+                total_size += file_path.stat().st_size
+            except OSError:
+                continue
+
+    return total_size / (1024**3)
+
+
+def choose_model() -> str | None:
+    list_models()
+    model_choice = input("Enter model ID (1-4): ").strip()
+    if model_choice not in MODELS:
+        print("Invalid model option.")
+        return None
+    return MODELS[model_choice]["id"]
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="AI-DJ local MusicGen model manager")
+    parser.add_argument("--list", action="store_true", help="List available models and exit")
+    parser.add_argument("--cache-size", action="store_true", help="Show Hugging Face model cache size and exit")
     parser.add_argument("--status", action="store_true", help="Check MusicGen/AudioCraft environment")
     args = parser.parse_args(argv)
 
@@ -235,10 +241,10 @@ def main(argv=None):
 
     if args.cache_size:
         size = get_model_cache_size()
-        print(f"💾 模型缓存大小: {size:.2f} GB")
-        print("   缓存位置: ~/.cache/huggingface/hub/")
+        print(f"Model cache size: {size:.2f} GB")
+        print("Cache location: ~/.cache/huggingface/hub/")
         return 0
-    
+
     if args.status:
         python_executable = get_musicgen_python()
         if python_executable:
@@ -249,60 +255,44 @@ def main(argv=None):
 
     try:
         while True:
-            print("请选择操作:")
-            print("1. 📋 查看可用模型")
-            print("2. 📥 下载模型")
-            print("3. 🧪 测试模型")
-            print("4. 💾 查看缓存大小")
-            print("0. 退出")
+            print("Choose an action:")
+            print("1. List available models")
+            print("2. Download model")
+            print("3. Test model")
+            print("4. Show cache size")
+            print("0. Exit")
             print()
 
-            choice = input("请输入选项: ").strip()
+            choice = input("Enter option: ").strip()
 
             if choice == "0":
-                print("👋 再见！")
+                print("Goodbye.")
                 return 0
-
-            elif choice == "1":
+            if choice == "1":
                 list_models()
-
             elif choice == "2":
-                list_models()
-                model_choice = input("请输入要下载的模型ID (1-4): ").strip()
-
-                if model_choice in MODELS:
-                    model_id = MODELS[model_choice]["id"]
-                    if download_model(model_id):
-                        test = input("是否测试生成? (y/n): ").strip().lower()
-                        if test == "y":
-                            test_model(model_id)
-                else:
-                    print("❌ 无效的选项")
-
+                model_id = choose_model()
+                if model_id and download_model(model_id):
+                    if input("Run a 5-second smoke test? (y/N): ").strip().lower() == "y":
+                        test_model(model_id)
             elif choice == "3":
-                list_models()
-                model_choice = input("请输入要测试的模型ID (1-4): ").strip()
-
-                if model_choice in MODELS:
-                    model_id = MODELS[model_choice]["id"]
+                model_id = choose_model()
+                if model_id:
                     test_model(model_id)
-                else:
-                    print("❌ 无效的选项")
-
             elif choice == "4":
                 size = get_model_cache_size()
-                print(f"💾 模型缓存大小: {size:.2f} GB")
-                print("   缓存位置: ~/.cache/huggingface/hub/")
+                print(f"Model cache size: {size:.2f} GB")
+                print("Cache location: ~/.cache/huggingface/hub/")
                 print()
-
             else:
-                print("❌ 无效的选项")
+                print("Invalid option.")
 
-            input("\n按 Enter 继续...")
+            input("\nPress Enter to continue...")
             print()
     except EOFError:
-        print("\n未收到交互输入，已退出。可使用 --help 查看非交互命令。")
+        print("\nNo interactive input received. Use --help for non-interactive commands.")
         return 0
+
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv[1:]))
