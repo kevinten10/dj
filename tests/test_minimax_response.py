@@ -149,6 +149,37 @@ class MiniMaxResponseTests(unittest.TestCase):
         self.assertEqual(1, exit_code)
         post.assert_not_called()
 
+    def test_custom_structure_is_included_in_prompt(self):
+        minimax = load_minimax_module()
+        captured = {}
+
+        def fake_post(url, api_key, payload):
+            captured["payload"] = payload
+            return {"data": {"audio": "494433040000"}, "base_resp": {"status_code": 0}}
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            structure = "[Intro:16][Verse:32][Drop:32][Outro:16]"
+            with mock.patch.dict(os.environ, {"MINIMAX_API_KEY": "test-key"}, clear=False):
+                with mock.patch.object(minimax, "_repo_root", return_value=tmp_path):
+                    with mock.patch.object(minimax, "_minimax_post", side_effect=fake_post):
+                        exit_code = minimax.main(
+                            [
+                                "--idea",
+                                "smoke",
+                                "--style",
+                                "House",
+                                "--bpm",
+                                "120",
+                                "--structure",
+                                structure,
+                                "--instrumental",
+                            ]
+                        )
+
+        self.assertEqual(0, exit_code)
+        self.assertIn(f"Structure: {structure}", captured["payload"]["prompt"])
+
 
 if __name__ == "__main__":
     unittest.main()

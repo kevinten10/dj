@@ -10,8 +10,8 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - Remote default branch: `master`
 - GitHub repository: `https://github.com/kevinten10/dj`
 - Repository visibility: public
-- Latest reviewed master commit before this update: `b03491c`
-- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27090092223`
+- Latest reviewed master commit before this update: `c8aae72`
+- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27090236789`
 - Open GitHub PRs: none
 - Open GitHub issues: none
 - Local working tree: clean
@@ -66,6 +66,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - Safe CLI smoke commands matching `.github/workflows/cli-smoke.yml`
 - MiniMax missing-key path: exits with `MINIMAX_API_KEY environment variable is missing.`
 - MiniMax missing lyrics-file path: exits cleanly before the API call when `--lyrics-file` cannot be read.
+- MiniMax custom structure path: `--structure` is accepted by the CLI and included in the generation prompt.
 - MiniMax local config path: `make_dj_track_minimax.py` and `check_system.py` can read ignored local PowerShell config values without printing secrets.
 - `generate_and_play.py` returns the exact MiniMax child-process export path instead of selecting a potentially stale newest file.
 - `make_dj_track_with_lyrics.py --with-lyrics` forwards the generated lyrics file to the MiniMax child process.
@@ -98,6 +99,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - PR #22: fixed `generate_demo_local.py` to return the exact local MusicGen child-process export path.
 - PR #23: forwarded generated lyrics files into MiniMax generation for `--with-lyrics`.
 - PR #24: included WAV exports in `library_manager.py` scans.
+- PR #25: handled missing/unreadable MiniMax `--lyrics-file` inputs before API calls.
 
 All merged PRs were followed by successful master `CLI smoke tests`.
 
