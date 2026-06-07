@@ -2,6 +2,8 @@ import subprocess
 import tempfile
 import unittest
 import os
+from contextlib import redirect_stdout
+from io import StringIO
 from pathlib import Path
 from unittest import mock
 
@@ -71,6 +73,26 @@ class GenerateDemoLocalTests(unittest.TestCase):
 
         self.assertEqual(0, result)
         play_audio.assert_called_once_with(generated_file)
+
+    def test_main_reports_child_stdout_when_generation_fails(self):
+        def fake_run(args, **kwargs):
+            return subprocess.CompletedProcess(
+                args,
+                1,
+                stdout="AudioCraft/MusicGen is not installed.\n",
+                stderr="",
+            )
+
+        stdout = StringIO()
+        with (
+            mock.patch.object(generate_demo_local, "get_musicgen_python", return_value="musicgen-python"),
+            mock.patch.object(generate_demo_local.subprocess, "run", side_effect=fake_run),
+            redirect_stdout(stdout),
+        ):
+            result = generate_demo_local.main(["--no-play"])
+
+        self.assertEqual(1, result)
+        self.assertIn("AudioCraft/MusicGen is not installed.", stdout.getvalue())
 
 
 if __name__ == "__main__":

@@ -10,8 +10,8 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - Remote default branch: `master`
 - GitHub repository: `https://github.com/kevinten10/dj`
 - Repository visibility: public
-- Latest reviewed master commit before this update: `c48ba0d`
-- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27091100210`
+- Latest reviewed master commit before this update: `e3765d2`
+- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27091242982`
 - Open GitHub PRs: none
 - Open GitHub issues: none
 - Local working tree: clean
@@ -62,6 +62,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - `manage_models.py` has a clean ASCII CLI surface for model listing, cache size, environment status, download, and smoke testing.
 - `generate_demo_local.py` uses the dedicated `.venv-musicgen` Python for local MusicGen demo generation.
 - `generate_demo_local.py` returns the exact local MusicGen child-process export path instead of selecting a potentially stale newest WAV file.
+- `generate_demo_local.py` reports useful child-process stdout/stderr details when local MusicGen generation fails.
 - `interactive_generator.py` uses the dedicated `.venv-musicgen` Python for local MusicGen menu generation.
 - `interactive_generator.py` prints copy-paste safe commands with quoted arguments that contain spaces.
 - Safe CLI smoke commands matching `.github/workflows/cli-smoke.yml`
@@ -108,6 +109,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - PR #27: quoted `generate_with_preset.py --dry-run` commands so arguments with spaces are copy-paste safe.
 - PR #28: surfaced child-process stdout/stderr details from `make_dj_track_with_lyrics.py` failures.
 - PR #29: surfaced child-process stdout/stderr details from `generate_and_play.py` failures.
+- PR #30: quoted interactive generator displayed commands so arguments with spaces are copy-paste safe.
 
 All merged PRs were followed by successful master `CLI smoke tests`.
 
