@@ -1,36 +1,26 @@
 
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                    HERCULES DJCONTROL INPULSE 200 MK2                        ║
-║                                                                              ║
-║  ┌─────────────────────────┐    ┌─────────────────┐    ┌─────────────────┐  ║
-║  │        DECK A           │    │     MIXER       │    │     DECK B      │  ║
-║  │                         │    │                 │    │                 │  ║
-║  │  ┌─────────────────┐   │    │  ┌───────────┐  │    │  ┌───────────┐   │  ║
-║  │  │   JOG WHEEL     │   │    │  │  MASTER   │  │    │  │   JOG     │   │  ║
-║  │  │   (Scratch)     │   │    │  │  VOLUME   │  │    │  │  WHEEL    │   │  ║
-║  │  └─────────────────┘   │    │  └───────────┘  │    │  └───────────┘   │  ║
-║  │                        │    │                 │    │                  │  ║
-║  │  [PAD 1] [PAD 2]      │    │  ┌───────────┐  │    │  [PAD 1] [PAD 2] │  ║
-║  │  [PAD 3] [PAD 4]      │    │  │ CUE VOL   │  │    │  [PAD 3] [PAD 4] │  ║
-║  │  Hot Cues / Loops     │    │  └───────────┘  │    │  Hot Cues/Loops  │  ║
-║  │                        │    │                 │    │                  │  ║
-║  │  ▶️ PLAY/PAUSE        │    │  ┌───────────┐  │    │  ▶️ PLAY/PAUSE  │  ║
-║  │  🔄 SYNC              │    │  │  CUE MIX  │  │    │  🔄 SYNC         │  ║
-║  │  🎧 CUE               │    │  └───────────┘  │    │  🎧 CUE          │  ║
-║  │                        │    │                 │    │                  │  ║
-║  │  🎚️ CHANNEL FADER    │    │  ═══════════════│    │  🎚️ CHANNEL     │  ║
-║  │                        │    │  ↔️ CROSSFADER │    │     FADER        │  ║
-║  │  📊 PITCH (±10%)      │    │  ═══════════════│    │  📊 PITCH        │  ║
-║  │                        │    │                 │    │                  │  ║
-║  └─────────────────────────┘    │  LOW  MID HIGH │    └──────────────────┘  ║
-║                                 │  🎚️   🎚️   🎚️  │                         ║
-║                                 │  (EQ Controls) │                         ║
-║                                 └─────────────────┘                         ║
-║                                                                              ║
-║  CONNECTIONS:                                                                ║
-║  • USB (to computer)    • Master Out (to speakers)    • Headphones          ║
-╚══════════════════════════════════════════════════════════════════════════════╝
++------------------------------------------------------------------------------+
+|                  HERCULES DJCONTROL INPULSE 200 MK2                          |
++----------------------------+------------------+------------------------------+
+| DECK A                     | MIXER            | DECK B                       |
+|                            |                  |                              |
+|  +----------------------+  |  MASTER VOLUME   |  +----------------------+    |
+|  |      JOG WHEEL       |  |                  |  |      JOG WHEEL       |    |
+|  |      Scratch         |  |  CUE VOL         |  |      Scratch         |    |
+|  +----------------------+  |  CUE MIX         |  +----------------------+    |
+|                            |                  |                              |
+|  [PAD 1] [PAD 2]           |  LOW MID HIGH    |  [PAD 1] [PAD 2]             |
+|  [PAD 3] [PAD 4]           |  EQ CONTROLS     |  [PAD 3] [PAD 4]             |
+|                            |                  |                              |
+|  PLAY/PAUSE  SYNC  CUE     |  CROSSFADER      |  PLAY/PAUSE  SYNC  CUE       |
+|  CHANNEL FADER             |                  |  CHANNEL FADER               |
+|  PITCH +/-10%              |                  |  PITCH +/-10%                |
++----------------------------+------------------+------------------------------+
+| Connections: USB to computer, master out to speakers, headphones             |
++------------------------------------------------------------------------------+
 
-LEGEND:
-  ▶️  = Play/Pause Button    🔄 = Sync Button       🎧 = Headphone Cue
-  🎚️  = Fader/Slider         📊 = Pitch Control     ↔️  = Crossfader
+Legend:
+  Pads = hot cues or loops
+  Cue = headphone preview
+  Pitch = tempo adjustment
+  Crossfader = blend between Deck A and Deck B

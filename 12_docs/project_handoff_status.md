@@ -10,8 +10,8 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - Remote default branch: `master`
 - GitHub repository: `https://github.com/kevinten10/dj`
 - Repository visibility: public
-- Latest reviewed master commit before this update: `7aa22f1`
-- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27091951638`
+- Latest reviewed master commit before this update: `aeb7529`
+- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27092170372`
 - Open GitHub PRs: none
 - Open GitHub issues: none
 - Local working tree: clean
@@ -79,6 +79,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - `library_manager.py` scans both MP3 and WAV DJ-ready exports so local MusicGen/ACE-Step WAV tracks appear in the library.
 - `library_manager.py show` and `setlist` return non-zero when the requested track or selected indices are invalid.
 - `generate_with_preset.py --dry-run` prints copy-paste safe commands with quoted arguments that contain spaces.
+- `generate_visualizations.py` regenerates readable ASCII visualization docs without mojibake output.
 - `practice_plan.py --start-day` schedules from the next requested weekday, matching the `1=Monday` help text.
 - ACE-Step preflight: `python 13_tools/scripts/make_dj_track_ace_step.py --check`
 - ACE-Step local generation smoke:
@@ -118,6 +119,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - PR #32: surfaced child-process stdout/stderr details from `manage_models.py` download and smoke-test failures.
 - PR #33: accepted `--theme` as a compatibility alias for `make_dj_track_with_lyrics.py --idea`.
 - PR #34: fixed `practice_plan.py --start-day` scheduling to match the documented weekday semantics.
+- PR #35: returned non-zero exits from invalid `library_manager.py show` and `setlist` commands.
 
 All merged PRs were followed by successful master `CLI smoke tests`.
 

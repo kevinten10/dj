@@ -1,38 +1,23 @@
 
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                    12-WEEK DJ LEARNING PATH                                   ║
-║                                                                              ║
-║  WEEK 1-2: FOUNDATION                                                        ║
-║  ┌──────────────────────────────────────────────────────────────────────┐   ║
-║  │  • Device familiarity    • Beat counting    • Basic SYNC mixing      │   ║
-║  │  Status: ████████████████████░░░░░░░░░░  40%                         │   ║
-║  └──────────────────────────────────────────────────────────────────────┘   ║
-║                                    ↓                                         ║
-║  WEEK 3-4: BASIC MIXING                                                      ║
-║  ┌──────────────────────────────────────────────────────────────────────┐   ║
-║  │  • EQ techniques         • Track structure    • Hot Cues setup       │   ║
-║  │  Status: ████████████████████████░░░░░░░░  60%                       │   ║
-║  └──────────────────────────────────────────────────────────────────────┘   ║
-║                                    ↓                                         ║
-║  WEEK 5-8: ADVANCED TECHNIQUES                                               ║
-║  ┌──────────────────────────────────────────────────────────────────────┐   ║
-║  │  • Looping               • Effects usage      • Harmonic mixing      │   ║
-║  │  Status: ████████████████████████████░░░░  80%                       │   ║
-║  └──────────────────────────────────────────────────────────────────────┘   ║
-║                                    ↓                                         ║
-║  WEEK 9-12: MASTERY                                                          ║
-║  ┌──────────────────────────────────────────────────────────────────────┐   ║
-║  │  • Genre exploration     • Set building       • Performance skills   │   ║
-║  │  Status: ████████████████████████████████  100% 🎉                   │   ║
-║  └──────────────────────────────────────────────────────────────────────┘   ║
-║                                                                              ║
-║  SKILL PROGRESSION:                                                          ║
-║                                                                              ║
-║  Beatmatching    ████████████████████████████████████████████████  Expert   ║
-║  EQ Mixing       ██████████████████████████████████████████        Advanced ║
-║  Track Selection ████████████████████████████████████              Intermediate
-║  Effects         ██████████████████████████                        Intermediate
-║  Scratching      ████████████████                                  Beginner  ║
-║                                                                              ║
-║  ESTIMATED TIME TO PERFORMANCE READY: 12-16 weeks                          ║
-╚══════════════════════════════════════════════════════════════════════════════╝
++------------------------------------------------------------------------------+
+|                         12-WEEK DJ LEARNING PATH                              |
++------------------------------------------------------------------------------+
+| Weeks 1-2: Foundation                                                         |
+|   Device familiarity -> beat counting -> basic sync mixing                    |
+|                                                                              |
+| Weeks 3-4: Basic mixing                                                       |
+|   EQ basics -> track structure -> hot cue setup                               |
+|                                                                              |
+| Weeks 5-8: Advanced techniques                                                |
+|   Looping -> effects -> harmonic mixing -> cleaner transitions                |
+|                                                                              |
+| Weeks 9-12: Mastery                                                           |
+|   Genre exploration -> set building -> performance practice                   |
++------------------------------------------------------------------------------+
+
+Progression:
+  Beatmatching    [####################] Expert
+  EQ mixing       [################--]   Advanced
+  Track selection [##############----]   Intermediate
+  Effects         [############------]   Intermediate
+  Scratching      [########----------]   Beginner

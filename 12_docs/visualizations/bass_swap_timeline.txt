@@ -1,30 +1,20 @@
 
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                    BASS SWAP TECHNIQUE - TIMELINE                            ║
-║                                                                              ║
-║  This technique prevents muddy bass when mixing two tracks                   ║
-║                                                                              ║
-║  TIME:    0s         5s         10s        15s        20s                    ║
-║           │          │          │          │          │                      ║
-║           ▼          ▼          ▼          ▼          ▼                      ║
-║                                                                              ║
-║  TRACK A: ████████████████████████████████████████░░░░░                      ║
-║  Volume:  100%       75%        50%        25%        0%                     ║
-║  Low EQ:  ████████████████████████░░░░░░░░░░░░░░░░░░░░░                      ║
-║           (Full)     (Full)     (-6dB)    (Cut)     (Cut)                    ║
-║                                                                              ║
-║  TRACK B: ░░░░░░░░░░░░░░░░░░░░░░████████████████████████                     ║
-║  Volume:   0%        25%        50%        75%       100%                    ║
-║  Low EQ:  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░███████████████                      ║
-║           (Cut)      (Cut)     (-6dB)    (Full)     (Full)                   ║
-║                                                                              ║
-║  MIX RESULT:                                                                 ║
-║  ┌─────────────────────────────────────────────────────────────────────────┐ ║
-║  │  Clean transition with NO bass overlap! Professional sound guaranteed   │ ║
-║  └─────────────────────────────────────────────────────────────────────────┘ ║
-║                                                                              ║
-║  KEY POINTS:                                                                 ║
-║  ✓ Always cut Low on incoming track before starting transition              ║
-║  ✓ Gradually swap bass frequencies over 15-20 seconds                       ║
-║  ✓ Keep Mid and High EQ unchanged for smoothness                            ║
-╚══════════════════════════════════════════════════════════════════════════════╝
++------------------------------------------------------------------------------+
+|                         BASS SWAP TECHNIQUE                                   |
++------------------------------------------------------------------------------+
+| Goal: avoid muddy bass when two tracks overlap.                               |
+|                                                                              |
+| Time:        0s          5s          10s         15s         20s              |
+| Track A vol: 100%        75%         50%         25%          0%              |
+| Track A low: FULL        FULL        -6 dB       CUT         CUT              |
+| Track B vol:   0%        25%         50%         75%        100%              |
+| Track B low: CUT         CUT         -6 dB       FULL        FULL             |
+|                                                                              |
+| Mix result: one bassline owns the low end at any moment.                      |
++------------------------------------------------------------------------------+
+
+Checklist:
+  1. Cut low EQ on the incoming track before bringing it in.
+  2. Blend volume gradually.
+  3. Swap low EQ once phrasing lines up.
+  4. Keep mids and highs stable for a smooth transition.

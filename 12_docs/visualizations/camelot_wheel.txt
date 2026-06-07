@@ -1,40 +1,17 @@
 
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                    CAMELOT WHEEL - HARMONIC MIXING GUIDE                     ║
-║                                                                              ║
-║                         MINOR KEYS (A)                                       ║
-║                                                                              ║
-║                              1A                                              ║
-║                            /    \                                           ║
-║                         12A      2A                                          ║
-║                         /          \                                        ║
-║                      11A            3A                                       ║
-║                      │               │                                       ║
-║                   10A │               │ 4A                                   ║
-║                      │               │                                       ║
-║                       9A ────┬─── 5A                                         ║
-║                              │                                               ║
-║                           8A─┴─6A                                            ║
-║                              7A                                              ║
-║                                                                              ║
-║                         MAJOR KEYS (B)                                       ║
-║                                                                              ║
-║                              1B                                              ║
-║                            /    \                                           ║
-║                         12B      2B                                          ║
-║                         /          \                                        ║
-║                      11B            3B                                       ║
-║                      │               │                                       ║
-║                   10B │               │ 4B                                   ║
-║                      │               │                                       ║
-║                       9B ────┬─── 5B                                         ║
-║                              │                                               ║
-║                           8B─┴─6B                                            ║
-║                              7B                                              ║
-║                                                                              ║
-║  MIXING RULES:                                                               ║
-║  ✓ Same number: 8A → 8B (perfect match, same key)                           ║
-║  ✓ Adjacent: 8A → 9A or 7A (smooth transition)                              ║
-║  ✓ Relative: 8A → 8B (major/minor switch)                                   ║
-║  ✗ Avoid: 8A → 3A (tritone, sounds dissonant)                               ║
-╚══════════════════════════════════════════════════════════════════════════════╝
++------------------------------------------------------------------------------+
+|                         CAMELOT WHEEL QUICK GUIDE                             |
++------------------------------------------------------------------------------+
+| Minor keys: 1A  2A  3A  4A  5A  6A  7A  8A  9A  10A 11A 12A                 |
+| Major keys: 1B  2B  3B  4B  5B  6B  7B  8B  9B  10B 11B 12B                 |
+|                                                                              |
+| Smooth moves from 8A:                                                         |
+|   Same key family : 8A -> 8A                                                  |
+|   Adjacent minor  : 8A -> 7A or 9A                                            |
+|   Relative major  : 8A -> 8B                                                  |
+|                                                                              |
+| Avoid large jumps such as 8A -> 3A unless you want obvious tension.           |
++------------------------------------------------------------------------------+
+
+Rule of thumb:
+  Same number, adjacent number, or same number with A/B switch is usually safe.
