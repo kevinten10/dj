@@ -1,112 +1,218 @@
 #!/usr/bin/env powershell
 # One-shot setup for the optional local MusicGen/AudioCraft environment.
 
+param(
+    [string]$VenvPath = ".venv-musicgen",
+    [string]$Python = "",
+    [switch]$CheckOnly,
+    [switch]$SkipModelDownload,
+    [switch]$SkipSmoke
+)
+
+Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-function Write-Step($Message) {
+function Write-Step {
+    param([string]$Message)
     Write-Host ""
     Write-Host $Message -ForegroundColor Cyan
 }
 
-function Require-Command($Command, $Hint) {
-    & $Command --version *> $null
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "Missing command: $Command" -ForegroundColor Red
-        Write-Host $Hint -ForegroundColor Yellow
-        exit 1
+function Get-CandidateLabel {
+    param([string[]]$Candidate)
+    return ($Candidate -join " ")
+}
+
+function Invoke-CandidatePython {
+    param(
+        [string[]]$Candidate,
+        [string]$Code
+    )
+
+    $exe = $Candidate[0]
+    $args = @()
+    if ($Candidate.Count -gt 1) {
+        $args = $Candidate[1..($Candidate.Count - 1)]
+    }
+
+    try {
+        & $exe @args -c $Code 2>$null
+    }
+    catch {
+        return $null
     }
 }
 
-Write-Host "========================================" -ForegroundColor Cyan
-Write-Host "  AI DJ Local MusicGen Setup" -ForegroundColor Cyan
-Write-Host "========================================" -ForegroundColor Cyan
+function Get-CompatiblePython {
+    $candidates = @()
+    if (-not [string]::IsNullOrWhiteSpace($Python)) {
+        $candidates += ,@($Python)
+    }
+    $candidates += ,@("py", "-3.11")
+    $candidates += ,@("py", "-3.10")
+    $candidates += ,@("python")
 
-Write-Step "Checking Python..."
-Require-Command "python" "Install Python 3.10 or 3.11 from https://www.python.org/downloads/"
+    foreach ($candidate in $candidates) {
+        $probe = Invoke-CandidatePython `
+            -Candidate $candidate `
+            -Code "import sys; print(f'{sys.executable}|{sys.version_info.major}.{sys.version_info.minor}')"
 
-$pythonVersion = python --version 2>&1
-Write-Host "Detected: $pythonVersion" -ForegroundColor Green
+        if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($probe)) {
+            continue
+        }
 
-$pyVersionInfo = python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')"
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "Unable to detect Python version." -ForegroundColor Red
-    exit 1
+        $parts = $probe.Trim().Split("|")
+        if ($parts.Count -ne 2) {
+            continue
+        }
+
+        $version = $parts[1]
+        if ($version -eq "3.10" -or $version -eq "3.11") {
+            return [pscustomobject]@{
+                Candidate = $candidate
+                Executable = $parts[0]
+                Version = $version
+                Label = Get-CandidateLabel $candidate
+            }
+        }
+
+        Write-Host "Skipping $(Get-CandidateLabel $candidate): Python $version is not supported by AudioCraft 1.3.0." -ForegroundColor Yellow
+    }
+
+    return $null
 }
 
-$pyParts = $pyVersionInfo.Trim().Split(".")
-$pyMajor = [int]$pyParts[0]
-$pyMinor = [int]$pyParts[1]
+function Invoke-VenvPython {
+    param(
+        [string]$VenvPython,
+        [string[]]$Arguments
+    )
+    & $VenvPython @Arguments
+    if ($LASTEXITCODE -ne 0) {
+        throw "Command failed: $VenvPython $($Arguments -join ' ')"
+    }
+}
 
-if ($pyMajor -gt 3 -or ($pyMajor -eq 3 -and $pyMinor -ge 12)) {
-    Write-Host "AudioCraft/MusicGen setup is not supported on Python $pyVersionInfo." -ForegroundColor Red
-    Write-Host "AudioCraft 1.3.0 pins torch==2.1.0, which is not available for Python 3.12." -ForegroundColor Yellow
+function Test-NvidiaGpu {
+    try {
+        nvidia-smi *> $null
+        return ($LASTEXITCODE -eq 0)
+    }
+    catch {
+        return $false
+    }
+}
+
+$repoRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+Set-Location $repoRoot
+
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host "  AI-DJ Local MusicGen Setup" -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
+
+Write-Step "Finding a compatible Python..."
+$compatiblePython = Get-CompatiblePython
+
+if ($null -eq $compatiblePython) {
+    Write-Host "No Python 3.10 or 3.11 runtime was found." -ForegroundColor Red
+    Write-Host "AudioCraft 1.3.0 pins torch==2.1.0, so Python 3.12 is not supported for MusicGen." -ForegroundColor Yellow
     Write-Host ""
-    Write-Host "Create a separate Python 3.10 or 3.11 environment instead:" -ForegroundColor Yellow
-    Write-Host "  py -3.11 -m venv .venv-musicgen" -ForegroundColor Gray
-    Write-Host "  .\.venv-musicgen\Scripts\activate" -ForegroundColor Gray
-    Write-Host "  python -m pip install --upgrade pip" -ForegroundColor Gray
-    Write-Host "  python -m pip install torch torchvision torchaudio audiocraft" -ForegroundColor Gray
+    Write-Host "Install Python 3.11, then rerun:" -ForegroundColor Yellow
+    Write-Host "  py -3.11 --version" -ForegroundColor Gray
+    Write-Host "  .\setup_local_models.ps1" -ForegroundColor Gray
     exit 1
 }
+
+Write-Host "Using $($compatiblePython.Label): $($compatiblePython.Executable) (Python $($compatiblePython.Version))" -ForegroundColor Green
+
+$venvPython = Join-Path $repoRoot (Join-Path $VenvPath "Scripts\python.exe")
+
+if ($CheckOnly) {
+    if (Test-Path $venvPython) {
+        Write-Host "Existing MusicGen venv found: $venvPython" -ForegroundColor Green
+    }
+    else {
+        Write-Host "MusicGen venv would be created at: $VenvPath" -ForegroundColor Yellow
+    }
+    Write-Host "Check complete. No packages were installed." -ForegroundColor Green
+    exit 0
+}
+
+if (-not (Test-Path $venvPython)) {
+    Write-Step "Creating MusicGen virtual environment..."
+    $candidate = [string[]]$compatiblePython.Candidate
+    $exe = $candidate[0]
+    $args = @()
+    if ($candidate.Count -gt 1) {
+        $args = $candidate[1..($candidate.Count - 1)]
+    }
+    & $exe @args -m venv $VenvPath
+    if ($LASTEXITCODE -ne 0) {
+        throw "Failed to create virtual environment with $($compatiblePython.Label)."
+    }
+}
+else {
+    Write-Step "Using existing MusicGen virtual environment..."
+}
+
+Write-Host "Venv Python: $venvPython" -ForegroundColor Green
 
 Write-Step "Checking pip..."
-python -m pip --version
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "pip is not available for this Python." -ForegroundColor Red
-    exit 1
-}
+Invoke-VenvPython $venvPython @("-m", "pip", "--version")
 
 Write-Step "Upgrading pip..."
-python -m pip install --upgrade pip
+Invoke-VenvPython $venvPython @("-m", "pip", "install", "--upgrade", "pip")
 
-Write-Step "Checking GPU/CUDA..."
-$hasGPU = $false
-try {
-    nvidia-smi
-    if ($LASTEXITCODE -eq 0) {
-        $hasGPU = $true
-        Write-Host "NVIDIA GPU detected." -ForegroundColor Green
-    }
-} catch {
-    $hasGPU = $false
+$hasGpu = Test-NvidiaGpu
+if ($hasGpu) {
+    Write-Step "Installing AudioCraft-compatible PyTorch with CUDA 12.1 wheels..."
+    Invoke-VenvPython $venvPython @(
+        "-m", "pip", "install",
+        "torch==2.1.0", "torchvision==0.16.0", "torchaudio==2.1.0",
+        "--index-url", "https://download.pytorch.org/whl/cu121"
+    )
 }
-
-Write-Step "Installing PyTorch..."
-if ($hasGPU) {
-    python -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
-} else {
-    python -m pip install torch torchvision torchaudio
+else {
+    Write-Step "Installing AudioCraft-compatible PyTorch CPU wheels..."
+    Invoke-VenvPython $venvPython @(
+        "-m", "pip", "install",
+        "torch==2.1.0", "torchvision==0.16.0", "torchaudio==2.1.0"
+    )
 }
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "PyTorch installation failed." -ForegroundColor Red
-    exit 1
-}
-
-Write-Step "Verifying PyTorch..."
-python -c "import torch; print(f'PyTorch: {torch.__version__}'); print(f'CUDA available: {torch.cuda.is_available()}')"
 
 Write-Step "Installing AudioCraft and helpers..."
-python -m pip install audiocraft transformers accelerate psutil
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "AudioCraft installation failed." -ForegroundColor Red
-    exit 1
+Invoke-VenvPython $venvPython @(
+    "-m", "pip", "install",
+    "audiocraft==1.3.0", "transformers", "accelerate", "psutil"
+)
+
+Write-Step "Verifying imports..."
+Invoke-VenvPython $venvPython @(
+    "-c",
+    "import torch; from audiocraft.models import MusicGen; print(f'PyTorch: {torch.__version__}'); print(f'CUDA available: {torch.cuda.is_available()}'); print('AudioCraft import OK')"
+)
+
+if (-not $SkipModelDownload) {
+    Write-Step "Pre-downloading MusicGen Small..."
+    Invoke-VenvPython $venvPython @(
+        "-c",
+        "from audiocraft.models import MusicGen; print('Downloading model...'); MusicGen.get_pretrained('facebook/musicgen-small'); print('Model ready.')"
+    )
 }
 
-Write-Step "Pre-downloading MusicGen Small..."
-python -c "from audiocraft.models import MusicGen; print('Downloading model...'); MusicGen.get_pretrained('facebook/musicgen-small'); print('Model ready.')"
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "Model pre-download failed; it may still download on first use." -ForegroundColor Yellow
-}
-
-Write-Step "Running a short generation smoke test..."
-python 13_tools/scripts/make_dj_track_local.py --idea "test" --duration 5 --model facebook/musicgen-small
-if ($LASTEXITCODE -eq 0) {
-    Write-Host "Local MusicGen generation smoke test passed." -ForegroundColor Green
-} else {
-    Write-Host "Local MusicGen generation smoke test failed after installation." -ForegroundColor Yellow
+if (-not $SkipSmoke) {
+    Write-Step "Running a short generation smoke test..."
+    Invoke-VenvPython $venvPython @(
+        "13_tools/scripts/make_dj_track_local.py",
+        "--idea", "test",
+        "--duration", "5",
+        "--model", "facebook/musicgen-small"
+    )
 }
 
 Write-Host ""
-Write-Host "Setup finished. Try:" -ForegroundColor Green
+Write-Host "Setup finished. Activate the venv with:" -ForegroundColor Green
+Write-Host "  .\$VenvPath\Scripts\activate" -ForegroundColor Gray
+Write-Host "Then try:" -ForegroundColor Green
 Write-Host "  python generate_demo_local.py" -ForegroundColor Gray
 Write-Host "  python 13_tools/scripts/make_dj_track_local.py --idea 'your idea' --cuda" -ForegroundColor Gray

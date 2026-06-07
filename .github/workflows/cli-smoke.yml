@@ -39,6 +39,19 @@ jobs:
             13_tools/scripts/make_dj_track_with_lyrics.py \
             13_tools/scripts/practice_plan.py
 
+      - name: Parse PowerShell entrypoints
+        shell: powershell
+        run: |
+          foreach ($script in @("start.ps1", "setup_local_models.ps1")) {
+            $tokens = $null
+            $errors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $script), [ref]$tokens, [ref]$errors) | Out-Null
+            if ($errors.Count -gt 0) {
+              $errors | Format-List | Out-String | Write-Host
+              exit 1
+            }
+          }
+
       - name: Run safe CLI smoke commands
         shell: bash
         run: |
@@ -61,3 +74,4 @@ jobs:
           printf "0\n" | powershell -NoProfile -ExecutionPolicy Bypass -File ./start.ps1
           printf "1\n" | powershell -NoProfile -ExecutionPolicy Bypass -File ./start.ps1
           git check-ignore 13_tools/configs/minimax_env.ps1
+          git check-ignore .venv-musicgen/
