@@ -1,6 +1,6 @@
 # AI-DJ Project Handoff Status
 
-Date: 2026-06-06
+Date: 2026-06-07
 
 This document summarizes the current handoff state for `D:\projects\dj` and the GitHub repository `kevinten10/dj`.
 
@@ -10,8 +10,8 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - Remote default branch: `master`
 - GitHub repository: `https://github.com/kevinten10/dj`
 - Repository visibility: public
-- Baseline verified master commit before this document: `61e527b`
-- Baseline master workflow before this document: `CLI smoke tests`, success, run `27061018186`
+- Latest reviewed master commit before this update: `75bd0af`
+- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27061349094`
 - Open GitHub PRs: none
 - Open GitHub issues: none
 - Local working tree: clean
@@ -21,6 +21,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - `README.md` / `README_CN.md`: main user guides.
 - `13_tools/scripts/`: CLI tools for cloud generation, local generation, ACE-Step lyrics generation, presets, practice plans, library management, and docs helpers.
 - `13_tools/configs/minimax_env.example.ps1`: MiniMax API environment template.
+- `13_tools/configs/minimax_env.ps1`: local MiniMax API secret file, ignored by Git.
 - `13_tools/presets/styles.json`: DJ style presets.
 - `13_tools/ace_step/`: optional third-party ACE-Step clone, ignored by Git.
 - `04_generations/`: generated raw audio and metadata runtime output, ignored except `.gitkeep`.
@@ -42,6 +43,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 
 - Base project dependencies are in `requirements.txt`: `requests`, `mutagen`, `soundfile`.
 - MiniMax generation requires `MINIMAX_API_KEY`; `MINIMAX_API_BASE` defaults to `https://api.minimax.io`.
+- Commit only `13_tools/configs/minimax_env.example.ps1`; keep the real `13_tools/configs/minimax_env.ps1` local.
 - ACE-Step requires the local clone under `13_tools/ace_step/`, PyTorch, and `soundfile`.
 - MusicGen/AudioCraft should use a separate Python 3.10 or 3.11 virtual environment because AudioCraft 1.3.0 pins `torch==2.1.0`, which is not available for Python 3.12 on current pip indexes.
 
@@ -50,6 +52,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - `python -m unittest discover -s tests`
 - Python entrypoint compilation for the top-level and `13_tools/scripts` CLIs.
 - `python check_system.py`
+- `git check-ignore 13_tools/configs/minimax_env.ps1`
 - Safe CLI smoke commands matching `.github/workflows/cli-smoke.yml`
 - MiniMax missing-key path: exits with `MINIMAX_API_KEY environment variable is missing.`
 - ACE-Step preflight: `python 13_tools/scripts/make_dj_track_ace_step.py --check`
@@ -66,6 +69,8 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - PR #8: detected unusable TorchCodec runtime.
 - PR #9: added soundfile fallback for ACE-Step WAV output.
 - PR #10: expanded system readiness checks.
+- PR #11: added this project handoff/status document.
+- PR #12: fixed the Windows launcher path and added launcher smoke coverage.
 
 All merged PRs were followed by successful master `CLI smoke tests`.
 

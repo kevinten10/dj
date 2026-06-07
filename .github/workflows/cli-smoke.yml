@@ -60,3 +60,4 @@ jobs:
           printf "0\n" | python 13_tools/scripts/interactive_generator.py
           printf "0\n" | powershell -NoProfile -ExecutionPolicy Bypass -File ./start.ps1
           printf "1\n" | powershell -NoProfile -ExecutionPolicy Bypass -File ./start.ps1
+          git check-ignore 13_tools/configs/minimax_env.ps1
