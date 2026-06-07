@@ -60,6 +60,40 @@ class MakeDjTrackWithLyricsTests(unittest.TestCase):
         self.assertEqual(str(lyrics_path), lyrics_file_arg)
         self.assertEqual("[Verse]\nSmoke test", lyrics_text)
 
+    def test_child_stdout_is_reported_when_generation_fails(self):
+        lyrics_module = load_lyrics_module()
+
+        def fake_run(cmd, **kwargs):
+            return subprocess.CompletedProcess(
+                cmd,
+                1,
+                stdout="MINIMAX_API_KEY environment variable is missing.\n",
+                stderr="",
+            )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            with (
+                mock.patch.object(lyrics_module, "_repo_root", return_value=Path(tmp)),
+                mock.patch.object(lyrics_module.subprocess, "run", side_effect=fake_run),
+                mock.patch.object(lyrics_module.logger, "error") as log_error,
+            ):
+                result = lyrics_module.main(
+                    [
+                        "--idea",
+                        "smoke",
+                        "--style",
+                        "House",
+                        "--bpm",
+                        "124",
+                    ]
+                )
+
+        self.assertEqual(1, result)
+        messages = [call.args[0] for call in log_error.call_args_list]
+        self.assertTrue(
+            any("MINIMAX_API_KEY environment variable is missing." in message for message in messages)
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

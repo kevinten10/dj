@@ -63,6 +63,16 @@ def _start_file(path: Path) -> None:
         logger.warning(f"Failed to open file automatically: {e}")
 
 
+def _child_failure_message(result: subprocess.CompletedProcess) -> str:
+    messages = []
+    for stream in (result.stderr, result.stdout):
+        if stream:
+            text = str(stream).strip()
+            if text:
+                messages.append(text)
+    return "\n".join(messages) or f"child process exited with code {result.returncode}"
+
+
 def generate_lyrics(theme: str, style: str) -> str:
     """
     使用 AI 生成歌词
@@ -255,7 +265,7 @@ def main(argv: list[str]) -> int:
         try:
             result = subprocess.run(cmd, capture_output=True, text=True)
             if result.returncode != 0:
-                logger.error(f"❌ 生成失败: {result.stderr}")
+                logger.error(f"❌ 生成失败: {_child_failure_message(result)}")
                 return 1
             logger.info("✅ 音乐生成成功!")
             return 0
