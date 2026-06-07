@@ -10,8 +10,8 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - Remote default branch: `master`
 - GitHub repository: `https://github.com/kevinten10/dj`
 - Repository visibility: public
-- Latest reviewed master commit before this update: `3fab169`
-- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27089116420`
+- Latest reviewed master commit before this update: `3373061`
+- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27089542566`
 - Open GitHub PRs: none
 - Open GitHub issues: none
 - Local working tree: clean
@@ -65,6 +65,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - Safe CLI smoke commands matching `.github/workflows/cli-smoke.yml`
 - MiniMax missing-key path: exits with `MINIMAX_API_KEY environment variable is missing.`
 - MiniMax local config path: `make_dj_track_minimax.py` and `check_system.py` can read ignored local PowerShell config values without printing secrets.
+- `generate_and_play.py` returns the exact MiniMax child-process export path instead of selecting a potentially stale newest file.
 - ACE-Step preflight: `python 13_tools/scripts/make_dj_track_ace_step.py --check`
 - ACE-Step local generation smoke:
   - Command: `python 13_tools/scripts/make_dj_track_ace_step.py --style House --duration 10 --steps 5 --seed 123 --output 04_generations/audio/raw/ace_step_10s_smoke.wav`
@@ -88,6 +89,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - PR #17: cleaned the local model manager CLI and removed duplicate model operations.
 - PR #18: routed the local demo generator through the dedicated MusicGen venv.
 - PR #19: routed the interactive local MusicGen menu through the dedicated MusicGen venv.
+- PR #20: added shared MiniMax local config loading from the ignored PowerShell env file.
 
 All merged PRs were followed by successful master `CLI smoke tests`.
 
