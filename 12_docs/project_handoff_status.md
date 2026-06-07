@@ -45,14 +45,16 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - MiniMax generation requires `MINIMAX_API_KEY`; `MINIMAX_API_BASE` defaults to `https://api.minimax.io`.
 - Commit only `13_tools/configs/minimax_env.example.ps1`; keep the real `13_tools/configs/minimax_env.ps1` local.
 - ACE-Step requires the local clone under `13_tools/ace_step/`, PyTorch, and `soundfile`.
-- MusicGen/AudioCraft should use a separate Python 3.10 or 3.11 virtual environment because AudioCraft 1.3.0 pins `torch==2.1.0`, which is not available for Python 3.12 on current pip indexes.
+- MusicGen/AudioCraft should use a separate Python 3.10 or 3.11 virtual environment because AudioCraft 1.3.0 pins `torch==2.1.0`, which is not available for Python 3.12 on current pip indexes. Use `setup_local_models.ps1` to create `.venv-musicgen`; that venv is ignored by Git.
 
 ## Verified Locally
 
 - `python -m unittest discover -s tests`
 - Python entrypoint compilation for the top-level and `13_tools/scripts` CLIs.
+- PowerShell parser checks for `start.ps1` and `setup_local_models.ps1`.
 - `python check_system.py`
 - `git check-ignore 13_tools/configs/minimax_env.ps1`
+- `git check-ignore .venv-musicgen`
 - Safe CLI smoke commands matching `.github/workflows/cli-smoke.yml`
 - MiniMax missing-key path: exits with `MINIMAX_API_KEY environment variable is missing.`
 - ACE-Step preflight: `python 13_tools/scripts/make_dj_track_ace_step.py --check`
