@@ -10,8 +10,8 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - Remote default branch: `master`
 - GitHub repository: `https://github.com/kevinten10/dj`
 - Repository visibility: public
-- Latest reviewed master commit before this update: `78a7660`
-- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27092740359`
+- Latest reviewed master commit before this update: `3be8b7c`
+- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27092895185`
 - Open GitHub PRs: none
 - Open GitHub issues: none
 - Local working tree: clean
@@ -78,6 +78,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - `make_dj_track_with_lyrics.py --with-lyrics` forwards the generated lyrics file to the MiniMax child process.
 - `make_dj_track_with_lyrics.py` accepts `--theme` as a compatibility alias for `--idea`.
 - `make_dj_track_with_lyrics.py` reports useful child-process stdout/stderr details when MiniMax generation fails.
+- `make_dj_track_with_lyrics.py` has readable ASCII help, lyrics-only, and generation status text.
 - `library_manager.py` scans both MP3 and WAV DJ-ready exports so local MusicGen/ACE-Step WAV tracks appear in the library.
 - `library_manager.py show` and `setlist` return non-zero when the requested track or selected indices are invalid.
 - `generate_with_preset.py --dry-run` prints copy-paste safe commands with quoted arguments that contain spaces.
@@ -126,6 +127,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - PR #36: regenerated readable ASCII visualization docs and added mojibake regression coverage.
 - PR #37: cleaned the interactive generator menu text and made its continue prompt EOF-safe.
 - PR #38: added the project handoff status document to the interactive documentation menu.
+- PR #39: cleaned the ACE-Step CLI help, dry-run, preflight, and generation status text.
 
 All merged PRs were followed by successful master `CLI smoke tests`.
 

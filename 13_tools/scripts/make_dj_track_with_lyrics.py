@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-DJ 曲目生成器 - 支持歌词生成
-使用 MiniMax 云端 API 生成带歌词的完整音乐
+DJ-ready track generator with optional lyrics.
+Uses MiniMax cloud generation for the final audio track.
 """
 
 from __future__ import annotations
@@ -75,8 +75,8 @@ def _child_failure_message(result: subprocess.CompletedProcess) -> str:
 
 def generate_lyrics(theme: str, style: str) -> str:
     """
-    使用 AI 生成歌词
-    这里使用简单的模板生成，如果需要更好的歌词，可以调用 GPT 或其他 LLM API
+    Generate lyrics from local templates.
+    For higher-quality lyrics, replace this helper with an LLM-backed generator.
     """
     lyrics_templates = {
         "House": {
@@ -164,7 +164,7 @@ def generate_lyrics(theme: str, style: str) -> str:
 
     import random
     
-    # 选择最接近的模板
+    # Select the closest template.
     style_key = style.lower()
     if "house" in style_key:
         template = lyrics_templates["House"]
@@ -173,13 +173,13 @@ def generate_lyrics(theme: str, style: str) -> str:
     elif "trance" in style_key:
         template = lyrics_templates["Trance"]
     else:
-        # 默认使用 House 模板
+        # Default to the House template.
         template = lyrics_templates["House"]
     
-    # 根据主题替换关键词
+    # Keep the theme available for future template customization.
     theme_keywords = theme.lower()
     
-    # 生成歌词
+    # Generate lyrics.
     lyrics = template["structure"].format(
         intro=random.choice(template.get("intros", ["(Instrumental)"])),
         verse1=random.choice(template["verses"]),
@@ -196,14 +196,14 @@ def generate_lyrics(theme: str, style: str) -> str:
 
 
 def main(argv: list[str]) -> int:
-    p = argparse.ArgumentParser(description="AI DJ 带歌词曲目生成器")
-    p.add_argument("--idea", "-i", default="", help="曲目创意/主题")
-    p.add_argument("--style", "-s", default="House", help="音乐风格")
-    p.add_argument("--bpm", "-b", type=int, default=128, help="目标 BPM")
-    p.add_argument("--with-lyrics", action="store_true", help="生成带歌词的曲目")
-    p.add_argument("--lyrics-only", action="store_true", help="只生成歌词")
-    p.add_argument("--play", action="store_true", help="生成后自动播放")
-    p.add_argument("--verbose", "-v", action="store_true", help="启用调试日志")
+    p = argparse.ArgumentParser(description="AI DJ track generator with optional lyrics")
+    p.add_argument("--idea", "-i", default="", help="Track idea or theme")
+    p.add_argument("--style", "-s", default="House", help="Music style")
+    p.add_argument("--bpm", "-b", type=int, default=128, help="Target BPM")
+    p.add_argument("--with-lyrics", action="store_true", help="Generate a track with a generated lyrics file")
+    p.add_argument("--lyrics-only", action="store_true", help="Only generate and save lyrics")
+    p.add_argument("--play", action="store_true", help="Play the generated audio after generation")
+    p.add_argument("--verbose", "-v", action="store_true", help="Enable debug logging")
     p.add_argument("--theme", help="Compatibility alias for --idea.")
     
     normalized_argv = list(argv)
@@ -222,36 +222,36 @@ def main(argv: list[str]) -> int:
     slug = _slugify(args.style or args.idea)
     lyrics_path: Path | None = None
     
-    # 生成歌词
+    # Generate lyrics.
     if args.with_lyrics or args.lyrics_only:
         print("=" * 60)
-        print("🎵 AI DJ 歌词生成器")
+        print("AI DJ lyrics generator")
         print("=" * 60)
         print()
-        print(f"📝 主题: {args.idea}")
-        print(f"🎶 风格: {args.style}")
-        print(f"🎼 BPM: {args.bpm}")
+        print(f"Theme: {args.idea}")
+        print(f"Style: {args.style}")
+        print(f"BPM: {args.bpm}")
         print()
         
         lyrics = generate_lyrics(args.idea, args.style)
         
-        # 保存歌词
+        # Save lyrics.
         lyrics_path = root / "04_generations" / "metadata" / f"{stamp}_{slug}_lyrics.txt"
         lyrics_path.parent.mkdir(parents=True, exist_ok=True)
         lyrics_path.write_text(lyrics, encoding="utf-8")
         
-        print("📄 生成的歌词:")
+        print("Generated lyrics:")
         print("-" * 60)
         print(lyrics)
         print("-" * 60)
         print()
-        print(f"✅ 歌词已保存到: {lyrics_path}")
+        print(f"Lyrics saved to: {lyrics_path}")
         print()
         
         if args.lyrics_only:
             return 0
     
-    # 生成音乐（使用云端 API）
+    # Generate music with the cloud API.
     if not args.lyrics_only:
         cmd = [
             sys.executable,
@@ -265,20 +265,20 @@ def main(argv: list[str]) -> int:
         if lyrics_path is not None:
             cmd.extend(["--lyrics-file", str(lyrics_path)])
         
-        logger.info("🎵 开始生成音乐...")
-        logger.info(f"📝 提示词: {args.idea}")
-        logger.info(f"🎶 风格: {args.style}")
-        logger.info(f"🎼 BPM: {args.bpm}")
+        logger.info("Starting music generation...")
+        logger.info(f"Prompt: {args.idea}")
+        logger.info(f"Style: {args.style}")
+        logger.info(f"BPM: {args.bpm}")
         
         try:
             result = subprocess.run(cmd, capture_output=True, text=True)
             if result.returncode != 0:
-                logger.error(f"❌ 生成失败: {_child_failure_message(result)}")
+                logger.error(f"Generation failed: {_child_failure_message(result)}")
                 return 1
-            logger.info("✅ 音乐生成成功!")
+            logger.info("Music generation succeeded.")
             return 0
         except Exception as e:
-            logger.error(f"❌ 生成失败: {e}")
+            logger.error(f"Generation failed: {e}")
             return 1
 
 
