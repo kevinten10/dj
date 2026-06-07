@@ -81,7 +81,8 @@ def load_minimax_env_file(
     for name, value in values.items():
         if not value:
             continue
-        if target_environ.get(name):
+        existing = target_environ.get(name, "")
+        if existing and existing.strip():
             continue
         target_environ[name] = value
         loaded[name] = value
