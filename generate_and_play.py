@@ -48,6 +48,16 @@ def extract_exported_path(output):
         return None
     return Path(match.group(1).strip())
 
+def child_failure_message(result):
+    """Return useful output from a failed child process."""
+    messages = []
+    for stream in (result.stderr, result.stdout):
+        if stream:
+            text = str(stream).strip()
+            if text:
+                messages.append(text)
+    return "\n".join(messages) or f"child process exited with code {result.returncode}"
+
 def generate_music(idea, style=DEFAULT_STYLE, bpm=DEFAULT_BPM, duration=DEFAULT_DURATION):
     """
     生成音乐
@@ -88,7 +98,7 @@ def generate_music(idea, style=DEFAULT_STYLE, bpm=DEFAULT_BPM, duration=DEFAULT_
         )
         
         if result.returncode != 0:
-            print(f"❌ 生成失败: {result.stderr}")
+            print(f"❌ 生成失败: {child_failure_message(result)}")
             return None
         
         # 从输出中提取文件路径
