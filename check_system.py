@@ -11,6 +11,8 @@ import importlib.util
 from pathlib import Path
 from typing import Callable, Sequence
 
+from minimax_config import MINIMAX_API_KEY_PLACEHOLDER, load_minimax_env_file
+
 
 REPO_ROOT = Path(__file__).resolve().parent
 MUSICGEN_VENV_DIR = ".venv-musicgen"
@@ -231,20 +233,27 @@ def get_musicgen_environment_status(
     return False, messages
 
 
+def get_effective_minimax_environ(repo_root: Path = REPO_ROOT, environ=os.environ) -> dict[str, str]:
+    effective = dict(environ)
+    load_minimax_env_file(repo_root, effective)
+    return effective
+
+
 def get_minimax_config_status(environ=os.environ):
     api_key = environ.get("MINIMAX_API_KEY", "").strip()
     if not api_key:
         return False, "MINIMAX_API_KEY is not set."
-    if api_key == "PASTE_YOUR_MINIMAX_API_KEY_HERE":
+    if api_key == MINIMAX_API_KEY_PLACEHOLDER:
         return False, "MINIMAX_API_KEY is still the placeholder value."
     return True, "MINIMAX_API_KEY is configured."
 
 
 def check_minimax_config():
-    ready, message = get_minimax_config_status(os.environ)
+    effective_environ = get_effective_minimax_environ(REPO_ROOT, os.environ)
+    ready, message = get_minimax_config_status(effective_environ)
     if ready:
         print(f"✅ {message}")
-        print(f"   API base: {os.environ.get('MINIMAX_API_BASE', 'https://api.minimax.io')}")
+        print(f"   API base: {effective_environ.get('MINIMAX_API_BASE', 'https://api.minimax.io')}")
     else:
         print(f"⚠️  {message}")
         print("   配置示例:")

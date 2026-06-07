@@ -10,8 +10,8 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - Remote default branch: `master`
 - GitHub repository: `https://github.com/kevinten10/dj`
 - Repository visibility: public
-- Latest reviewed master commit before this update: `a45af80`
-- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27088904041`
+- Latest reviewed master commit before this update: `3fab169`
+- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27089116420`
 - Open GitHub PRs: none
 - Open GitHub issues: none
 - Local working tree: clean
@@ -19,6 +19,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 ## Project Shape
 
 - `README.md` / `README_CN.md`: main user guides.
+- `minimax_config.py`: shared MiniMax local environment-file loader.
 - `13_tools/scripts/`: CLI tools for cloud generation, local generation, ACE-Step lyrics generation, presets, practice plans, library management, and docs helpers.
 - `13_tools/configs/minimax_env.example.ps1`: MiniMax API environment template.
 - `13_tools/configs/minimax_env.ps1`: local MiniMax API secret file, ignored by Git.
@@ -43,6 +44,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 
 - Base project dependencies are in `requirements.txt`: `requests`, `mutagen`, `soundfile`.
 - MiniMax generation requires `MINIMAX_API_KEY`; `MINIMAX_API_BASE` defaults to `https://api.minimax.io`.
+- Python MiniMax tools read missing `MINIMAX_API_KEY` / `MINIMAX_API_BASE` values from the ignored local `13_tools/configs/minimax_env.ps1` file.
 - Commit only `13_tools/configs/minimax_env.example.ps1`; keep the real `13_tools/configs/minimax_env.ps1` local.
 - ACE-Step requires the local clone under `13_tools/ace_step/`, PyTorch, and `soundfile`.
 - MusicGen/AudioCraft should use a separate Python 3.10 or 3.11 virtual environment because AudioCraft 1.3.0 pins `torch==2.1.0`, which is not available for Python 3.12 on current pip indexes. Use `setup_local_models.ps1` to create `.venv-musicgen`; that venv is ignored by Git.
@@ -62,6 +64,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - `interactive_generator.py` uses the dedicated `.venv-musicgen` Python for local MusicGen menu generation.
 - Safe CLI smoke commands matching `.github/workflows/cli-smoke.yml`
 - MiniMax missing-key path: exits with `MINIMAX_API_KEY environment variable is missing.`
+- MiniMax local config path: `make_dj_track_minimax.py` and `check_system.py` can read ignored local PowerShell config values without printing secrets.
 - ACE-Step preflight: `python 13_tools/scripts/make_dj_track_ace_step.py --check`
 - ACE-Step local generation smoke:
   - Command: `python 13_tools/scripts/make_dj_track_ace_step.py --style House --duration 10 --steps 5 --seed 123 --output 04_generations/audio/raw/ace_step_10s_smoke.wav`
@@ -84,6 +87,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - PR #16: routed the model manager through the dedicated MusicGen venv.
 - PR #17: cleaned the local model manager CLI and removed duplicate model operations.
 - PR #18: routed the local demo generator through the dedicated MusicGen venv.
+- PR #19: routed the interactive local MusicGen menu through the dedicated MusicGen venv.
 
 All merged PRs were followed by successful master `CLI smoke tests`.
 

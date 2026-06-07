@@ -26,6 +26,22 @@ class CheckSystemTests(unittest.TestCase):
         self.assertTrue(ready)
         self.assertIn("configured", message.lower())
 
+    def test_effective_minimax_environ_loads_project_config_without_mutating_source(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            config_dir = root / "13_tools" / "configs"
+            config_dir.mkdir(parents=True)
+            (config_dir / "minimax_env.ps1").write_text(
+                '$env:MINIMAX_API_KEY = "file-key"\n',
+                encoding="utf-8",
+            )
+            source_environ = {}
+
+            effective = check_system.get_effective_minimax_environ(root, source_environ)
+
+        self.assertEqual("file-key", effective["MINIMAX_API_KEY"])
+        self.assertNotIn("MINIMAX_API_KEY", source_environ)
+
     def test_ace_step_status_reports_missing_clone(self):
         with tempfile.TemporaryDirectory() as tmp:
             ready, issues = check_system.get_ace_step_status(Path(tmp))

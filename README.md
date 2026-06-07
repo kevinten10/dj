@@ -732,7 +732,8 @@ cp 13_tools/configs/minimax_env.example.ps1 13_tools/configs/minimax_env.ps1
 # Edit and add your API Key
 notepad 13_tools/configs/minimax_env.ps1
 
-# Load config
+# Python tools read this local file automatically.
+# Optional: load it into the current PowerShell session too.
 . .\13_tools\configs\minimax_env.ps1
 ```
 

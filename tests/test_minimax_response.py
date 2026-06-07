@@ -88,6 +88,44 @@ class MiniMaxResponseTests(unittest.TestCase):
             self.assertNotIn("lyrics_optimizer", captured["payload"])
             self.assertTrue(list((tmp_path / "08_exports" / "dj_ready").glob("*.mp3")))
 
+    def test_main_loads_project_minimax_env_file_when_process_env_missing(self):
+        minimax = load_minimax_module()
+        captured = {}
+
+        def fake_post(url, api_key, payload):
+            captured["url"] = url
+            captured["api_key"] = api_key
+            return {"data": {"audio": "494433040000"}, "base_resp": {"status_code": 0}}
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            config_dir = tmp_path / "13_tools" / "configs"
+            config_dir.mkdir(parents=True)
+            (config_dir / "minimax_env.ps1").write_text(
+                '$env:MINIMAX_API_KEY = "file-key"\n'
+                '$env:MINIMAX_API_BASE = "https://example.test"\n',
+                encoding="utf-8",
+            )
+
+            with mock.patch.dict(os.environ, {}, clear=True):
+                with mock.patch.object(minimax, "_repo_root", return_value=tmp_path):
+                    with mock.patch.object(minimax, "_minimax_post", side_effect=fake_post):
+                        exit_code = minimax.main(
+                            [
+                                "--idea",
+                                "smoke",
+                                "--style",
+                                "House",
+                                "--bpm",
+                                "120",
+                                "--instrumental",
+                            ]
+                        )
+
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(captured["api_key"], "file-key")
+        self.assertEqual(captured["url"], "https://example.test/v1/music_generation")
+
 
 if __name__ == "__main__":
     unittest.main()

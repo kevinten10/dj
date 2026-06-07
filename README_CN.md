@@ -733,6 +733,8 @@ cp 13_tools/configs/minimax_env.example.ps1 13_tools/configs/minimax_env.ps1
 notepad 13_tools/configs/minimax_env.ps1
 
 # 加载配置
+# Python 工具会自动读取此本地文件。
+# 可选：也可以加载到当前 PowerShell 会话。
 . .\13_tools\configs\minimax_env.ps1
 ```
 
