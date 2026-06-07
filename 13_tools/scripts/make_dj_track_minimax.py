@@ -219,7 +219,11 @@ def main(argv: list[str]) -> int:
     logger.info(f"Generating track with model {args.model}...")
     logger.debug(f"Prompt: {music_prompt}")
 
-    lyrics, lyrics_optimizer = _build_lyrics(args)
+    try:
+        lyrics, lyrics_optimizer = _build_lyrics(args)
+    except OSError as exc:
+        logger.error(f"Failed to read lyrics file: {exc}")
+        return 1
 
     payload: dict[str, Any] = {
         "model": args.model,

@@ -126,6 +126,29 @@ class MiniMaxResponseTests(unittest.TestCase):
         self.assertEqual(captured["api_key"], "file-key")
         self.assertEqual(captured["url"], "https://example.test/v1/music_generation")
 
+    def test_missing_lyrics_file_fails_before_api_call(self):
+        minimax = load_minimax_module()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            missing_lyrics = tmp_path / "missing_lyrics.txt"
+            with mock.patch.dict(os.environ, {"MINIMAX_API_KEY": "test-key"}, clear=False):
+                with mock.patch.object(minimax, "_repo_root", return_value=tmp_path):
+                    with mock.patch.object(minimax, "_minimax_post") as post:
+                        exit_code = minimax.main(
+                            [
+                                "--idea",
+                                "smoke",
+                                "--style",
+                                "House",
+                                "--lyrics-file",
+                                str(missing_lyrics),
+                            ]
+                        )
+
+        self.assertEqual(1, exit_code)
+        post.assert_not_called()
+
 
 if __name__ == "__main__":
     unittest.main()
