@@ -197,15 +197,23 @@ def generate_lyrics(theme: str, style: str) -> str:
 
 def main(argv: list[str]) -> int:
     p = argparse.ArgumentParser(description="AI DJ 带歌词曲目生成器")
-    p.add_argument("--idea", "-i", required=True, help="曲目创意/主题")
+    p.add_argument("--idea", "-i", default="", help="曲目创意/主题")
     p.add_argument("--style", "-s", default="House", help="音乐风格")
     p.add_argument("--bpm", "-b", type=int, default=128, help="目标 BPM")
     p.add_argument("--with-lyrics", action="store_true", help="生成带歌词的曲目")
     p.add_argument("--lyrics-only", action="store_true", help="只生成歌词")
     p.add_argument("--play", action="store_true", help="生成后自动播放")
     p.add_argument("--verbose", "-v", action="store_true", help="启用调试日志")
+    p.add_argument("--theme", help="Compatibility alias for --idea.")
     
-    args = p.parse_args(argv)
+    normalized_argv = list(argv)
+    if "--theme" in normalized_argv and "--idea" not in normalized_argv and "-i" not in normalized_argv:
+        normalized_argv[normalized_argv.index("--theme")] = "--idea"
+
+    args = p.parse_args(normalized_argv)
+    args.idea = args.idea.strip() or (args.theme or "").strip()
+    if not args.idea:
+        p.error("one of --idea/-i or --theme is required")
     if args.verbose:
         logger.setLevel(logging.DEBUG)
     

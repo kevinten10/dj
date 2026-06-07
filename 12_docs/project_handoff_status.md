@@ -10,8 +10,8 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - Remote default branch: `master`
 - GitHub repository: `https://github.com/kevinten10/dj`
 - Repository visibility: public
-- Latest reviewed master commit before this update: `3e45cb6`
-- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27091375383`
+- Latest reviewed master commit before this update: `33f69c3`
+- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27091591425`
 - Open GitHub PRs: none
 - Open GitHub issues: none
 - Local working tree: clean
@@ -74,6 +74,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - `generate_and_play.py` returns the exact MiniMax child-process export path instead of selecting a potentially stale newest file.
 - `generate_and_play.py` reports useful child-process stdout/stderr details when MiniMax generation fails.
 - `make_dj_track_with_lyrics.py --with-lyrics` forwards the generated lyrics file to the MiniMax child process.
+- `make_dj_track_with_lyrics.py` accepts `--theme` as a compatibility alias for `--idea`.
 - `make_dj_track_with_lyrics.py` reports useful child-process stdout/stderr details when MiniMax generation fails.
 - `library_manager.py` scans both MP3 and WAV DJ-ready exports so local MusicGen/ACE-Step WAV tracks appear in the library.
 - `generate_with_preset.py --dry-run` prints copy-paste safe commands with quoted arguments that contain spaces.
@@ -112,6 +113,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - PR #29: surfaced child-process stdout/stderr details from `generate_and_play.py` failures.
 - PR #30: quoted interactive generator displayed commands so arguments with spaces are copy-paste safe.
 - PR #31: surfaced child-process stdout/stderr details from `generate_demo_local.py` failures.
+- PR #32: surfaced child-process stdout/stderr details from `manage_models.py` download and smoke-test failures.
 
 All merged PRs were followed by successful master `CLI smoke tests`.
 

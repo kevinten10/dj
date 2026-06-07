@@ -23,6 +23,35 @@ def load_lyrics_module():
 
 
 class MakeDjTrackWithLyricsTests(unittest.TestCase):
+    def test_theme_alias_can_supply_track_idea(self):
+        lyrics_module = load_lyrics_module()
+        commands = []
+
+        def fake_run(cmd, **kwargs):
+            commands.append(cmd)
+            return subprocess.CompletedProcess(cmd, 0, stdout="", stderr="")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            with (
+                mock.patch.object(lyrics_module, "_repo_root", return_value=Path(tmp)),
+                mock.patch.object(lyrics_module.subprocess, "run", side_effect=fake_run),
+            ):
+                result = lyrics_module.main(
+                    [
+                        "--theme",
+                        "DJ party",
+                        "--style",
+                        "House",
+                        "--bpm",
+                        "124",
+                    ]
+                )
+
+        self.assertEqual(0, result)
+        self.assertIn("--idea", commands[0])
+        idea_arg = commands[0][commands[0].index("--idea") + 1]
+        self.assertEqual("DJ party", idea_arg)
+
     def test_with_lyrics_passes_generated_lyrics_file_to_minimax(self):
         lyrics_module = load_lyrics_module()
         commands = []
