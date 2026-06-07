@@ -56,6 +56,29 @@ class LibraryManagerTests(unittest.TestCase):
         self.assertEqual("Tech House", tracks[0]["style"])
         self.assertEqual(124, tracks[0]["bpm"])
 
+    def test_show_missing_track_exits_nonzero(self):
+        manager = load_library_manager()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            with mock.patch.object(manager, "_repo_root", return_value=Path(tmp)):
+                result = manager.main(["show", "missing.mp3"])
+
+        self.assertEqual(1, result)
+
+    def test_setlist_with_no_valid_tracks_exits_nonzero(self):
+        manager = load_library_manager()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            exports_dir = root / "08_exports" / "dj_ready"
+            exports_dir.mkdir(parents=True)
+            (exports_dir / "track.mp3").write_bytes(b"ID3")
+
+            with mock.patch.object(manager, "_repo_root", return_value=root):
+                result = manager.main(["setlist", "--name", "Test", "--tracks", "99"])
+
+        self.assertEqual(1, result)
+
 
 if __name__ == "__main__":
     unittest.main()

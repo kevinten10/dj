@@ -107,12 +107,12 @@ def list_tracks(tracks: List[Dict[str, Any]], filter_style: Optional[str] = None
     print("\n" + "=" * 80)
 
 
-def show_track_details(tracks: List[Dict[str, Any]], filename: str) -> None:
+def show_track_details(tracks: List[Dict[str, Any]], filename: str) -> bool:
     """Show detailed information for a specific track."""
     track = next((t for t in tracks if t["filename"] == filename), None)
     if not track:
         print(f"❌ 找不到曲目: {filename}", file=sys.stderr)
-        return
+        return False
 
     print(f"\n📋 曲目详情: {track['filename']}")
     print("=" * 80)
@@ -129,6 +129,7 @@ def show_track_details(tracks: List[Dict[str, Any]], filename: str) -> None:
         print(f"\n📝 提示词: {meta.get('prompt', '')}")
 
     print("\n" + "=" * 80)
+    return True
 
 
 def export_library(tracks: List[Dict[str, Any]], output_path: Path) -> None:
@@ -144,7 +145,7 @@ def export_library(tracks: List[Dict[str, Any]], output_path: Path) -> None:
     print(f"✅ 曲目库已导出到: {output_path}")
 
 
-def create_set_list(tracks: List[Dict[str, Any]], name: str, track_indices: List[int]) -> None:
+def create_set_list(tracks: List[Dict[str, Any]], name: str, track_indices: List[int]) -> bool:
     """Create a set list from selected track indices."""
     root = _repo_root()
     set_lists_dir = root / "08_exports" / "set_lists"
@@ -159,7 +160,7 @@ def create_set_list(tracks: List[Dict[str, Any]], name: str, track_indices: List
 
     if not selected_tracks:
         print("❌ 没有选择有效的曲目", file=sys.stderr)
-        return
+        return False
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     set_list_path = set_lists_dir / f"set_{name}_{timestamp}.json"
@@ -186,6 +187,7 @@ def create_set_list(tracks: List[Dict[str, Any]], name: str, track_indices: List
     print(f"\n🎧 曲目顺序:")
     for i, t in enumerate(selected_tracks, 1):
         print(f"{i}. {t['filename']} ({t.get('style', 'N/A')} @ {t.get('bpm', 'N/A')} BPM)")
+    return True
 
 
 def main(argv: list[str]) -> int:
@@ -218,7 +220,8 @@ def main(argv: list[str]) -> int:
     if args.command == "list":
         list_tracks(tracks, args.style, args.bpm_min, args.bpm_max)
     elif args.command == "show":
-        show_track_details(tracks, args.filename)
+        if not show_track_details(tracks, args.filename):
+            return 1
     elif args.command == "export":
         root = _repo_root()
         output = Path(args.output) if args.output else root / "08_exports" / f"library_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
@@ -226,7 +229,8 @@ def main(argv: list[str]) -> int:
     elif args.command == "setlist":
         try:
             track_indices = [int(x.strip()) for x in args.tracks.split(",")]
-            create_set_list(tracks, args.name, track_indices)
+            if not create_set_list(tracks, args.name, track_indices):
+                return 1
         except ValueError:
             print("❌ 错误: 请使用逗号分隔的数字索引", file=sys.stderr)
             return 1

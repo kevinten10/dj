@@ -10,8 +10,8 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - Remote default branch: `master`
 - GitHub repository: `https://github.com/kevinten10/dj`
 - Repository visibility: public
-- Latest reviewed master commit before this update: `99639d6`
-- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27091788281`
+- Latest reviewed master commit before this update: `7aa22f1`
+- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27091951638`
 - Open GitHub PRs: none
 - Open GitHub issues: none
 - Local working tree: clean
@@ -77,6 +77,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - `make_dj_track_with_lyrics.py` accepts `--theme` as a compatibility alias for `--idea`.
 - `make_dj_track_with_lyrics.py` reports useful child-process stdout/stderr details when MiniMax generation fails.
 - `library_manager.py` scans both MP3 and WAV DJ-ready exports so local MusicGen/ACE-Step WAV tracks appear in the library.
+- `library_manager.py show` and `setlist` return non-zero when the requested track or selected indices are invalid.
 - `generate_with_preset.py --dry-run` prints copy-paste safe commands with quoted arguments that contain spaces.
 - `practice_plan.py --start-day` schedules from the next requested weekday, matching the `1=Monday` help text.
 - ACE-Step preflight: `python 13_tools/scripts/make_dj_track_ace_step.py --check`
@@ -116,6 +117,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - PR #31: surfaced child-process stdout/stderr details from `generate_demo_local.py` failures.
 - PR #32: surfaced child-process stdout/stderr details from `manage_models.py` download and smoke-test failures.
 - PR #33: accepted `--theme` as a compatibility alias for `make_dj_track_with_lyrics.py --idea`.
+- PR #34: fixed `practice_plan.py --start-day` scheduling to match the documented weekday semantics.
 
 All merged PRs were followed by successful master `CLI smoke tests`.
 
