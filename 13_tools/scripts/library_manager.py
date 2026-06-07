@@ -11,6 +11,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Any, Optional
 
+SUPPORTED_AUDIO_EXTENSIONS = (".mp3", ".wav")
+
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -33,7 +35,13 @@ def scan_library() -> List[Dict[str, Any]]:
     if not dj_ready_dir.exists():
         return tracks
 
-    for audio_file in dj_ready_dir.glob("*.mp3"):
+    audio_files = [
+        audio_file
+        for audio_file in dj_ready_dir.iterdir()
+        if audio_file.is_file() and audio_file.suffix.lower() in SUPPORTED_AUDIO_EXTENSIONS
+    ]
+
+    for audio_file in audio_files:
         track_info = {
             "filename": audio_file.name,
             "path": str(audio_file),
