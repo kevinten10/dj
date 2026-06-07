@@ -10,8 +10,8 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - Remote default branch: `master`
 - GitHub repository: `https://github.com/kevinten10/dj`
 - Repository visibility: public
-- Latest reviewed master commit before this update: `75bd0af`
-- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27061349094`
+- Latest reviewed master commit before this update: `a841def`
+- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27088204142`
 - Open GitHub PRs: none
 - Open GitHub issues: none
 - Local working tree: clean
@@ -55,6 +55,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - `python check_system.py`
 - `git check-ignore 13_tools/configs/minimax_env.ps1`
 - `git check-ignore .venv-musicgen`
+- MusicGen environment status check in `check_system.py`: reports `.venv-musicgen` readiness and Python 3.10/3.11 availability.
 - Safe CLI smoke commands matching `.github/workflows/cli-smoke.yml`
 - MiniMax missing-key path: exits with `MINIMAX_API_KEY environment variable is missing.`
 - ACE-Step preflight: `python 13_tools/scripts/make_dj_track_ace_step.py --check`
@@ -73,6 +74,8 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - PR #10: expanded system readiness checks.
 - PR #11: added this project handoff/status document.
 - PR #12: fixed the Windows launcher path and added launcher smoke coverage.
+- PR #13: ignored the local MiniMax secret config and added CI ignore checks.
+- PR #14: hardened the MusicGen setup script and dedicated `.venv-musicgen` path.
 
 All merged PRs were followed by successful master `CLI smoke tests`.
 

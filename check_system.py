@@ -9,9 +9,11 @@ import subprocess
 import os
 import importlib.util
 from pathlib import Path
+from typing import Callable, Sequence
 
 
 REPO_ROOT = Path(__file__).resolve().parent
+MUSICGEN_VENV_DIR = ".venv-musicgen"
 
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -117,6 +119,118 @@ def check_dependencies():
     return len(missing) == 0, missing
 
 
+def _musicgen_venv_python(repo_root: Path = REPO_ROOT) -> Path:
+    if os.name == "nt":
+        return repo_root / MUSICGEN_VENV_DIR / "Scripts" / "python.exe"
+    return repo_root / MUSICGEN_VENV_DIR / "bin" / "python"
+
+
+def _default_musicgen_python_candidates() -> list[list[str]]:
+    if os.name == "nt":
+        return [["py", "-3.11"], ["py", "-3.10"], ["python"]]
+    return [["python3.11"], ["python3.10"], ["python3"]]
+
+
+def _probe_python_candidate(
+    candidate: Sequence[str],
+    runner: Callable[..., subprocess.CompletedProcess] = subprocess.run,
+) -> tuple[str, str] | None:
+    try:
+        result = runner(
+            [
+                *candidate,
+                "-c",
+                "import sys; print(f'{sys.executable}|{sys.version_info.major}.{sys.version_info.minor}')",
+            ],
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+
+    if result.returncode != 0:
+        return None
+
+    parts = result.stdout.strip().split("|")
+    if len(parts) != 2:
+        return None
+    return parts[0], parts[1]
+
+
+def get_musicgen_environment_status(
+    repo_root: Path = REPO_ROOT,
+    candidates: Sequence[Sequence[str]] | None = None,
+    runner: Callable[..., subprocess.CompletedProcess] = subprocess.run,
+) -> tuple[bool, list[str]]:
+    messages = []
+    venv_python = _musicgen_venv_python(repo_root)
+
+    if venv_python.exists():
+        try:
+            result = runner(
+                [
+                    str(venv_python),
+                    "-c",
+                    (
+                        "import importlib.util, sys; "
+                        "missing=[m for m in ('torch','audiocraft') if importlib.util.find_spec(m) is None]; "
+                        "print(f'{sys.version_info.major}.{sys.version_info.minor}|{','.join(missing)}')"
+                    ),
+                ],
+                capture_output=True,
+                text=True,
+                timeout=20,
+            )
+        except (OSError, subprocess.SubprocessError) as exc:
+            return False, [f"{MUSICGEN_VENV_DIR} exists, but its Python could not run: {exc}"]
+
+        if result.returncode != 0:
+            return False, [f"{MUSICGEN_VENV_DIR} Python failed: {result.stderr.strip()}"]
+
+        version_text, _, missing_text = result.stdout.strip().partition("|")
+        if version_text not in {"3.10", "3.11"}:
+            messages.append(f"{MUSICGEN_VENV_DIR} uses Python {version_text}; expected Python 3.10 or 3.11.")
+
+        missing = [item for item in missing_text.split(",") if item]
+        if missing:
+            messages.append(f"{MUSICGEN_VENV_DIR} is missing: {', '.join(missing)}.")
+
+        if messages:
+            messages.append("Run: .\\setup_local_models.ps1")
+            return False, messages
+
+        return True, [f"{MUSICGEN_VENV_DIR} is ready for MusicGen/AudioCraft."]
+
+    candidate_commands = candidates if candidates is not None else _default_musicgen_python_candidates()
+    compatible = []
+    incompatible = []
+    for candidate in candidate_commands:
+        probe = _probe_python_candidate(candidate, runner=runner)
+        if probe is None:
+            continue
+        executable, version_text = probe
+        label = " ".join(candidate)
+        if version_text in {"3.10", "3.11"}:
+            compatible.append(f"{label} -> {executable} (Python {version_text})")
+        else:
+            incompatible.append(f"{label} is Python {version_text}")
+
+    if compatible:
+        return False, [
+            f"{MUSICGEN_VENV_DIR} is missing.",
+            f"Compatible runtime found: {compatible[0]}.",
+            "Run: .\\setup_local_models.ps1",
+        ]
+
+    messages.append(f"{MUSICGEN_VENV_DIR} is missing.")
+    messages.append("No Python 3.10 or 3.11 runtime was found for AudioCraft/MusicGen.")
+    if incompatible:
+        messages.append("Detected incompatible runtimes: " + "; ".join(incompatible) + ".")
+    messages.append("Install Python 3.11, then run: .\\setup_local_models.ps1")
+    return False, messages
+
+
 def get_minimax_config_status(environ=os.environ):
     api_key = environ.get("MINIMAX_API_KEY", "").strip()
     if not api_key:
@@ -171,6 +285,19 @@ def check_ace_step_readiness():
         print("     git clone https://github.com/ace-step/ACE-Step.git 13_tools/ace_step")
         print("     python -m pip install soundfile")
         print("     python 13_tools/scripts/make_dj_track_ace_step.py --check")
+    return ready
+
+
+def check_musicgen_readiness():
+    ready, messages = get_musicgen_environment_status(REPO_ROOT)
+    if ready:
+        print(f"OK: {messages[0]}")
+        print("   Smoke test:")
+        print("     .\\.venv-musicgen\\Scripts\\python.exe 13_tools/scripts/make_dj_track_local.py --idea \"test\" --duration 5")
+    else:
+        print("WARN: MusicGen/AudioCraft local environment is not ready:")
+        for message in messages:
+            print(f"   - {message}")
     return ready
 
 
@@ -263,6 +390,11 @@ def main():
     print("🎤 ACE-Step 本地歌词模型")
     print("-" * 40)
     check_ace_step_readiness()
+    print()
+
+    print("MusicGen local instrumental model")
+    print("-" * 40)
+    check_musicgen_readiness()
     print()
     
     # 推荐模型
