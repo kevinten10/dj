@@ -65,6 +65,7 @@ jobs:
           python 13_tools/scripts/make_dj_track_ace_step.py --help
           python 13_tools/scripts/make_dj_track_ace_step.py --prompt "Custom prompt" --dry-run
           python 13_tools/scripts/make_dj_track_minimax.py --help
+          python 13_tools/scripts/make_dj_track_with_lyrics.py --help
           python 13_tools/scripts/make_dj_track_local.py --help
           python 13_tools/scripts/generate_with_preset.py --preset tech_house --idea smoke --dry-run
           python 13_tools/scripts/practice_plan.py --help

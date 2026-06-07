@@ -202,6 +202,7 @@ def main(argv: list[str]) -> int:
     root = _repo_root()
     stamp = _now_stamp()
     slug = _slugify(args.style or args.idea)
+    lyrics_path: Path | None = None
     
     # 生成歌词
     if args.with_lyrics or args.lyrics_only:
@@ -243,6 +244,8 @@ def main(argv: list[str]) -> int:
         ]
         if args.play:
             cmd.append("--play")
+        if lyrics_path is not None:
+            cmd.extend(["--lyrics-file", str(lyrics_path)])
         
         logger.info("🎵 开始生成音乐...")
         logger.info(f"📝 提示词: {args.idea}")
