@@ -10,8 +10,8 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - Remote default branch: `master`
 - GitHub repository: `https://github.com/kevinten10/dj`
 - Repository visibility: public
-- Latest reviewed master commit before this update: `aeb7529`
-- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27092170372`
+- Latest reviewed master commit before this update: `c77805a`
+- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27092376366`
 - Open GitHub PRs: none
 - Open GitHub issues: none
 - Local working tree: clean
@@ -66,6 +66,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - `generate_demo_local.py` reports useful child-process stdout/stderr details when local MusicGen generation fails.
 - `interactive_generator.py` uses the dedicated `.venv-musicgen` Python for local MusicGen menu generation.
 - `interactive_generator.py` prints copy-paste safe commands with quoted arguments that contain spaces.
+- `interactive_generator.py` has an ASCII-safe menu surface and handles EOF at the continue prompt for scripted launcher runs.
 - Safe CLI smoke commands matching `.github/workflows/cli-smoke.yml`
 - MiniMax missing-key path: exits with `MINIMAX_API_KEY environment variable is missing.`
 - MiniMax missing lyrics-file path: exits cleanly before the API call when `--lyrics-file` cannot be read.
@@ -120,6 +121,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - PR #33: accepted `--theme` as a compatibility alias for `make_dj_track_with_lyrics.py --idea`.
 - PR #34: fixed `practice_plan.py --start-day` scheduling to match the documented weekday semantics.
 - PR #35: returned non-zero exits from invalid `library_manager.py show` and `setlist` commands.
+- PR #36: regenerated readable ASCII visualization docs and added mojibake regression coverage.
 
 All merged PRs were followed by successful master `CLI smoke tests`.
 

@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 """
-Interactive DJ Track Generator
-Easy to use menu-driven interface for generating DJ music.
+Interactive DJ Track Generator.
+
+Menu-driven entry point for MiniMax, MusicGen, ACE-Step, practice-plan,
+library, and documentation workflows.
 """
 
-import sys
 import importlib.util
+import os
+import platform
 import subprocess
+import sys
 from pathlib import Path
 
 
@@ -73,9 +77,9 @@ def print_musicgen_setup_hint() -> None:
 
 
 def load_presets() -> dict:
-    """Load style presets."""
     try:
         import json
+
         presets_path = _repo_root() / "13_tools" / "presets" / "styles.json"
         with presets_path.open("r", encoding="utf-8") as f:
             return json.load(f)
@@ -83,37 +87,37 @@ def load_presets() -> dict:
         return {"presets": {}}
 
 
-def print_header():
+def print_header() -> None:
     print("\n" + "=" * 60)
-    print("🎧 AI-DJ 交互式生成器")
+    print("AI-DJ Interactive Generator")
     print("=" * 60)
 
 
-def print_main_menu():
-    print("\n请选择:")
-    print("1. 🎵 使用云端 API (MiniMax) 生成")
-    print("2. 🏠 使用本地模型 (MusicGen) 生成")
-    print("3. 🎤 使用本地歌词模型 (ACE-Step) 生成 ⭐NEW")
-    print("4. 📋 获取练习计划")
-    print("5. 📁 管理曲目库")
-    print("6. 📚 查看文档")
-    print("0. 退出")
+def print_main_menu() -> None:
+    print("\nChoose an action:")
+    print("1. Cloud generation with MiniMax")
+    print("2. Local instrumental generation with MusicGen")
+    print("3. Local lyrics/song generation with ACE-Step")
+    print("4. Create a practice plan")
+    print("5. Manage the DJ-ready track library")
+    print("6. Open documentation")
+    print("0. Exit")
 
 
-def print_cloud_menu():
-    print("\n--- 云端 API 生成 ---")
-    print("1. 基本生成 (自定义)")
-    print("2. 使用风格预设")
-    print("0. 返回主菜单")
+def print_cloud_menu() -> None:
+    print("\n--- Cloud Generation ---")
+    print("1. Custom MiniMax generation")
+    print("2. Use a style preset")
+    print("0. Back to main menu")
 
 
-def print_local_menu():
-    print("\n--- 本地模型生成 ---")
-    print("1. 基本生成 (Small 模型)")
-    print("2. 使用 Medium 模型 (更高质量)")
-    print("3. 使用 Large 模型 (最佳质量)")
-    print("4. 自定义参数")
-    print("0. 返回主菜单")
+def print_local_menu() -> None:
+    print("\n--- Local MusicGen Generation ---")
+    print("1. Basic generation with the small model")
+    print("2. Use the medium model")
+    print("3. Use the large model")
+    print("4. Custom MusicGen parameters")
+    print("0. Back to main menu")
 
 
 def get_input(prompt: str, default: str = "") -> str:
@@ -126,20 +130,46 @@ def get_input(prompt: str, default: str = "") -> str:
         return default
 
 
-def get_int_input(prompt: str, default: int, min_val: int = None, max_val: int = None) -> int:
+def get_int_input(
+    prompt: str,
+    default: int,
+    min_val: int | None = None,
+    max_val: int | None = None,
+) -> int:
     while True:
         try:
             val = get_input(prompt, str(default))
             result = int(val)
             if min_val is not None and result < min_val:
-                print(f"⚠️  值不能小于 {min_val}")
+                print(f"Warning: value cannot be less than {min_val}.")
                 continue
             if max_val is not None and result > max_val:
-                print(f"⚠️  值不能大于 {max_val}")
+                print(f"Warning: value cannot be greater than {max_val}.")
                 continue
             return result
         except ValueError:
-            print(f"⚠️  请输入有效的数字")
+            print("Warning: enter a valid integer.")
+
+
+def get_float_input(
+    prompt: str,
+    default: float,
+    min_val: float | None = None,
+    max_val: float | None = None,
+) -> float:
+    while True:
+        try:
+            val = get_input(prompt, str(default))
+            result = float(val)
+            if min_val is not None and result < min_val:
+                print(f"Warning: value cannot be less than {min_val}.")
+                continue
+            if max_val is not None and result > max_val:
+                print(f"Warning: value cannot be greater than {max_val}.")
+                continue
+            return result
+        except ValueError:
+            print("Warning: enter a valid number.")
 
 
 def get_yes_no(prompt: str, default: bool = False) -> bool:
@@ -152,112 +182,117 @@ def get_yes_no(prompt: str, default: bool = False) -> bool:
             return False
         if val == "":
             return default
-        print("⚠️  请输入 y 或 n")
+        print("Warning: enter y or n.")
 
 
-def run_cloud_generate():
-    print("\n--- 云端 API 生成 ---")
-    
-    idea = get_input("曲目创意/主题", "午夜 Tech House 派对")
-    style = get_input("音乐风格", "Tech House")
+def wait_for_continue() -> None:
+    try:
+        input("\nPress Enter to continue...")
+    except EOFError:
+        return
+
+
+def run_cloud_generate() -> None:
+    print("\n--- Custom MiniMax Generation ---")
+
+    idea = get_input("Track idea/theme", "Midnight Tech House party")
+    style = get_input("Music style", "Tech House")
     bpm = get_int_input("BPM", 128, 60, 200)
-    with_lyrics = get_yes_no("生成带歌词的曲目？", False)
-    
+    with_lyrics = get_yes_no("Generate with lyrics?", False)
+
     if with_lyrics:
-        play = get_yes_no("生成后自动播放？", True)
-        
+        play = get_yes_no("Play after generation?", True)
         cmd = [
             sys.executable,
             str(_repo_root() / "13_tools" / "scripts" / "make_dj_track_with_lyrics.py"),
-            "--idea", idea,
-            "--style", style,
-            "--bpm", str(bpm),
-            "--with-lyrics"
+            "--idea",
+            idea,
+            "--style",
+            style,
+            "--bpm",
+            str(bpm),
+            "--with-lyrics",
         ]
         if play:
             cmd.append("--play")
-        
-        print(f"\n🚀 执行命令: {_format_command(cmd)}")
-        import subprocess
-        subprocess.run(cmd)
     else:
-        instrumental = get_yes_no("生成器乐曲目？", True)
-        play = get_yes_no("生成后自动播放？", True)
-        
+        instrumental = get_yes_no("Generate an instrumental track?", True)
+        play = get_yes_no("Play after generation?", True)
         cmd = [
             sys.executable,
             str(_repo_root() / "13_tools" / "scripts" / "make_dj_track_minimax.py"),
-            "--idea", idea,
-            "--style", style,
-            "--bpm", str(bpm)
+            "--idea",
+            idea,
+            "--style",
+            style,
+            "--bpm",
+            str(bpm),
         ]
         if instrumental:
             cmd.append("--instrumental")
         if play:
             cmd.append("--play")
-        
-        print(f"\n🚀 执行命令: {_format_command(cmd)}")
-        import subprocess
-        subprocess.run(cmd)
+
+    print(f"\nRunning command: {_format_command(cmd)}")
+    subprocess.run(cmd)
 
 
-def run_cloud_preset():
-    print("\n--- 使用风格预设 ---")
-    
+def run_cloud_preset() -> None:
+    print("\n--- Style Preset Generation ---")
+
     presets = load_presets()
     if not presets["presets"]:
-        print("⚠️  未找到预设文件")
+        print("Warning: no preset file was found.")
         return
-    
-    print("\n可用预设:")
+
+    print("\nAvailable presets:")
     preset_list = list(presets["presets"].items())
     for i, (key, preset) in enumerate(preset_list, 1):
         print(f"{i}. {preset['name']} ({preset['default_bpm']} BPM)")
-    print("0. 返回")
-    
-    choice = get_int_input("选择预设", 0, 0, len(preset_list))
+    print("0. Back")
+
+    choice = get_int_input("Choose preset", 0, 0, len(preset_list))
     if choice == 0:
         return
-    
+
     preset_key, preset = preset_list[choice - 1]
-    
-    idea = get_input("添加额外创意（可选）", "")
-    instrumental = get_yes_no("生成器乐曲目？", True)
-    play = get_yes_no("生成后自动播放？", True)
-    
+    idea = get_input("Extra idea (optional)", "")
+    instrumental = get_yes_no("Generate an instrumental track?", True)
+    play = get_yes_no("Play after generation?", True)
+
     cmd = [
         sys.executable,
         str(_repo_root() / "13_tools" / "scripts" / "generate_with_preset.py"),
-        "--preset", preset_key,
-        "--idea", idea if idea else preset["description"]
+        "--preset",
+        preset_key,
+        "--idea",
+        idea if idea else preset["description"],
     ]
     if instrumental:
         cmd.append("--instrumental")
     if play:
         cmd.append("--play")
-    
-    print(f"\n🚀 执行命令: {_format_command(cmd)}")
-    import subprocess
+
+    print(f"\nRunning command: {_format_command(cmd)}")
     subprocess.run(cmd)
 
 
-def run_local_generate(model_size: str = "small"):
+def run_local_generate(model_size: str = "small") -> None:
     model_map = {
         "small": "facebook/musicgen-small",
         "medium": "facebook/musicgen-medium",
-        "large": "facebook/musicgen-large"
+        "large": "facebook/musicgen-large",
     }
-    
-    print(f"\n--- 本地模型生成 ({model_size}) ---")
-    
-    idea = get_input("曲目创意/主题", "午夜 Tech House 派对")
-    style = get_input("音乐风格", "Tech House")
+
+    print(f"\n--- Local MusicGen Generation ({model_size}) ---")
+
+    idea = get_input("Track idea/theme", "Midnight Tech House party")
+    style = get_input("Music style", "Tech House")
     bpm = get_int_input("BPM", 128, 60, 200)
-    duration = get_int_input("时长（秒）", 90, 10, 600)
-    
-    use_cuda = get_yes_no("使用 GPU (CUDA) 加速？", False)
-    play = get_yes_no("生成后自动播放？", True)
-    
+    duration = get_int_input("Duration in seconds", 90, 10, 600)
+    use_cuda = get_yes_no("Use GPU acceleration with CUDA?", False)
+    play = get_yes_no("Play after generation?", True)
+
     python_executable = get_musicgen_python()
     if python_executable is None:
         print_musicgen_setup_hint()
@@ -266,48 +301,51 @@ def run_local_generate(model_size: str = "small"):
     cmd = [
         python_executable,
         str(_repo_root() / "13_tools" / "scripts" / "make_dj_track_local.py"),
-        "--idea", idea,
-        "--style", style,
-        "--bpm", str(bpm),
-        "--duration", str(duration),
-        "--model", model_map[model_size]
+        "--idea",
+        idea,
+        "--style",
+        style,
+        "--bpm",
+        str(bpm),
+        "--duration",
+        str(duration),
+        "--model",
+        model_map[model_size],
     ]
     if use_cuda:
         cmd.append("--cuda")
     if play:
         cmd.append("--play")
-    
-    print(f"\n🚀 执行命令: {_format_command(cmd)}")
-    import subprocess
+
+    print(f"\nRunning command: {_format_command(cmd)}")
     subprocess.run(cmd)
 
 
-def run_local_custom():
-    print("\n--- 本地模型自定义生成 ---")
-    
-    idea = get_input("曲目创意/主题", "午夜 Tech House 派对")
-    style = get_input("音乐风格", "Tech House")
+def run_local_custom() -> None:
+    print("\n--- Custom MusicGen Generation ---")
+
+    idea = get_input("Track idea/theme", "Midnight Tech House party")
+    style = get_input("Music style", "Tech House")
     bpm = get_int_input("BPM", 128, 60, 200)
-    duration = get_int_input("时长（秒）", 90, 10, 600)
-    
-    print("\n模型选择:")
-    print("1. Small (300M, 快速)")
-    print("2. Medium (1.5B, 平衡)")
-    print("3. Large (3.3B, 高质量)")
-    model_choice = get_int_input("选择模型", 1, 1, 3)
-    
+    duration = get_int_input("Duration in seconds", 90, 10, 600)
+
+    print("\nModel choice:")
+    print("1. Small (300M, fastest)")
+    print("2. Medium (1.5B, balanced)")
+    print("3. Large (3.3B, highest quality)")
+    model_choice = get_int_input("Choose model", 1, 1, 3)
+
     model_map = {
         1: "facebook/musicgen-small",
         2: "facebook/musicgen-medium",
-        3: "facebook/musicgen-large"
+        3: "facebook/musicgen-large",
     }
-    
-    temperature = get_float_input("温度参数 (0.0-2.0)", 1.0, 0.0, 2.0)
-    cfg = get_float_input("CFG 系数 (1.0-10.0)", 3.0, 1.0, 10.0)
-    
-    use_cuda = get_yes_no("使用 GPU (CUDA) 加速？", False)
-    play = get_yes_no("生成后自动播放？", True)
-    
+
+    temperature = get_float_input("Temperature (0.0-2.0)", 1.0, 0.0, 2.0)
+    cfg = get_float_input("CFG scale (1.0-10.0)", 3.0, 1.0, 10.0)
+    use_cuda = get_yes_no("Use GPU acceleration with CUDA?", False)
+    play = get_yes_no("Play after generation?", True)
+
     python_executable = get_musicgen_python()
     if python_executable is None:
         print_musicgen_setup_hint()
@@ -316,126 +354,114 @@ def run_local_custom():
     cmd = [
         python_executable,
         str(_repo_root() / "13_tools" / "scripts" / "make_dj_track_local.py"),
-        "--idea", idea,
-        "--style", style,
-        "--bpm", str(bpm),
-        "--duration", str(duration),
-        "--model", model_map[model_choice],
-        "--temperature", str(temperature),
-        "--cfg", str(cfg)
+        "--idea",
+        idea,
+        "--style",
+        style,
+        "--bpm",
+        str(bpm),
+        "--duration",
+        str(duration),
+        "--model",
+        model_map[model_choice],
+        "--temperature",
+        str(temperature),
+        "--cfg",
+        str(cfg),
     ]
     if use_cuda:
         cmd.append("--cuda")
     if play:
         cmd.append("--play")
-    
-    print(f"\n🚀 执行命令: {_format_command(cmd)}")
-    import subprocess
+
+    print(f"\nRunning command: {_format_command(cmd)}")
     subprocess.run(cmd)
 
 
-def get_float_input(prompt: str, default: float, min_val: float = None, max_val: float = None) -> float:
-    while True:
-        try:
-            val = get_input(prompt, str(default))
-            result = float(val)
-            if min_val is not None and result < min_val:
-                print(f"⚠️  值不能小于 {min_val}")
-                continue
-            if max_val is not None and result > max_val:
-                print(f"⚠️  值不能大于 {max_val}")
-                continue
-            return result
-        except ValueError:
-            print(f"⚠️  请输入有效的数字")
+def run_practice_plan() -> None:
+    print("\n--- Practice Plan ---")
+    print("1. Beginner plan")
+    print("2. Intermediate plan")
+    print("3. Advanced plan")
+    print("0. Back")
 
-
-def run_practice_plan():
-    print("\n--- 练习计划 ---")
-    print("1. 新手计划")
-    print("2. 进阶计划")
-    print("3. 高级计划")
-    print("0. 返回")
-    
-    choice = get_int_input("选择计划", 0, 0, 3)
+    choice = get_int_input("Choose plan", 0, 0, 3)
     if choice == 0:
         return
-    
+
     level_map = {1: "beginner", 2: "intermediate", 3: "advanced"}
-    save = get_yes_no("保存到文件？", True)
-    
+    save = get_yes_no("Save to file?", True)
+
     cmd = [
         sys.executable,
         str(_repo_root() / "13_tools" / "scripts" / "practice_plan.py"),
-        "--level", level_map[choice]
+        "--level",
+        level_map[choice],
     ]
     if save:
         cmd.append("--save")
-    
-    import subprocess
+
+    print(f"\nRunning command: {_format_command(cmd)}")
     subprocess.run(cmd)
 
 
-def run_library_manager():
-    print("\n--- 曲目库管理 ---")
-    print("1. 列出所有曲目")
-    print("2. 按风格筛选")
-    print("3. 创建 Set List")
-    print("0. 返回")
-    
-    choice = get_int_input("选择操作", 0, 0, 3)
+def run_library_manager() -> None:
+    print("\n--- Track Library Manager ---")
+    print("1. List all tracks")
+    print("2. Filter by style")
+    print("3. Create a set list")
+    print("0. Back")
+
+    choice = get_int_input("Choose action", 0, 0, 3)
     if choice == 0:
         return
-    
+
     cmd = [
         sys.executable,
-        str(_repo_root() / "13_tools" / "scripts" / "library_manager.py")
+        str(_repo_root() / "13_tools" / "scripts" / "library_manager.py"),
     ]
-    
+
     if choice == 1:
         cmd.append("list")
     elif choice == 2:
-        style = get_input("输入风格", "Tech House")
+        style = get_input("Enter style", "Tech House")
         cmd.extend(["list", "--style", style])
     elif choice == 3:
-        print("请先运行 'list' 查看曲目索引")
-        name = get_input("Set List 名称", "我的 Set")
-        tracks = get_input("曲目索引（逗号分隔）", "1,2,3")
+        print("Run 'list' first to inspect track indexes.")
+        name = get_input("Set list name", "My Set")
+        tracks = get_input("Track indexes, comma-separated", "1,2,3")
         cmd.extend(["setlist", "--name", name, "--tracks", tracks])
-    
-    import subprocess
+
+    print(f"\nRunning command: {_format_command(cmd)}")
     subprocess.run(cmd)
 
 
-def show_docs():
-    print("\n--- 文档 ---")
-    print("1. DJ 学习路径")
-    print("2. DJ 技巧库")
-    print("3. 本地模型使用指南")
-    print("4. 本地歌词模型对比")
-    print("5. ACE-Step 部署报告")
-    print("6. AI-DJ 教程")
-    print("0. 返回")
-    
-    choice = get_int_input("选择文档", 0, 0, 6)
+def show_docs() -> None:
+    print("\n--- Documentation ---")
+    print("1. DJ learning path")
+    print("2. DJ techniques library")
+    print("3. Local model guide")
+    print("4. Local lyrics model guide")
+    print("5. ACE-Step deployment report")
+    print("6. AI-DJ tutorial")
+    print("0. Back")
+
+    choice = get_int_input("Choose document", 0, 0, 6)
     if choice == 0:
         return
-    
+
     doc_map = {
         1: "12_docs/learning_path.md",
         2: "12_docs/techniques_library.md",
         3: "12_docs/local_models.md",
         4: "12_docs/local_lyrics_models.md",
         5: "12_docs/ace_step_deployment_report.md",
-        6: "12_docs/ai_djuced_tutorial.md"
+        6: "12_docs/ai_djuced_tutorial.md",
     }
-    
+
     doc_path = _repo_root() / doc_map[choice]
     if doc_path.exists():
-        print(f"\n📖 打开: {doc_path}")
-        import os
-        import platform
-        import subprocess
+        print(f"\nOpening: {doc_path}")
         system = platform.system().lower()
         if system.startswith("windows"):
             os.startfile(str(doc_path))
@@ -444,39 +470,43 @@ def show_docs():
         else:
             subprocess.run(["xdg-open", str(doc_path)], check=False)
     else:
-        print(f"⚠️  文档未找到: {doc_path}")
+        print(f"Warning: document not found: {doc_path}")
 
 
-def print_ace_menu():
-    print("\n--- 本地歌词生成 (ACE-Step) ---")
-    print("⚠️  注意：RTX 5060 Ti 可能存在兼容性问题")
-    print("1. 生成 House 音乐（带歌词）")
-    print("2. 生成 Techno 音乐（带歌词）")
-    print("3. 生成 Trance 音乐（带歌词）")
-    print("4. 自定义生成")
-    print("5. 启动 Web UI (Gradio)")
-    print("6. 检查 ACE-Step 环境")
-    print("0. 返回主菜单")
+def print_ace_menu() -> None:
+    print("\n--- ACE-Step Local Lyrics/Song Generation ---")
+    print("Note: RTX 5060 Ti may require compatibility tuning.")
+    print("1. Generate House with lyrics")
+    print("2. Generate Techno with lyrics")
+    print("3. Generate Trance with lyrics")
+    print("4. Custom ACE-Step generation")
+    print("5. Start ACE-Step Web UI (Gradio)")
+    print("6. Check ACE-Step environment")
+    print("0. Back to main menu")
 
 
-def run_ace_step_generate(style: str = "House"):
-    print(f"\n--- ACE-Step 生成 ({style}) ---")
+def run_ace_step_generate(style: str = "House") -> None:
+    print(f"\n--- ACE-Step Generation ({style}) ---")
 
-    theme = get_input("主题/创意", "DJ派对")
-    duration = get_int_input("时长（秒，-1为随机）", 30, -1, 300)
-    steps = get_int_input("推理步骤（30-50，越多质量越好）", 30, 10, 100)
+    theme = get_input("Theme/idea", "DJ party")
+    duration = get_int_input("Duration in seconds (-1 for random)", 30, -1, 300)
+    steps = get_int_input("Inference steps (10-100)", 30, 10, 100)
 
-    print("\n高级设置:")
-    cpu_offload = get_yes_no("启用 CPU Offload（减少显存使用）", True)
-    bf16 = get_yes_no("使用 BF16 精度（更快）", True)
+    print("\nAdvanced settings:")
+    cpu_offload = get_yes_no("Enable CPU offload?", True)
+    bf16 = get_yes_no("Use BF16 precision?", True)
 
     cmd = [
         sys.executable,
         str(_repo_root() / "13_tools" / "scripts" / "make_dj_track_ace_step.py"),
-        "--theme", theme,
-        "--style", style,
-        "--duration", str(duration),
-        "--steps", str(steps)
+        "--theme",
+        theme,
+        "--style",
+        style,
+        "--duration",
+        str(duration),
+        "--steps",
+        str(steps),
     ]
 
     if not cpu_offload:
@@ -484,60 +514,72 @@ def run_ace_step_generate(style: str = "House"):
     if not bf16:
         cmd.append("--fp32")
 
-    print(f"\n🚀 执行命令: {_format_command(cmd)}")
-    import subprocess
+    print(f"\nRunning command: {_format_command(cmd)}")
     subprocess.run(cmd)
 
 
-def run_ace_step_custom():
-    print("\n--- ACE-Step 自定义生成 ---")
+def run_ace_step_custom() -> None:
+    print("\n--- Custom ACE-Step Generation ---")
 
-    lyrics = get_input("输入歌词（或留空使用模板）", "")
-    prompt = get_input("风格描述", "Electronic House music, upbeat, dance, 120 BPM")
-    duration = get_int_input("时长（秒）", 30, -1, 300)
-    steps = get_int_input("推理步骤", 30, 10, 100)
-    guidance = get_float_input("引导系数", 7.0, 1.0, 20.0)
-    seed = get_int_input("随机种子（-1为随机）", -1, -1, 999999)
+    lyrics = get_input("Lyrics (leave blank to use template)", "")
+    prompt = get_input("Style prompt", "Electronic House music, upbeat, dance, 120 BPM")
+    duration = get_int_input("Duration in seconds", 30, -1, 300)
+    steps = get_int_input("Inference steps", 30, 10, 100)
+    guidance = get_float_input("Guidance scale", 7.0, 1.0, 20.0)
+    seed = get_int_input("Seed (-1 for random)", -1, -1, 999999)
 
     cmd = [
         sys.executable,
         str(_repo_root() / "13_tools" / "scripts" / "make_dj_track_ace_step.py"),
-        "--prompt", prompt,
-        "--duration", str(duration),
-        "--steps", str(steps),
-        "--guidance", str(guidance),
-        "--seed", str(seed)
+        "--prompt",
+        prompt,
+        "--duration",
+        str(duration),
+        "--steps",
+        str(steps),
+        "--guidance",
+        str(guidance),
+        "--seed",
+        str(seed),
     ]
 
     if lyrics:
         cmd.extend(["--lyrics", lyrics])
 
-    print(f"\n🚀 执行命令: {_format_command(cmd)}")
-    import subprocess
+    print(f"\nRunning command: {_format_command(cmd)}")
     subprocess.run(cmd)
 
 
-def run_ace_step_webui():
-    print("\n--- 启动 ACE-Step Web UI ---")
-    print("🌐 启动后访问: http://localhost:7865")
+def run_ace_step_webui() -> None:
+    print("\n--- Start ACE-Step Web UI ---")
+    print("Open this URL after startup: http://localhost:7865")
 
     ace_step_path = _ace_step_path()
     if not ace_step_path.exists():
-        print(f"❌ ACE-Step 目录不存在: {ace_step_path}")
-        print("请先克隆 ACE-Step，或运行环境检查: python 13_tools/scripts/make_dj_track_ace_step.py --check")
+        print(f"Error: ACE-Step directory does not exist: {ace_step_path}")
+        print(
+            "Clone ACE-Step first, or run: "
+            "python 13_tools/scripts/make_dj_track_ace_step.py --check"
+        )
         return
 
     if not _ace_step_importable(ace_step_path):
-        print("❌ Python 包 acestep 不可导入。")
-        print("请先安装 ACE-Step 依赖，或运行环境检查: python 13_tools/scripts/make_dj_track_ace_step.py --check")
+        print("Error: Python package 'acestep' is not importable.")
+        print(
+            "Install ACE-Step dependencies first, or run: "
+            "python 13_tools/scripts/make_dj_track_ace_step.py --check"
+        )
         return
 
-    port = get_int_input("端口号", 7865, 1000, 99999)
-    cpu_offload = get_yes_no("启用 CPU Offload", True)
+    port = get_int_input("Port", 7865, 1000, 99999)
+    cpu_offload = get_yes_no("Enable CPU offload?", True)
 
     cmd = [
-        sys.executable, "-m", "acestep.gui",
-        "--port", str(port)
+        sys.executable,
+        "-m",
+        "acestep.gui",
+        "--port",
+        str(port),
     ]
 
     if cpu_offload:
@@ -545,54 +587,54 @@ def run_ace_step_webui():
 
     cmd.extend(["--bf16", "true", "--overlapped_decode", "true"])
 
-    print(f"\n🚀 执行命令: {_format_command(cmd)}")
-    print("⚠️  Web UI 启动后，请在浏览器中使用生成")
+    print(f"\nRunning command: {_format_command(cmd)}")
+    print("After the Web UI starts, use the browser to generate music.")
 
     try:
         subprocess.run(cmd, cwd=str(ace_step_path), check=False)
     except OSError as exc:
-        print(f"❌ ACE-Step Web UI 启动失败: {exc}")
-        print("请先运行环境检查: python 13_tools/scripts/make_dj_track_ace_step.py --check")
+        print(f"Error: ACE-Step Web UI failed to start: {exc}")
+        print("Run the environment check before retrying.")
 
 
-def run_ace_step_check():
-    print("\n--- 检查 ACE-Step 环境 ---")
+def run_ace_step_check() -> None:
+    print("\n--- Check ACE-Step Environment ---")
     cmd = [
         sys.executable,
         str(_repo_root() / "13_tools" / "scripts" / "make_dj_track_ace_step.py"),
         "--check",
     ]
-    import subprocess
+    print(f"\nRunning command: {_format_command(cmd)}")
     subprocess.run(cmd)
 
 
-def main():
+def main() -> None:
     while True:
         print_header()
         print_main_menu()
-        
-        choice = get_int_input("\n请输入选项", 0, 0, 6)
-        
+
+        choice = get_int_input("\nEnter option", 0, 0, 6)
+
         if choice == 0:
-            print("\n👋 再见！")
+            print("\nGoodbye.")
             break
-        elif choice == 1:
+        if choice == 1:
             while True:
                 print_cloud_menu()
-                sub_choice = get_int_input("请输入选项", 0, 0, 2)
+                sub_choice = get_int_input("Enter option", 0, 0, 2)
                 if sub_choice == 0:
                     break
-                elif sub_choice == 1:
+                if sub_choice == 1:
                     run_cloud_generate()
                 elif sub_choice == 2:
                     run_cloud_preset()
         elif choice == 2:
             while True:
                 print_local_menu()
-                sub_choice = get_int_input("请输入选项", 0, 0, 4)
+                sub_choice = get_int_input("Enter option", 0, 0, 4)
                 if sub_choice == 0:
                     break
-                elif sub_choice == 1:
+                if sub_choice == 1:
                     run_local_generate("small")
                 elif sub_choice == 2:
                     run_local_generate("medium")
@@ -603,10 +645,10 @@ def main():
         elif choice == 3:
             while True:
                 print_ace_menu()
-                sub_choice = get_int_input("请输入选项", 0, 0, 6)
+                sub_choice = get_int_input("Enter option", 0, 0, 6)
                 if sub_choice == 0:
                     break
-                elif sub_choice == 1:
+                if sub_choice == 1:
                     run_ace_step_generate("House")
                 elif sub_choice == 2:
                     run_ace_step_generate("Techno")
@@ -624,8 +666,8 @@ def main():
             run_library_manager()
         elif choice == 6:
             show_docs()
-        
-        input("\n按 Enter 继续...")
+
+        wait_for_continue()
 
 
 if __name__ == "__main__":
