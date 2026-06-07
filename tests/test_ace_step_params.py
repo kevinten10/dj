@@ -22,6 +22,11 @@ def load_ace_step_module():
 
 
 class AceStepParameterTests(unittest.TestCase):
+    def test_ace_step_cli_text_is_ascii(self):
+        source = SCRIPT_PATH.read_text(encoding="utf-8")
+
+        self.assertTrue(source.isascii())
+
     def test_generation_kwargs_use_ace_step_sampling_defaults(self):
         ace_step = load_ace_step_module()
 

@@ -10,8 +10,8 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - Remote default branch: `master`
 - GitHub repository: `https://github.com/kevinten10/dj`
 - Repository visibility: public
-- Latest reviewed master commit before this update: `528527f`
-- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27092622122`
+- Latest reviewed master commit before this update: `78a7660`
+- Latest reviewed master workflow before this update: `CLI smoke tests`, success, run `27092740359`
 - Open GitHub PRs: none
 - Open GitHub issues: none
 - Local working tree: clean
@@ -83,6 +83,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - `generate_with_preset.py --dry-run` prints copy-paste safe commands with quoted arguments that contain spaces.
 - `generate_visualizations.py` regenerates readable ASCII visualization docs without mojibake output.
 - `practice_plan.py --start-day` schedules from the next requested weekday, matching the `1=Monday` help text.
+- `make_dj_track_ace_step.py` has readable ASCII help, dry-run, preflight, and generation status text.
 - ACE-Step preflight: `python 13_tools/scripts/make_dj_track_ace_step.py --check`
 - ACE-Step local generation smoke:
   - Command: `python 13_tools/scripts/make_dj_track_ace_step.py --style House --duration 10 --steps 5 --seed 123 --output 04_generations/audio/raw/ace_step_10s_smoke.wav`
@@ -124,6 +125,7 @@ This document summarizes the current handoff state for `D:\projects\dj` and the 
 - PR #35: returned non-zero exits from invalid `library_manager.py show` and `setlist` commands.
 - PR #36: regenerated readable ASCII visualization docs and added mojibake regression coverage.
 - PR #37: cleaned the interactive generator menu text and made its continue prompt EOF-safe.
+- PR #38: added the project handoff status document to the interactive documentation menu.
 
 All merged PRs were followed by successful master `CLI smoke tests`.
 
