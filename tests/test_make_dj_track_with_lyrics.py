@@ -23,6 +23,11 @@ def load_lyrics_module():
 
 
 class MakeDjTrackWithLyricsTests(unittest.TestCase):
+    def test_lyrics_cli_text_is_ascii(self):
+        source = SCRIPT_PATH.read_text(encoding="utf-8")
+
+        self.assertTrue(source.isascii())
+
     def test_theme_alias_can_supply_track_idea(self):
         lyrics_module = load_lyrics_module()
         commands = []
