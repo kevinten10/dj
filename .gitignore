@@ -30,6 +30,9 @@ venv/
 research_log.txt
 research_state.json
 
+# Local secrets
+13_tools/configs/minimax_env.ps1
+
 # OS
 .DS_Store
 Thumbs.db
