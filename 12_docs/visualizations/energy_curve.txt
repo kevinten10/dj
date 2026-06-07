@@ -1,34 +1,21 @@
 
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                    DJ SET ENERGY CURVE DESIGN                                ║
-║                                                                              ║
-║  Energy                                                                      ║
-║    ↑                                                                         ║
-║ 100│                                          ╱╲                            ║
-║    │                                        ╱    ╲                          ║
-║  80│                                      ╱        ╲                        ║
-║    │                                    ╱            ╲                      ║
-║  60│                                  ╱                ╲                    ║
-║    │                                ╱                    ╲                  ║
-║  40│                              ╱                        ╲                ║
-║    │                            ╱                            ╲              ║
-║  20│                          ╱                                ╲            ║
-║    │                        ╱                                    ╲          ║
-║   0│______________________╱________________________________________╲________║
-║    │          │           │            │            │              │         ║
-║    │   Warm   │   Ramp    │   Peak     │   Peak     │   Cool      │ Closing ║
-║    │   Up     │   Up      │   Time 1   │   Time 2   │   Down      │         ║
-║    └──────────┴───────────┴────────────┴────────────┴──────────────┴─────────║
-║                                                                              ║
-║  PHASE BREAKDOWN:                                                            ║
-║  ┌─────────────┬─────────────┬─────────────────────────────────────────────┐ ║
-║  │   PHASE     │    TIME     │              DESCRIPTION                    │ ║
-║  ├─────────────┼─────────────┼─────────────────────────────────────────────┤ ║
-║  │ Warm-up     │ 15-20 min   │ Deep House/Tech House, BPM 118-124          │ ║
-║  │ Ramp-up     │ 20-30 min   │ Gradually increase BPM to 128-130           │ ║
-║  │ Peak Time 1 │ 30-40 min   │ High energy Techno/Trance, BPM 130-138      │ ║
-║  │ Peak Time 2 │ 20-30 min   │ Maximum energy, biggest drops               │ ║
-║  │ Cool-down   │ 15-20 min   │ Lower BPM, more melodic, prepare for end    │ ║
-║  │ Closing     │ 10-15 min   │ Outro-friendly tracks, easy transition      │ ║
-║  └─────────────┴─────────────┴─────────────────────────────────────────────┘ ║
-╚══════════════════════════════════════════════════════════════════════════════╝
++------------------------------------------------------------------------------+
+|                         DJ SET ENERGY CURVE                                   |
++------------------------------------------------------------------------------+
+| Energy                                                                       |
+| 100 |                                      /\                                 |
+|  80 |                                  ___/  \___                             |
+|  60 |                             ____/          \____                        |
+|  40 |                        ____/                    \___                    |
+|  20 |                   ____/                            \___                 |
+|   0 +------------------+---------+----------+----------+----+--------------> |
+|       Warm-up          Ramp-up   Peak 1     Peak 2     Cool Closing          |
++------------------------------------------------------------------------------+
+
+Phase guide:
+  Warm-up   : 15-20 min, Deep House / Tech House, 118-124 BPM
+  Ramp-up   : 20-30 min, gradually increase to 128-130 BPM
+  Peak 1    : 30-40 min, high-energy Techno / Trance
+  Peak 2    : 20-30 min, biggest tracks and drops
+  Cool-down : 15-20 min, more melodic and lower energy
+  Closing   : 10-15 min, outro-friendly tracks
